@@ -1,0 +1,59 @@
+===================================================
+         IMAGE SIZE GUIDE FOR ADMIN PANEL
+===================================================
+
+---Home Page---
+===================================================
+
+1. Banner Image
+   - Upload Size: 1920 x 800 px
+   - Format: JPG (compressed, max 300KB)
+   - Type: Full-width hero background
+   - Notes: Landscape, high quality, property/cityscape
+
+2. Featured Property Cards
+   - Upload Size: 400 x 280 px
+   - Format: JPG (compressed, max 150KB)
+   - Type: Property thumbnail
+   - Notes: Landscape, show front view of property
+
+3. Blog Post Cards
+   - Upload Size: 400 x 240 px
+   - Format: JPG (compressed, max 120KB)
+   - Type: Blog thumbnail
+   - Notes: Landscape, relevant to blog topic
+
+4. City Icons (Explore Cities Slider)
+   - Upload Size: 80 x 80 px
+   - Format: PNG (transparent background)
+   - Type: City landmark/icon
+   - Notes: Square, clean illustration style
+
+5. Why Choose Us / Benefit Icons
+   - Upload Size: 64 x 64 px
+   - Format: PNG (transparent background)
+   - Type: Feature icon
+   - Notes: Square, simple illustration style
+
+
+---Buy Properties Page---
+===================================================
+
+1. Property Listing Cards
+   - Upload Size: 400 x 280 px
+   - Format: JPG (compressed, max 150KB)
+   - Type: Property thumbnail for grid/list view
+   - Notes: Landscape, front view, well-lit photo
+
+
+---Rent Properties Page---
+===================================================
+
+1. Rental Property Cards
+   - Upload Size: 600 x 400 px
+   - Format: JPG (compressed, max 200KB)
+   - Type: Property thumbnail for grid/list view
+   - Notes: Landscape, well-lit interior/exterior photo
+   - Folder: public/img/rent/
+
+

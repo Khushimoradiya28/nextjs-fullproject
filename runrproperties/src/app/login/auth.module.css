@@ -1,0 +1,59 @@
+.page { display: flex; flex: 1; flex-direction: column; background: linear-gradient(180deg, #fcfaf8 0%, #f7f3ee 100%); min-height: 100vh; }
+.main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 20px; }
+
+.authCard { width: 100%; max-width: 480px; background: #ffffff; border-radius: 24px; border: 1px solid rgba(30,58,95,0.08); box-shadow: 0 20px 56px rgba(30,58,95,0.08); padding: 40px 36px; }
+
+.authHeader { text-align: center; margin-bottom: 28px; }
+.authTitle { margin: 0 0 8px; font-size: 1.6rem; }
+.authSubtitle { margin: 0; color: #5a6f85; font-size: 0.92rem; }
+
+.authForm { display: flex; flex-direction: column; gap: 18px; }
+
+.formGroup { display: flex; flex-direction: column; gap: 7px; }
+.formLabel { font-size: 0.78rem; font-weight: 700; color: #3f556d; text-transform: uppercase; letter-spacing: 0.04em; }
+.formInput { width: 100%; padding: 13px 16px; border-radius: 12px; border: 1px solid rgba(30,58,95,0.12); background: #f8fafc; color: #1e3a5f; font-size: 0.9rem; font-weight: 500; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+.formInput:focus { outline: none; border-color: rgba(63,166,107,0.45); box-shadow: 0 0 0 3px rgba(63,166,107,0.1); background: #ffffff; }
+.formInput::placeholder { color: #94a3b8; }
+
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.errorMsg { padding: 12px 16px; border-radius: 10px; background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.12); color: #dc2626; font-size: 0.85rem; font-weight: 500; }
+.infoMsg { padding: 12px 16px; border-radius: 10px; background: rgba(63,166,107,0.06); border: 1px solid rgba(63,166,107,0.12); color: #166534; font-size: 0.85rem; font-weight: 500; }
+
+.forgotLink { align-self: flex-end; background: none; border: none; color: #3fa66b; font-size: 0.82rem; font-weight: 600; cursor: pointer; padding: 0; margin-top: -8px; }
+.forgotLink:hover { text-decoration: underline; }
+
+.submitBtn { width: 100%; padding: 15px 24px; border-radius: 14px; border: none; background: linear-gradient(135deg, #1e3a5f, #16304b); color: #ffffff; font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: 0 10px 24px rgba(30,58,95,0.2); transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; overflow: hidden; margin-top: 6px; }
+.submitBtn::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, #3fa66b, #2f8f58); opacity: 0; transition: opacity 0.25s ease; }
+.submitBtn span { position: relative; z-index: 1; }
+.submitBtn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(63,166,107,0.25); }
+.submitBtn:hover:not(:disabled)::before { opacity: 1; }
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.switchText { text-align: center; margin-top: 24px; color: #5a6f85; font-size: 0.88rem; }
+.switchLink { color: #3fa66b; font-weight: 700; text-decoration: none; }
+.switchLink:hover { text-decoration: underline; }
+
+.backLink { display: block; text-align: center; margin-top: 18px; background: none; border: none; color: #5a6f85; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+.backLink:hover { color: #1e3a5f; }
+
+/* Role select */
+.roleSelect { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.roleBtn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 12px; border-radius: 14px; border: 2px solid rgba(30,58,95,0.1); background: #f8fafc; cursor: pointer; transition: all 0.2s ease; }
+.roleBtn:hover { border-color: rgba(63,166,107,0.3); background: #f0fdf4; }
+.roleBtnActive { border-color: #3fa66b; background: #f0fdf4; box-shadow: 0 4px 16px rgba(63,166,107,0.15); }
+.roleIcon { font-size: 1.8rem; }
+.roleText { font-size: 0.9rem; font-weight: 700; color: #10203b; }
+.roleDesc { font-size: 0.72rem; color: #64748b; }
+
+@media (max-width: 640px) {
+  .authCard { padding: 28px 22px; border-radius: 18px; }
+  .formRow { grid-template-columns: 1fr; }
+  .roleSelect { grid-template-columns: 1fr; }
+  .authTitle { font-size: 1.4rem; }
+}
+
+@media (max-width: 400px) {
+  .main { padding: 20px 12px; }
+  .authCard { padding: 24px 16px; }
+}

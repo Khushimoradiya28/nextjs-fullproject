@@ -1,0 +1,380 @@
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  height: 100%;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid rgba(30, 58, 95, 0.08);
+  border-radius: 22px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 36px rgba(30, 58, 95, 0.06);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  height: 100%;
+  width: 100%;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 56px rgba(30, 58, 95, 0.12);
+}
+
+/* List view variant */
+.cardList {
+  flex-direction: row;
+  border-radius: 18px;
+  height: 200px;
+}
+
+.cardList .cardImageWrap {
+  flex: 0 0 260px;
+  max-width: 260px;
+  height: 200px;
+}
+
+.cardList .cardImage {
+  height: 200px;
+  min-height: 200px;
+  border-radius: 18px 0 0 18px;
+}
+
+.cardList .cardImg {
+  height: 200px;
+}
+
+.cardList .cardContent {
+  flex: 1;
+  padding: 22px 24px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Image area */
+.cardImageWrap {
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cardImage {
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  background-color: #f3f6fb;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.card:hover .cardImg {
+  transform: scale(1.03);
+}
+
+/* Badges */
+.badgeRow {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  gap: 6px;
+  z-index: 3;
+}
+
+.badgeType {
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1e3a5f, #16304b);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.badgeFurnish {
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #166534;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid rgba(63, 166, 107, 0.2);
+}
+
+/* Like button */
+.likeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: #999696;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease;
+}
+
+.likeBtn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.likeBtn:hover {
+  transform: scale(1.1);
+}
+
+.likeBtn.liked {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+
+/* Content */
+.cardContent {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.cardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.featuredBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  width: fit-content;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #10203b;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardLocation {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #5a6f85;
+  font-size: 0.84rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardLocation svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #3fa66b;
+}
+
+/* Details row */
+.cardDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detailItem {
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+}
+
+/* Amenities */
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.amenityTag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.amenityMore {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #166534;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Description */
+.cardDesc {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Footer */
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(30, 58, 95, 0.06);
+}
+
+.priceBlock {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.priceValue {
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: #1e3a5f;
+}
+
+.priceLabel {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.enquiryBtn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(63,166,107,0.2);
+  background: rgba(63,166,107,0.08);
+  color: #166534;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.enquiryBtn:hover {
+  background: #3fa66b;
+  color: #ffffff;
+  border-color: #3fa66b;
+}
+
+/* ——————————————————————————————————
+   RESPONSIVE BREAKPOINTS
+   —————————————————————————————————— */
+
+@media (max-width: 880px) {
+  .cardList {
+    flex-direction: column;
+  }
+
+  .cardList .cardImageWrap {
+    flex: none;
+    max-width: 100%;
+  }
+
+  .cardList .cardImage {
+    height: 200px;
+    min-height: 200px;
+    border-radius: 0;
+  }
+
+  .cardList .cardContent {
+    padding: 18px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    border-radius: 16px;
+  }
+
+  .cardImage {
+    height: 190px;
+  }
+
+  .cardContent {
+    padding: 16px 18px 18px;
+    gap: 10px;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .priceValue {
+    font-size: 1.08rem;
+  }
+
+  .badgeRow {
+    top: 10px;
+    left: 10px;
+  }
+
+  .likeBtn {
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .likeBtn svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+@media (max-width: 400px) {
+  .cardImage {
+    height: 170px;
+  }
+
+  .cardContent {
+    padding: 14px 14px 16px;
+    gap: 8px;
+  }
+
+  .detailItem {
+    font-size: 0.78rem;
+  }
+}

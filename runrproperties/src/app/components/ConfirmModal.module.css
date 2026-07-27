@@ -1,0 +1,11 @@
+.overlay { position: fixed; inset: 0; background: rgba(15,31,61,0.5); backdrop-filter: blur(4px); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal { background: #fff; border-radius: 20px; padding: 32px 28px; max-width: 400px; width: 100%; box-shadow: 0 24px 64px rgba(30,58,95,0.2); animation: slideUp 0.2s ease; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.title { margin: 0 0 10px; font-size: 1.15rem; color: #10203b; }
+.message { margin: 0 0 24px; color: #5a6f85; font-size: 0.92rem; line-height: 1.5; }
+.actions { display: flex; gap: 12px; justify-content: flex-end; }
+.cancelBtn { padding: 10px 22px; border-radius: 10px; border: 1px solid rgba(30,58,95,0.12); background: #f8fafc; color: #5a6f85; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+.cancelBtn:hover { background: #f1f5f9; }
+.confirmBtn { padding: 10px 22px; border-radius: 10px; border: none; background: #dc2626; color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+.confirmBtn:hover:not(:disabled) { background: #b91c1c; }
+.confirmBtn:disabled { opacity: 0.6; cursor: not-allowed; }

@@ -1,0 +1,376 @@
+.featuredSection {
+  width: calc(100vw - 300px);
+  max-width: calc(100vw - 300px);
+  margin: 30px auto 30px;
+  /* padding: 40px 0 0; */
+}
+
+.featuredHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.sectionTitle {
+  margin: 0;
+}
+
+.viewAll {
+  color: #1e3a5f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sliderControls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sliderButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(30, 58, 95, 0.14);
+  background: #ffffff;
+  color: #1e3a5f;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(30, 58, 95, 0.08);
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.sliderButton:hover:not(:disabled) {
+  transform: translateX(-2px);
+}
+
+.sliderButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.featuredGrid {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: none;
+  padding-bottom: 12px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.featuredGrid::-webkit-scrollbar {
+  display: none;
+}
+
+.propertyCard {
+  background: #ffffff;
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 calc((100% - 72px) / 4);
+  max-width: calc((100% - 72px) / 4);
+  scroll-snap-align: start;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
+  position: relative;
+}
+
+.propertyCard:hover {
+  transform: translateY(-5px);
+}
+
+.cardImage {
+  height: 260px;
+  position: relative;
+  overflow: hidden;
+  background-color: #f3f6fb;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.propertyCard:hover .cardImg {
+  transform: scale(1.035);
+}
+
+.cardBody {
+  padding: 20px 22px 20px;
+  display: block;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  margin: 0;
+}
+
+.cardLocation {
+  margin: 0 0 12px;
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cardBadge {
+  padding: 3px 13px;
+  border-radius: 6px;
+  background: linear-gradient(#3fa66b 0%, #34995f 100%);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.cardBhk {
+  padding: 3px 13px;
+  border-radius: 6px;
+  background: #e4e9ee;
+  color: #475569;
+  font-size: 0.79rem;
+  font-weight: 600;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cardPrice {
+  font-weight: 800;
+  color: #1e3a5f;
+  font-size: 20px;
+}
+
+.cardSize {
+  color: #6b7280;
+  font-size: 0.88rem;
+}
+
+/* Overlay favorite button */
+.cardActionOverlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #aba9a9cc;
+  border: 1px solid rgba(30, 58, 95, 0.08);
+  color: #1e3a5f;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(30, 58, 95, 0.08);
+  z-index: 5;
+  transition:
+    transform 0.12s ease,
+    color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.cardActionOverlay:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.cardActionOverlay.liked {
+  background: rgba(255, 255, 255, 0.95);
+  color: #e0245e;
+  border-color: rgba(226, 36, 94, 0.08);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.cardActionOverlay svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18));
+}
+
+.cardActionOverlay svg path {
+  transition:
+    fill 120ms ease,
+    stroke 120ms ease;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid rgba(30, 58, 95, 0.08);
+}
+
+.emptyText {
+  margin: 0;
+  color: #5a6f85;
+  font-size: 0.95rem;
+}
+
+/* ——————————————————————————————————
+   RESPONSIVE BREAKPOINTS
+   —————————————————————————————————— */
+
+@media (max-width: 1200px) {
+  .featuredSection {
+    width: calc(100vw - 64px);
+    max-width: calc(100vw - 64px);
+  }
+
+  .propertyCard {
+    flex: 0 0 calc((100% - 48px) / 3);
+    max-width: calc((100% - 48px) / 3);
+  }
+}
+
+@media (max-width: 768px) {
+  .theme-padding {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .featuredSection {
+    width: calc(100vw - 40px);
+    max-width: calc(100vw - 40px);
+    position: relative;
+  }
+
+  .featuredHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .propertyCard {
+    flex: 0 0 calc((100% - 24px) / 2);
+    max-width: calc((100% - 24px) / 2);
+  }
+
+  .cardImage {
+    height: 220px;
+  }
+
+  .sliderControls {
+    margin-bottom: 14px;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .featuredSection {
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    margin: 32px auto 0px;
+  }
+
+  .sectionTitle {
+    font-size: 1.3rem;
+  }
+
+  .propertyCard {
+    flex: 0 0 calc((100% - 16px) / 2);
+    max-width: calc((100% - 16px) / 2);
+    border-radius: 14px;
+  }
+
+  .cardImage {
+    height: 160px;
+  }
+
+  .cardBody {
+    padding: 12px 14px 14px;
+  }
+
+  .cardTitle {
+    font-size: 0.88rem;
+  }
+
+  .cardLocation {
+    font-size: 0.78rem;
+    margin-bottom: 8px;
+  }
+
+  .cardMeta {
+    margin-bottom: 10px;
+  }
+
+  .cardBadge,
+  .cardBhk {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+  }
+
+  .cardPrice {
+    font-size: 0.95rem;
+  }
+
+  .cardSize {
+    font-size: 0.75rem;
+  }
+
+  .featuredGrid {
+    gap: 16px;
+  }
+
+  .sliderButton {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 400px) {
+  .featuredSection {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+  }
+
+  .sectionTitle {
+    font-size: 1.15rem;
+  }
+
+  .propertyCard {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .cardImage {
+    height: 180px;
+  }
+}

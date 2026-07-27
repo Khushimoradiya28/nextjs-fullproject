@@ -1,0 +1,317 @@
+.gridSection {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+  min-height: 800px;
+}
+
+/* Sort bar */
+.sortBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 22px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(30, 58, 95, 0.08);
+  box-shadow: 0 6px 20px rgba(30, 58, 95, 0.04);
+  position: sticky;
+  top: 78px;
+  z-index: 10;
+}
+
+.sortLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.resultCount {
+  color: #5a6f85;
+  font-size: 0.88rem;
+}
+
+.resultCount strong {
+  color: #10203b;
+  font-weight: 800;
+}
+
+.sortRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sortGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sortLabel {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sortSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 9px 32px 9px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  background: #f8fafc;
+  color: #1e3a5f;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231e3a5f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.15s ease;
+}
+
+.sortSelect:focus {
+  outline: none;
+  border-color: rgba(63, 166, 107, 0.4);
+}
+
+/* View toggle */
+.viewToggle {
+  display: flex;
+  border-radius: 10px;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+  overflow: hidden;
+}
+
+.viewBtn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: #f8fafc;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.viewBtn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.viewBtn:hover {
+  background: #f0fdf4;
+  color: #3fa66b;
+}
+
+.viewBtnActive {
+  background: #1e3a5f;
+  color: #ffffff;
+}
+
+.viewBtnActive:hover {
+  background: #1e3a5f;
+  color: #ffffff;
+}
+
+/* Properties container */
+.gridLayout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  animation: fadeIn 0.4s ease;
+}
+
+.listLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid rgba(30, 58, 95, 0.08);
+  text-align: center;
+}
+
+.emptyIcon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+}
+
+.emptyIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.emptyTitle {
+  margin: 0 0 8px;
+  color: #10203b;
+  font-size: 1.15rem;
+}
+
+.emptyText {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 12px;
+}
+
+.pageBtn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+  background: #ffffff;
+  color: #1e3a5f;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: #f0fdf4;
+  border-color: rgba(63, 166, 107, 0.3);
+  color: #3fa66b;
+  transform: translateY(-1px);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageBtnActive {
+  background: linear-gradient(135deg, #3fa66b 0%, #2f8f58 100%);
+  border-color: #3fa66b;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(63, 166, 107, 0.25);
+}
+
+.pageBtnActive:hover:not(:disabled) {
+  background: linear-gradient(135deg, #358f5c 0%, #28794c 100%);
+  color: #ffffff;
+  border-color: #2f8f58;
+}
+
+.pageEllipsis {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  padding: 0 4px;
+}
+
+/* ——————————————————————————————————
+   RESPONSIVE BREAKPOINTS
+   —————————————————————————————————— */
+
+@media (max-width: 1100px) {
+  .gridLayout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 880px) {
+  .sortBar {
+    flex-wrap: wrap;
+    padding: 14px 18px;
+    gap: 12px;
+  }
+
+  .gridLayout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gridLayout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .sortBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .sortLeft {
+    justify-content: center;
+  }
+
+  .sortRight {
+    justify-content: space-between;
+  }
+
+  .sortSelect {
+    flex: 1;
+  }
+
+  .pagination {
+    gap: 4px;
+  }
+
+  .pageBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .sortBar {
+    padding: 10px 12px;
+  }
+
+  .viewToggle {
+    display: none;
+  }
+
+  .sortGroup {
+    width: 100%;
+  }
+
+  .sortSelect {
+    width: 100%;
+  }
+}
