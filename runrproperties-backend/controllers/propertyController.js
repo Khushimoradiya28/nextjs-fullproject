@@ -154,6 +154,12 @@ const getMyProperties = async (req, res, next) => {
  */
 const updateProperty = async (req, res, next) => {
   try {
+    console.log('[UPDATE] Property ID:', req.params.id);
+    console.log('[UPDATE] Content-Type:', req.headers['content-type']);
+    console.log('[UPDATE] req.body:', JSON.stringify(req.body));
+    console.log('[UPDATE] req.body.status:', req.body.status);
+    console.log('[UPDATE] req.file:', req.file ? req.file.filename : 'none');
+
     if (req.body.amenities && typeof req.body.amenities === 'string') {
       try {
         req.body.amenities = JSON.parse(req.body.amenities);
@@ -173,6 +179,8 @@ const updateProperty = async (req, res, next) => {
     }
 
     const property = await propertyService.updateProperty(req.params.id, req.user._id, req.body);
+
+    console.log('[UPDATE] Saved status:', property.status);
 
     res.status(200).json({
       success: true,
@@ -202,6 +210,25 @@ const deleteProperty = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Mark property as sold
+ * @route   PATCH /api/properties/:id/sold
+ * @access  Private (owner only)
+ */
+const markAsSold = async (req, res, next) => {
+  try {
+    const property = await propertyService.markAsSold(req.params.id, req.user._id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Property marked as sold',
+      data: property,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createProperty,
   getAllProperties,
@@ -211,4 +238,5 @@ module.exports = {
   getMyProperties,
   updateProperty,
   deleteProperty,
+  markAsSold,
 };

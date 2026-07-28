@@ -9,7 +9,7 @@ const amenitiesList = ["Parking", "Gym", "Swimming Pool", "Garden", "Lift", "AC"
 const defaultForm = {
   title: "", location: "", city: "", type: "Apartment", bhk: "2", bathrooms: "1",
   price: "", area: "", furnishing: "", parking: "", description: "",
-  image: "", amenities: [], listingType: "buy", category: "Residential", featured: false,
+  image: "", amenities: [], listingType: "buy", category: "Residential", featured: false, status: "active",
 };
 
 export default function PropertyForm({ initialData, onSubmit, submitLabel, loading }) {
@@ -209,6 +209,14 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel, loadi
               <input type="checkbox" checked={form.featured} onChange={(e) => setForm(p => ({...p, featured: e.target.checked}))} />
               <span className={styles.formLabel} style={{margin:0}}>Mark as Featured Property</span>
             </label>
+          </div>
+          <div className={styles.formGroup} style={{marginTop: 16}}>
+            <label className={styles.formLabel}>Status</label>
+            <select name="status" className={styles.formSelect} value={form.status || "active"} onChange={handleChange}>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="sold">Sold</option>
+            </select>
           </div>
         </div>
 

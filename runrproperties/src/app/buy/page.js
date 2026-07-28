@@ -10,7 +10,17 @@ import { searchProperties } from "../services/api";
 import styles from "./buy.module.css";
 
 const ITEMS_PER_PAGE = 12;
-const EMPTY_FILTERS = { city: [], type: [], bhk: [], budgetMin: "", budgetMax: "", areaMin: "", areaMax: "", furnishing: [], keyword: "" };
+const EMPTY_FILTERS = {
+  city: [],
+  type: [],
+  bhk: [],
+  budgetMin: "",
+  budgetMax: "",
+  areaMin: "",
+  areaMax: "",
+  furnishing: [],
+  keyword: "",
+};
 
 function mapSort(val) {
   if (val === "price-low") return "price";
@@ -19,7 +29,8 @@ function mapSort(val) {
 }
 
 function readInitialParams() {
-  if (typeof window === "undefined") return { filters: EMPTY_FILTERS, sortBy: "newest", page: 1 };
+  if (typeof window === "undefined")
+    return { filters: EMPTY_FILTERS, sortBy: "newest", page: 1 };
   const sp = new URLSearchParams(window.location.search);
   return {
     filters: {
@@ -50,6 +61,12 @@ export default function BuyPage() {
   const [currentPage, setCurrentPage] = useState(initial.current.page);
   const [viewMode, setViewMode] = useState("grid");
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [properties, setProperties] = useState([]);
   const [gridLoading, setGridLoading] = useState(true);
   const [totalResults, setTotalResults] = useState(0);
@@ -57,13 +74,35 @@ export default function BuyPage() {
 
   const fetchData = useCallback(async (f, sort, page) => {
     setGridLoading(true);
-    const q = { listingType: "buy", page: String(page), limit: String(ITEMS_PER_PAGE), sortBy: mapSort(sort) };
-    if (f.city.length > 0) q.city = f.city[0];
-    if (f.type.length > 0) q.propertyType = f.type[0];
-    if (f.bhk.length > 0) q.bedrooms = f.bhk[0];
+    const q = {
+      listingType: "buy",
+      page: String(page),
+      limit: String(ITEMS_PER_PAGE),
+      sortBy: mapSort(sort),
+    };
+    if (f.city.length > 0) q.city = f.city.join(",");
+    if (f.type.length > 0) q.propertyType = f.type.join(",");
+    if (f.bhk.length > 0) q.bedrooms = f.bhk.join(",");
     if (f.budgetMin) q.minPrice = f.budgetMin;
     if (f.budgetMax) q.maxPrice = f.budgetMax;
-    if (f.furnishing.length > 0) q.furnishing = f.furnishing[0];
+    // if (f.furnishing.length > 0) q.furnishing = f.furnishing.join(",");
+    if (f.furnishing.length > 0) {
+      q.furnishing = f.furnishing
+        .map((v) => {
+          switch (v) {
+            case "furnished":
+              return "Fully Furnished";
+            case "semi-furnished":
+              return "Semi Furnished";
+            case "unfurnished":
+              return "Unfurnished";
+            default:
+              return v;
+          }
+        })
+        .join(",");
+    }
+    // console.log(q.furnishing);
     if (f.keyword) q.q = f.keyword;
 
     const res = await searchProperties(q);
@@ -80,10 +119,10 @@ export default function BuyPage() {
 
     // Sync URL
     const p = new URLSearchParams();
-    f.city.forEach(v => p.append("city", v));
-    f.type.forEach(v => p.append("type", v));
-    f.bhk.forEach(v => p.append("bhk", v));
-    f.furnishing.forEach(v => p.append("furnishing", v));
+    f.city.forEach((v) => p.append("city", v));
+    f.type.forEach((v) => p.append("type", v));
+    f.bhk.forEach((v) => p.append("bhk", v));
+    f.furnishing.forEach((v) => p.append("furnishing", v));
     if (f.budgetMin) p.set("minPrice", f.budgetMin);
     if (f.budgetMax) p.set("maxPrice", f.budgetMax);
     if (f.areaMin) p.set("areaMin", f.areaMin);
@@ -91,7 +130,11 @@ export default function BuyPage() {
     if (f.keyword) p.set("q", f.keyword);
     if (sort !== "newest") p.set("sortBy", sort);
     if (page > 1) p.set("page", String(page));
-    window.history.replaceState(null, "", `/buy${p.toString() ? "?" + p.toString() : ""}`);
+    window.history.replaceState(
+      null,
+      "",
+      `/buy${p.toString() ? "?" + p.toString() : ""}`,
+    );
   }, []);
 
   // Only fetch when APPLIED filters, sort, or page change
@@ -103,7 +146,9 @@ export default function BuyPage() {
   // Initialize filters from URL on mount, then trigger first fetch
   useEffect(() => {
     const params = readInitialParams();
-    const hasUrlFilters = Object.values(params.filters).some(v => Array.isArray(v) ? v.length > 0 : v !== "");
+    const hasUrlFilters = Object.values(params.filters).some((v) =>
+      Array.isArray(v) ? v.length > 0 : v !== "",
+    );
     if (hasUrlFilters || params.sortBy !== "newest" || params.page !== 1) {
       setPending(params.filters);
       setApplied(params.filters);
@@ -130,7 +175,7 @@ export default function BuyPage() {
 
   // Called by filter sidebar checkboxes — only updates pending (no API)
   const handleFilterChange = (key, value) => {
-    setPending(prev => ({ ...prev, [key]: value }));
+    setPending((prev) => ({ ...prev, [key]: value }));
   };
 
   // Called by "Apply Filters" button — commits pending → applied
@@ -146,26 +191,53 @@ export default function BuyPage() {
     setCurrentPage(1);
   };
 
+  if (!mounted) return null;
+
   return (
     <div className={styles.buyPage}>
       <Header />
       <main className={styles.mainContent}>
         <div className={styles.pageHeader}>
           <div className={styles.breadcrumb}>
-            <a href="/" className={styles.breadcrumbLink}>Home</a>
+            <a href="/" className={styles.breadcrumbLink}>
+              Home
+            </a>
             <span className={styles.breadcrumbSep}>/</span>
             <span className={styles.breadcrumbCurrent}>Buy Properties</span>
           </div>
           <div className={styles.pageHeaderInner}>
             <div>
               <h1 className={styles.pageTitle}>Buy Properties</h1>
-              <p className={styles.pageSubtitle}>{gridLoading ? "Searching..." : `${totalResults} properties found`}</p>
+              <p className={styles.pageSubtitle}>
+                {gridLoading
+                  ? "Searching..."
+                  : `${totalResults} properties found`}
+              </p>
             </div>
           </div>
         </div>
         <div className={styles.contentLayout}>
-          <PropertyFilters filters={pending} onFilterChange={handleFilterChange} onApplyFilters={handleApplyFilters} onClearFilters={handleClearFilters} resultCount={totalResults} />
-          <PropertyGrid properties={properties} viewMode={viewMode} setViewMode={setViewMode} sortBy={sortBy} setSortBy={(v) => { setSortBy(v); setCurrentPage(1); }} currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} totalResults={totalResults} />
+          <PropertyFilters
+            filters={pending}
+            onFilterChange={handleFilterChange}
+            onApplyFilters={handleApplyFilters}
+            onClearFilters={handleClearFilters}
+            resultCount={totalResults}
+          />
+          <PropertyGrid
+            properties={properties}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            sortBy={sortBy}
+            setSortBy={(v) => {
+              setSortBy(v);
+              setCurrentPage(1);
+            }}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+            totalResults={totalResults}
+          />
         </div>
       </main>
       <Footer />

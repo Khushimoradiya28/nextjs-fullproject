@@ -7,12 +7,12 @@
 
 .pageHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
 .pageTitle { margin: 0 0 4px; }
-.pageSubtitle { margin: 0; color: #5a6f85; font-size: 0.9rem; }
+.pageSubtitle { margin: 0; color: #5a6f85; font-size: 0.9rem; padding-top: 20px; }
 .addBtn { padding: 12px 24px; border-radius: 12px; background: linear-gradient(135deg, #3fa66b, #2f8f58); color: #ffffff; font-weight: 700; font-size: 0.88rem; text-decoration: none; box-shadow: 0 6px 16px rgba(63,166,107,0.2); transition: transform 0.2s ease; }
 .addBtn:hover { transform: translateY(-2px); }
 
 /* Stats */
-.statsRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
+.statsRow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
 .statCard { background: #ffffff; border-radius: 14px; border: 1px solid rgba(30,58,95,0.08); padding: 18px 16px; text-align: center; }
 .statValue { display: block; font-size: 1.6rem; font-weight: 800; color: #1e3a5f; }
 .statLabel { font-size: 0.78rem; color: #5a6f85; font-weight: 600; }
@@ -90,3 +90,11 @@
 
 @media (max-width: 880px) { .main { width: calc(100vw - 40px); max-width: calc(100vw - 40px); } .propCard { flex-direction: column; align-items: stretch; } .propImage { width: 100%; height: 180px; } .propActions { flex-direction: row; } .statsRow { grid-template-columns: 1fr; } .filterRow { flex-direction: column; } .filterSelect { min-width: 100%; } }
 @media (max-width: 640px) { .main { width: calc(100vw - 24px); } .pageHeader { flex-direction: column; align-items: flex-start; gap: 14px; } .pagination { flex-wrap: wrap; gap: 6px; } .pageBtn { padding: 8px 12px; font-size: 0.75rem; } }
+
+/* Mark as Sold */
+.soldBtn { padding: 7px 18px; border-radius: 8px; border: 1px solid rgba(202, 138, 4, 0.2); background: rgba(202, 138, 4, 0.06); color: #92400e; font-weight: 600; font-size: 0.78rem; cursor: pointer; transition: all 0.15s ease; }
+.soldBtn:hover { background: rgba(202, 138, 4, 0.15); border-color: rgba(202, 138, 4, 0.4); }
+.soldBadge { padding: 7px 18px; border-radius: 8px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.78rem; text-align: center; }
+
+/* Inactive badge */
+.inactiveBadge { padding: 7px 18px; border-radius: 8px; background: #f1f5f9; color: #475569; font-weight: 700; font-size: 0.78rem; text-align: center; }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import PasswordInput from "../components/PasswordInput";
 import MobileInput from "../components/MobileInput";
+import { validateName, validateEmail, validateMobile, validatePassword, validateConfirmPassword } from "../utils/validation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import styles from "../login/auth.module.css";
@@ -14,34 +15,60 @@ export default function SignupPage() {
   const router = useRouter();
   const { signup } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", mobile: "", password: "", confirmPassword: "", role: "buyer" });
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState({});
 
   const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setError("");
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setApiError("");
+    // Clear error on valid input
+    if (touched[name]) validateField(name, value);
+  };
+
+  const validateField = (name, value) => {
+    let result = { valid: true, message: "" };
+    switch (name) {
+      case "name": result = validateName(value); break;
+      case "email": result = validateEmail(value); break;
+      case "mobile": result = validateMobile(value); break;
+      case "password": result = validatePassword(value); break;
+      case "confirmPassword": result = validateConfirmPassword(form.password, value); break;
+    }
+    setErrors(prev => ({ ...prev, [name]: result.valid ? "" : result.message }));
+    return result.valid;
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    validateField(name, value);
+  };
+
+  const validateAll = () => {
+    const r = {
+      name: validateName(form.name),
+      email: validateEmail(form.email),
+      mobile: validateMobile(form.mobile),
+      password: validatePassword(form.password),
+      confirmPassword: validateConfirmPassword(form.password, form.confirmPassword),
+    };
+    const newErrors = {};
+    let allValid = true;
+    Object.entries(r).forEach(([key, val]) => {
+      if (!val.valid) { newErrors[key] = val.message; allValid = false; }
+    });
+    setErrors(newErrors);
+    setTouched({ name: true, email: true, mobile: true, password: true, confirmPassword: true });
+    return allValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
-    if (!form.name || !form.email || !form.mobile || !form.password || !form.confirmPassword) {
-      setError("Please fill in all fields");
-      return;
-    }
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    if (!/^[0-9]{10}$/.test(form.mobile)) {
-      setError("Please enter a valid 10-digit mobile number");
-      return;
-    }
+    setApiError("");
+    if (!validateAll()) return;
 
     setLoading(true);
     const result = await signup({
@@ -56,9 +83,11 @@ export default function SignupPage() {
     if (result.success) {
       router.push("/profile");
     } else {
-      setError(result.message);
+      setApiError(result.message);
     }
   };
+
+  const fieldStyle = (name) => errors[name] ? `${styles.formInput} ${styles.inputError}` : styles.formInput;
 
   return (
     <div className={styles.page}>
@@ -70,32 +99,36 @@ export default function SignupPage() {
             <p className={styles.authSubtitle}>Join Runr Properties to find your dream property</p>
           </div>
 
-          <form className={styles.authForm} onSubmit={handleSubmit}>
-            {error && <div className={styles.errorMsg}>{error}</div>}
+          <form className={styles.authForm} onSubmit={handleSubmit} noValidate>
+            {apiError && <div className={styles.errorMsg}>{apiError}</div>}
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="signup-name">Full Name</label>
-              <input id="signup-name" name="name" className={styles.formInput} value={form.name} onChange={handleChange} placeholder="Your full name" />
+              <label className={styles.formLabel} htmlFor="signup-name">Full Name <span style={{color:"#dc2626"}}>*</span></label>
+              <input id="signup-name" name="name" className={fieldStyle("name")} value={form.name} onChange={handleChange} onBlur={handleBlur} placeholder="Your full name" />
+              {errors.name && <span className={styles.fieldError}>{errors.name}</span>}
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="signup-email">Email</label>
-              <input id="signup-email" name="email" type="email" className={styles.formInput} value={form.email} onChange={handleChange} placeholder="you@email.com" />
+              <label className={styles.formLabel} htmlFor="signup-email">Email <span style={{color:"#dc2626"}}>*</span></label>
+              <input id="signup-email" name="email" type="email" className={fieldStyle("email")} value={form.email} onChange={handleChange} onBlur={handleBlur} placeholder="you@email.com" />
+              {errors.email && <span className={styles.fieldError}>{errors.email}</span>}
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="signup-mobile">Mobile Number</label>
-              <MobileInput id="signup-mobile" name="mobile" className={styles.formInput} value={form.mobile} onChange={(val) => { setForm((p) => ({ ...p, mobile: val })); setError(""); }} placeholder="10-digit number" />
+              <label className={styles.formLabel} htmlFor="signup-mobile">Mobile Number <span style={{color:"#dc2626"}}>*</span></label>
+              <MobileInput id="signup-mobile" name="mobile" className={fieldStyle("mobile")} value={form.mobile} onChange={(val) => { setForm((p) => ({ ...p, mobile: val })); setApiError(""); if (touched.mobile) { const r = validateMobile(val); setErrors(prev => ({...prev, mobile: r.valid ? "" : r.message})); } }} placeholder="10-digit number" />
             </div>
 
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="signup-password">Password</label>
-                <PasswordInput id="signup-password" name="password" className={styles.formInput} value={form.password} onChange={handleChange} placeholder="Min 6 characters" />
+                <label className={styles.formLabel} htmlFor="signup-password">Password <span style={{color:"#dc2626"}}>*</span></label>
+                <PasswordInput id="signup-password" name="password" className={fieldStyle("password")} value={form.password} onChange={handleChange} onBlur={handleBlur} placeholder="Min 8 characters" />
+                {errors.password && <span className={styles.fieldError}>{errors.password}</span>}
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="signup-confirm">Confirm Password</label>
-                <PasswordInput id="signup-confirm" name="confirmPassword" className={styles.formInput} value={form.confirmPassword} onChange={handleChange} placeholder="Re-enter password" />
+                <label className={styles.formLabel} htmlFor="signup-confirm">Confirm Password <span style={{color:"#dc2626"}}>*</span></label>
+                <PasswordInput id="signup-confirm" name="confirmPassword" className={fieldStyle("confirmPassword")} value={form.confirmPassword} onChange={handleChange} onBlur={handleBlur} placeholder="Re-enter password" />
+                {errors.confirmPassword && <span className={styles.fieldError}>{errors.confirmPassword}</span>}
               </div>
             </div>
 

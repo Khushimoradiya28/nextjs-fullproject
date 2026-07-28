@@ -173,7 +173,9 @@ export async function clearWishlistAPI() {
 // ═══════════════════════════════════════════════════════════════
 
 export async function getMyProperties() {
-  const data = await request(`${API_BASE}/properties/my`, { headers: getHeaders() });
+  const data = await request(`${API_BASE}/properties/my`, {
+    headers: getHeaders(),
+  });
   if (data.success) {
     const raw = data.data || data.properties || [];
     return { success: true, properties: raw.map(mapProperty) };
@@ -183,66 +185,75 @@ export async function getMyProperties() {
 
 export async function addProperty(propertyData) {
   const furnishingMap = {
-    "unfurnished": "Unfurnished",
+    unfurnished: "Unfurnished",
     "semi-furnished": "Semi Furnished",
-    "furnished": "Fully Furnished",
-    "Unfurnished": "Unfurnished",
+    furnished: "Fully Furnished",
+    Unfurnished: "Unfurnished",
     "Semi Furnished": "Semi Furnished",
     "Fully Furnished": "Fully Furnished",
   };
 
   const typeMap = {
-    "apartment": "Apartment",
-    "villa": "Villa",
-    "plot": "Plot",
-    "commercial": "Office",
-    "office": "Office",
-    "shop": "Shop",
-    "studio": "Studio",
-    "penthouse": "Penthouse",
-    "farmhouse": "Farmhouse",
-    "other": "Other",
-    "Apartment": "Apartment",
-    "Villa": "Villa",
-    "Plot": "Plot",
-    "Office": "Office",
-    "Shop": "Shop",
-    "Studio": "Studio",
-    "Penthouse": "Penthouse",
-    "Farmhouse": "Farmhouse",
-    "Other": "Other",
+    apartment: "Apartment",
+    villa: "Villa",
+    plot: "Plot",
+    commercial: "Office",
+    office: "Office",
+    shop: "Shop",
+    studio: "Studio",
+    penthouse: "Penthouse",
+    farmhouse: "Farmhouse",
+    other: "Other",
+    Apartment: "Apartment",
+    Villa: "Villa",
+    Plot: "Plot",
+    Office: "Office",
+    Shop: "Shop",
+    Studio: "Studio",
+    Penthouse: "Penthouse",
+    Farmhouse: "Farmhouse",
+    Other: "Other",
   };
 
   const rawType = propertyData.type || propertyData.propertyType || "Apartment";
   const rawFurnishing = propertyData.furnishing || "";
 
   const formData = new FormData();
-  formData.append('title', propertyData.title || "");
-  formData.append('propertyType', typeMap[rawType] || "Apartment");
-  formData.append('category', propertyData.category || "Residential");
-  formData.append('listingType', propertyData.listingType || "buy");
-  formData.append('city', propertyData.city || "");
-  formData.append('locality', propertyData.location || propertyData.locality || "");
-  formData.append('address', propertyData.address || propertyData.location || "");
-  formData.append('bedrooms', parseInt(propertyData.bhk || propertyData.bedrooms || 0));
-  formData.append('bathrooms', parseInt(propertyData.bathrooms || 0));
-  formData.append('area', parseInt(propertyData.area || 0));
-  formData.append('furnishing', furnishingMap[rawFurnishing] || "");
-  formData.append('parking', propertyData.parking || "");
-  formData.append('description', propertyData.description || "");
-  formData.append('price', parseInt(propertyData.price || 0));
-  formData.append('featured', propertyData.featured || false);
+  formData.append("title", propertyData.title || "");
+  formData.append("propertyType", typeMap[rawType] || "Apartment");
+  formData.append("category", propertyData.category || "Residential");
+  formData.append("listingType", propertyData.listingType || "buy");
+  formData.append("city", propertyData.city || "");
+  formData.append(
+    "locality",
+    propertyData.location || propertyData.locality || "",
+  );
+  formData.append(
+    "address",
+    propertyData.address || propertyData.location || "",
+  );
+  formData.append(
+    "bedrooms",
+    parseInt(propertyData.bhk || propertyData.bedrooms || 0),
+  );
+  formData.append("bathrooms", parseInt(propertyData.bathrooms || 0));
+  formData.append("area", parseInt(propertyData.area || 0));
+  formData.append("furnishing", furnishingMap[rawFurnishing] || "");
+  formData.append("parking", propertyData.parking || "");
+  formData.append("description", propertyData.description || "");
+  formData.append("price", parseInt(propertyData.price || 0));
+  formData.append("featured", propertyData.featured || false);
 
   if (propertyData.amenities) {
-    formData.append('amenities', JSON.stringify(propertyData.amenities));
+    formData.append("amenities", JSON.stringify(propertyData.amenities));
   }
 
   if (propertyData.imageFile) {
-    formData.append('image', propertyData.imageFile);
+    formData.append("image", propertyData.imageFile);
   } else if (propertyData.image && !propertyData.image.startsWith("blob:")) {
-    const backendUrl = API_BASE.replace(/\/api\/?$/, '');
-    const relativeImage = propertyData.image.replace(backendUrl, '');
-    formData.append('images', JSON.stringify([relativeImage]));
+    const backendUrl = API_BASE.replace(/\/api\/?$/, "");
+    const relativeImage = propertyData.image.replace(backendUrl, "");
+    formData.append("images", JSON.stringify([relativeImage]));
   }
 
   const headers = getHeaders();
@@ -256,36 +267,75 @@ export async function addProperty(propertyData) {
 }
 
 export async function updateProperty(propertyId, updates) {
-  const furnishingMap = { "unfurnished": "Unfurnished", "semi-furnished": "Semi Furnished", "furnished": "Fully Furnished", "Unfurnished": "Unfurnished", "Semi Furnished": "Semi Furnished", "Fully Furnished": "Fully Furnished" };
-  const typeMap = { "apartment": "Apartment", "villa": "Villa", "plot": "Plot", "commercial": "Office", "Apartment": "Apartment", "Villa": "Villa", "Plot": "Plot", "Office": "Office", "Shop": "Shop", "Studio": "Studio", "Penthouse": "Penthouse", "Farmhouse": "Farmhouse", "Other": "Other" };
+  const furnishingMap = {
+    unfurnished: "Unfurnished",
+    "semi-furnished": "Semi Furnished",
+    furnished: "Fully Furnished",
+    Unfurnished: "Unfurnished",
+    "Semi Furnished": "Semi Furnished",
+    "Fully Furnished": "Fully Furnished",
+  };
+  const typeMap = {
+    apartment: "Apartment",
+    villa: "Villa",
+    plot: "Plot",
+    commercial: "Office",
+    Apartment: "Apartment",
+    Villa: "Villa",
+    Plot: "Plot",
+    Office: "Office",
+    Shop: "Shop",
+    Studio: "Studio",
+    Penthouse: "Penthouse",
+    Farmhouse: "Farmhouse",
+    Other: "Other",
+  };
 
   const formData = new FormData();
-  if (updates.title) formData.append('title', updates.title);
-  if (updates.type || updates.propertyType) formData.append('propertyType', typeMap[updates.type || updates.propertyType] || updates.type);
-  if (updates.category) formData.append('category', updates.category);
-  if (updates.listingType) formData.append('listingType', updates.listingType);
-  if (updates.city) formData.append('city', updates.city);
-  if (updates.location || updates.locality) formData.append('locality', updates.location || updates.locality);
-  if (updates.address || updates.location) formData.append('address', updates.address || updates.location);
-  if (updates.bhk !== undefined || updates.bedrooms !== undefined) formData.append('bedrooms', parseInt(updates.bhk || updates.bedrooms || 0));
-  if (updates.bathrooms !== undefined) formData.append('bathrooms', parseInt(updates.bathrooms || 0));
-  if (updates.area) formData.append('area', parseInt(updates.area));
-  if (updates.furnishing !== undefined) formData.append('furnishing', furnishingMap[updates.furnishing] || updates.furnishing);
-  if (updates.parking !== undefined) formData.append('parking', updates.parking);
-  if (updates.description !== undefined) formData.append('description', updates.description);
-  if (updates.price) formData.append('price', parseInt(updates.price));
-  if (updates.featured !== undefined) formData.append('featured', updates.featured);
+  if (updates.title) formData.append("title", updates.title);
+  if (updates.type || updates.propertyType)
+    formData.append(
+      "propertyType",
+      typeMap[updates.type || updates.propertyType] || updates.type,
+    );
+  if (updates.category) formData.append("category", updates.category);
+  if (updates.listingType) formData.append("listingType", updates.listingType);
+  if (updates.city) formData.append("city", updates.city);
+  if (updates.location || updates.locality)
+    formData.append("locality", updates.location || updates.locality);
+  if (updates.address || updates.location)
+    formData.append("address", updates.address || updates.location);
+  if (updates.bhk !== undefined || updates.bedrooms !== undefined)
+    formData.append("bedrooms", parseInt(updates.bhk || updates.bedrooms || 0));
+  if (updates.bathrooms !== undefined)
+    formData.append("bathrooms", parseInt(updates.bathrooms || 0));
+  if (updates.area) formData.append("area", parseInt(updates.area));
+  if (updates.furnishing !== undefined)
+    formData.append(
+      "furnishing",
+      furnishingMap[updates.furnishing] || updates.furnishing,
+    );
+  if (updates.parking !== undefined)
+    formData.append("parking", updates.parking);
+  if (updates.description !== undefined)
+    formData.append("description", updates.description);
+  if (updates.price) formData.append("price", parseInt(updates.price));
+  if (updates.featured !== undefined)
+    formData.append("featured", updates.featured);
+  if (updates.status !== undefined) {
+    formData.append("status", updates.status);
+  }
 
   if (updates.amenities) {
-    formData.append('amenities', JSON.stringify(updates.amenities));
+    formData.append("amenities", JSON.stringify(updates.amenities));
   }
 
   if (updates.imageFile) {
-    formData.append('image', updates.imageFile);
+    formData.append("image", updates.imageFile);
   } else if (updates.image && !updates.image.startsWith("blob:")) {
-    const backendUrl = API_BASE.replace(/\/api\/?$/, '');
-    const relativeImage = updates.image.replace(backendUrl, '');
-    formData.append('images', JSON.stringify([relativeImage]));
+    const backendUrl = API_BASE.replace(/\/api\/?$/, "");
+    const relativeImage = updates.image.replace(backendUrl, "");
+    formData.append("images", JSON.stringify([relativeImage]));
   }
 
   const headers = getHeaders();
@@ -313,16 +363,37 @@ export async function searchProperties(filters = {}) {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, val]) => {
     if (val !== "" && val !== undefined && val !== null) {
-      // Normalize city input for fuzzy matching
+      // Normalize city
       if (key === "city") {
         params.set(key, normalizeCity(val));
-      } else {
+      }
+
+      // Normalize furnishing
+      else if (key === "furnishing") {
+        const furnishMap = {
+          furnished: "Fully Furnished",
+          "semi-furnished": "Semi Furnished",
+          unfurnished: "Unfurnished",
+        };
+
+        const mapped = val
+          .split(",")
+          .map((v) => furnishMap[v.trim().toLowerCase()] || v.trim())
+          .join(",");
+
+        params.set(key, mapped);
+      }
+
+      // ALL OTHER FILTERS
+      else {
         params.set(key, val);
       }
     }
   });
   // Use search endpoint if keyword present
-  const endpoint = filters.q ? `${API_BASE}/properties/search` : `${API_BASE}/properties`;
+  const endpoint = filters.q
+    ? `${API_BASE}/properties/search`
+    : `${API_BASE}/properties`;
   const data = await request(`${endpoint}?${params.toString()}`);
   if (data.success) {
     const properties = data.data || [];
@@ -359,13 +430,13 @@ function mapProperty(p) {
   const getImageUrl = (url) => {
     if (!url) return "/img/buy-properties/1.jpg";
     // Already a full URL
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
     // Relative path from backend — serve via Next.js rewrite proxy
-    if (url.startsWith('/uploads') || url.startsWith('/images')) {
+    if (url.startsWith("/uploads") || url.startsWith("/images")) {
       return url;
     }
     // Relative path without leading slash
-    if (url.startsWith('uploads/') || url.startsWith('images/')) {
+    if (url.startsWith("uploads/") || url.startsWith("images/")) {
       return `/${url}`;
     }
     // Public asset or other path
@@ -375,7 +446,11 @@ function mapProperty(p) {
   // Handle both array (images) and singular (image) from backend
   let images = p.images || [];
   if (typeof images === "string") {
-    try { images = JSON.parse(images); } catch { images = [images]; }
+    try {
+      images = JSON.parse(images);
+    } catch {
+      images = [images];
+    }
   }
   // If images array is empty, check for singular image field
   if (images.length === 0 && p.image) {
@@ -383,13 +458,19 @@ function mapProperty(p) {
   }
   const imageUrls = images.map(getImageUrl);
 
-  const ownerData = (p.owner && typeof p.owner === "object") ? p.owner : null;
+  const ownerData = p.owner && typeof p.owner === "object" ? p.owner : null;
 
   return {
     id: p._id || p.id,
     slug: p.slug || "",
-    ownerId: ownerData ? (ownerData._id || ownerData.id || "") : (p.owner || ""),
-    owner: ownerData ? { name: ownerData.name || "", email: ownerData.email || "", mobile: ownerData.mobile || "" } : null,
+    ownerId: ownerData ? ownerData._id || ownerData.id || "" : p.owner || "",
+    owner: ownerData
+      ? {
+          name: ownerData.name || "",
+          email: ownerData.email || "",
+          mobile: ownerData.mobile || "",
+        }
+      : null,
     title: p.title || "",
     type: p.propertyType || p.category || "apartment",
     category: p.category || "Residential",
@@ -446,7 +527,13 @@ export async function getFilterOptions() {
 // ENQUIRIES (Connected to backend)
 // ═══════════════════════════════════════════════════════════════
 
-export async function contactOwner({ propertyId, name, email, phone, message }) {
+export async function contactOwner({
+  propertyId,
+  name,
+  email,
+  phone,
+  message,
+}) {
   return await request(`${API_BASE}/enquiries`, {
     method: "POST",
     headers: getHeaders(),
@@ -461,7 +548,9 @@ export async function contactOwner({ propertyId, name, email, phone, message }) 
 }
 
 export async function getMyEnquiries() {
-  const data = await request(`${API_BASE}/enquiries/my`, { headers: getHeaders() });
+  const data = await request(`${API_BASE}/enquiries/my`, {
+    headers: getHeaders(),
+  });
   if (data.success) {
     return { success: true, enquiries: data.data || [] };
   }
@@ -469,7 +558,9 @@ export async function getMyEnquiries() {
 }
 
 export async function getReceivedEnquiries() {
-  const data = await request(`${API_BASE}/enquiries/received`, { headers: getHeaders() });
+  const data = await request(`${API_BASE}/enquiries/received`, {
+    headers: getHeaders(),
+  });
   if (data.success) {
     return { success: true, enquiries: data.data || [] };
   }

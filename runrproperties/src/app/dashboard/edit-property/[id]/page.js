@@ -46,6 +46,7 @@ export default function EditPropertyPage() {
           amenities: p.amenities || [],
           image: p.image || "",
           featured: p.featured || false,
+          status: p.status || "active",
         });
       } else {
         setError("Property not found");

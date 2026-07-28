@@ -1,4 +1,4 @@
-const Property = require('../models/Property');
+const Property = require("../models/Property");
 
 /**
  * Create a new property
@@ -26,20 +26,58 @@ const getAllProperties = async (query = {}) => {
     bathrooms,
     furnishing,
     featured,
-    sortBy = 'newest',
+    sortBy = "newest",
   } = query;
 
-  const filter = { status: 'active' };
+  const filter = { status: "active" };
 
-  if (city) filter.city = new RegExp(city, 'i');
-  if (locality) filter.locality = new RegExp(locality, 'i');
+  // if (city) filter.city = new RegExp(city, 'i');
+  // if (propertyType) filter.propertyType = propertyType;
+  // if (bedrooms) filter.bedrooms = Number(bedrooms);
+  // if (furnishing) filter.furnishing = furnishing;
+
+  const parseMulti = (val) => {
+    if (!val) return null;
+    return val
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+  };
+
+  // City
+  const cities = parseMulti(city);
+  if (cities) {
+    filter.city =
+      cities.length === 1
+        ? new RegExp(cities[0], "i")
+        : { $in: cities.map((c) => new RegExp(c, "i")) };
+  }
+
+  // Property Type
+  const types = parseMulti(propertyType);
+  if (types) {
+    filter.propertyType = types.length === 1 ? types[0] : { $in: types };
+  }
+
+  // Bedrooms
+  const beds = parseMulti(bedrooms);
+  if (beds) {
+    const nums = beds.map(Number);
+    filter.bedrooms = nums.length === 1 ? nums[0] : { $in: nums };
+  }
+
+  // Furnishing
+  const furnishings = parseMulti(furnishing);
+  if (furnishings) {
+    filter.furnishing =
+      furnishings.length === 1 ? furnishings[0] : { $in: furnishings };
+  }
+
+  if (locality) filter.locality = new RegExp(locality, "i");
   if (listingType) filter.listingType = listingType;
-  if (propertyType) filter.propertyType = propertyType;
   if (category) filter.category = category;
-  if (bedrooms) filter.bedrooms = Number(bedrooms);
   if (bathrooms) filter.bathrooms = Number(bathrooms);
-  if (furnishing) filter.furnishing = furnishing;
-  if (featured === 'true' || featured === true) filter.featured = true;
+  if (featured === "true" || featured === true) filter.featured = true;
   if (minPrice || maxPrice) {
     filter.price = {};
     if (minPrice) filter.price.$gte = Number(minPrice);
@@ -49,16 +87,16 @@ const getAllProperties = async (query = {}) => {
   // Sort options
   let sort;
   switch (sortBy) {
-    case 'price':
+    case "price":
       sort = { price: 1 };
       break;
-    case 'price_desc':
+    case "price_desc":
       sort = { price: -1 };
       break;
-    case 'oldest':
+    case "oldest":
       sort = { createdAt: 1 };
       break;
-    case 'newest':
+    case "newest":
     default:
       sort = { createdAt: -1 };
       break;
@@ -68,7 +106,7 @@ const getAllProperties = async (query = {}) => {
 
   const [properties, total] = await Promise.all([
     Property.find(filter)
-      .populate('owner', 'name email mobile')
+      .populate("owner", "name email mobile")
       .sort(sort)
       .skip(skip)
       .limit(Number(limit)),
@@ -91,15 +129,15 @@ const getAllProperties = async (query = {}) => {
  * Search properties by keyword (title, city, locality, address, description)
  */
 const searchProperties = async (query = {}) => {
-  const { q = '', page = 1, limit = 12 } = query;
+  const { q = "", page = 1, limit = 12 } = query;
 
   if (!q.trim()) {
     return getAllProperties(query);
   }
 
-  const regex = new RegExp(q, 'i');
+  const regex = new RegExp(q, "i");
   const filter = {
-    status: 'active',
+    status: "active",
     $or: [
       { title: regex },
       { city: regex },
@@ -113,7 +151,7 @@ const searchProperties = async (query = {}) => {
 
   const [properties, total] = await Promise.all([
     Property.find(filter)
-      .populate('owner', 'name email mobile')
+      .populate("owner", "name email mobile")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit)),
@@ -138,8 +176,8 @@ const searchProperties = async (query = {}) => {
 const getFeaturedProperties = async (query = {}) => {
   const { limit = 8 } = query;
 
-  const properties = await Property.find({ featured: true, status: 'active' })
-    .populate('owner', 'name email mobile')
+  const properties = await Property.find({ featured: true, status: "active" })
+    .populate("owner", "name email mobile")
     .sort({ createdAt: -1 })
     .limit(Number(limit));
 
@@ -153,18 +191,23 @@ const getFeaturedProperties = async (query = {}) => {
  * - Returns similar properties
  */
 const getPropertyById = async (id, requestingUserId = null) => {
-  const property = await Property.findById(id).populate('owner', 'name email mobile');
+  const property = await Property.findById(id).populate(
+    "owner",
+    "name email mobile",
+  );
   if (!property) {
-    const error = new Error('Property not found');
+    const error = new Error("Property not found");
     error.statusCode = 404;
     throw error;
   }
 
   // Access control: inactive/sold properties only visible to their owner
-  if (property.status !== 'active') {
-    const isOwner = requestingUserId && property.owner._id.toString() === requestingUserId.toString();
+  if (property.status !== "active") {
+    const isOwner =
+      requestingUserId &&
+      property.owner._id.toString() === requestingUserId.toString();
     if (!isOwner) {
-      const error = new Error('Property not found');
+      const error = new Error("Property not found");
       error.statusCode = 404;
       throw error;
     }
@@ -179,9 +222,9 @@ const getPropertyById = async (id, requestingUserId = null) => {
     city: property.city,
     propertyType: property.propertyType,
     listingType: property.listingType,
-    status: 'active',
+    status: "active",
   })
-    .populate('owner', 'name email mobile')
+    .populate("owner", "name email mobile")
     .sort({ createdAt: -1 })
     .limit(4);
 
@@ -224,14 +267,14 @@ const getMyProperties = async (ownerId, query = {}) => {
 const updateProperty = async (propertyId, ownerId, data) => {
   const property = await Property.findById(propertyId);
   if (!property) {
-    const error = new Error('Property not found');
+    const error = new Error("Property not found");
     error.statusCode = 404;
     throw error;
   }
 
   // Check ownership
   if (property.owner.toString() !== ownerId.toString()) {
-    const error = new Error('Not authorized to update this property');
+    const error = new Error("Not authorized to update this property");
     error.statusCode = 403;
     throw error;
   }
@@ -251,20 +294,20 @@ const updateProperty = async (propertyId, ownerId, data) => {
 const deleteProperty = async (propertyId, ownerId) => {
   const property = await Property.findById(propertyId);
   if (!property) {
-    const error = new Error('Property not found');
+    const error = new Error("Property not found");
     error.statusCode = 404;
     throw error;
   }
 
   // Check ownership
   if (property.owner.toString() !== ownerId.toString()) {
-    const error = new Error('Not authorized to delete this property');
+    const error = new Error("Not authorized to delete this property");
     error.statusCode = 403;
     throw error;
   }
 
   await Property.findByIdAndDelete(propertyId);
-  return { message: 'Property deleted successfully' };
+  return { message: "Property deleted successfully" };
 };
 
 module.exports = {
