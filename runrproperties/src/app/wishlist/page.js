@@ -31,7 +31,9 @@ export default function WishlistPage() {
         {/* Page Header */}
         <div className={styles.pageHeader}>
           <div className={styles.breadcrumb}>
-            <Link href="/" className={styles.breadcrumbLink}>Home</Link>
+            <Link href="/" className={styles.breadcrumbLink}>
+              Home
+            </Link>
             <span className={styles.breadcrumbSep}>/</span>
             <span className={styles.breadcrumbCurrent}>My Wishlist</span>
           </div>
@@ -39,9 +41,11 @@ export default function WishlistPage() {
             <div>
               <h1 className={styles.pageTitle}>My Wishlist</h1>
               <p className={styles.pageSubtitle}>
-                {!loaded ? "Loading..." : wishlist.length > 0
-                  ? `You have ${wishlist.length} saved ${wishlist.length === 1 ? "property" : "properties"}`
-                  : "Your wishlist is empty"}
+                {!loaded
+                  ? "Loading..."
+                  : wishlist.length > 0
+                    ? `You have ${wishlist.length} saved ${wishlist.length === 1 ? "property" : "properties"}`
+                    : "Your wishlist is empty"}
               </p>
             </div>
             {wishlist.length > 0 && (
@@ -55,58 +59,106 @@ export default function WishlistPage() {
         {/* Wishlist Items */}
         {!loaded ? (
           <div className={styles.skeletonGrid}>
-            {[1, 2, 3, 4].map(i => <div key={i} className={styles.skeletonCard} />)}
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className={styles.skeletonCard} />
+            ))}
           </div>
         ) : wishlist.length > 0 ? (
           <div className={styles.wishlistGrid}>
             {wishlist.map((property) => (
               <article key={property.id} className={styles.wishlistCard}>
-                <div className={styles.cardImageWrap}>
-                  <img src={property.image} alt={property.title} className={styles.cardImg} loading="lazy" />
-                  <div className={styles.badgeRow}>
-                    <span className={styles.badgeType}>{capitalizeFirst(property.type)}</span>
-                  </div>
-                </div>
-
-                <div className={styles.cardContent}>
-                  <div className={styles.cardTop}>
-                    <h3 className={styles.cardTitle}>{property.title}</h3>
-                    <p className={styles.cardLocation}>
-                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path
-                          d="M12 21s-6.2-5.2-8.4-9.1A5.6 5.6 0 0 1 12 4.6a5.6 5.6 0 0 1 8.4 7.3C18.2 15.8 12 21 12 21Z"
-                          stroke="currentColor"
-                          strokeWidth="1.4"
-                          fill="none"
-                        />
-                        <circle cx="12" cy="11.2" r="2" stroke="currentColor" strokeWidth="1.4" fill="none" />
-                      </svg>
-                      {property.location}
-                    </p>
+                <Link
+                  href={`/property/${property.id}`}
+                  className={styles.cardLink}
+                >
+                  <div className={styles.cardImageWrap}>
+                    <img
+                      src={property.image}
+                      alt={property.title}
+                      className={styles.cardImg}
+                      loading="lazy"
+                    />
+                    <div className={styles.badgeRow}>
+                      <span className={styles.badgeType}>
+                        {capitalizeFirst(property.type)}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className={styles.cardDetails}>
-                    {property.bhk > 0 && (
-                      <span className={styles.detailItem}>{property.bhk} BHK</span>
-                    )}
-                    <span className={styles.detailItem}>{property.area?.toLocaleString("en-IN")} Sq.Ft.</span>
-                  </div>
+                  <div className={styles.cardContent}>
+                    <div className={styles.cardTop}>
+                      <h3 className={styles.cardTitle}>{property.title}</h3>
+                      <p className={styles.cardLocation}>
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M12 21s-6.2-5.2-8.4-9.1A5.6 5.6 0 0 1 12 4.6a5.6 5.6 0 0 1 8.4 7.3C18.2 15.8 12 21 12 21Z"
+                            stroke="currentColor"
+                            strokeWidth="1.4"
+                            fill="none"
+                          />
+                          <circle
+                            cx="12"
+                            cy="11.2"
+                            r="2"
+                            stroke="currentColor"
+                            strokeWidth="1.4"
+                            fill="none"
+                          />
+                        </svg>
+                        {property.location}
+                      </p>
+                    </div>
 
-                  <div className={styles.cardFooter}>
-                    <span className={styles.priceValue}>{formatPrice(property.price)}</span>
-                    <button
-                      className={styles.removeBtn}
-                      onClick={() => removeFromWishlist(property.id)}
-                      aria-label={`Remove ${property.title} from wishlist`}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        <path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      </svg>
-                      Remove
-                    </button>
+                    <div className={styles.cardDetails}>
+                      {property.bhk > 0 && (
+                        <span className={styles.detailItem}>
+                          {property.bhk} BHK
+                        </span>
+                      )}
+                      <span className={styles.detailItem}>
+                        {property.area?.toLocaleString("en-IN")} Sq.Ft.
+                      </span>
+                    </div>
+
+                    <div className={styles.cardFooter}>
+                      <span className={styles.priceValue}>
+                        {formatPrice(property.price)}
+                      </span>
+                      <div className={styles.cardFooterActions}>
+                        <button
+                          className={styles.removeBtn}
+                          onClick={(e) => {
+                            e.stopPropagation(); // ← ye add karo
+                            e.preventDefault();
+                            removeFromWishlist(property.id);
+                          }}
+                          aria-label={`Remove ${property.title} from wishlist`}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M10 11v6M14 11v6"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </article>
             ))}
           </div>
@@ -114,7 +166,13 @@ export default function WishlistPage() {
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>
               <svg viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                <circle cx="40" cy="40" r="36" stroke="#e2e8f0" strokeWidth="2" />
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="36"
+                  stroke="#e2e8f0"
+                  strokeWidth="2"
+                />
                 <path
                   d="M40 55s-10.5-7-13.2-11.6A8.4 8.4 0 0 1 34 30.8c2.4 0 4.2 1.1 6 2.9 1.8-1.8 3.6-2.9 6-2.9a8.4 8.4 0 0 1 7.2 12.6C50.5 48 40 55 40 55z"
                   stroke="#94a3b8"

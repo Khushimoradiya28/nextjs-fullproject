@@ -19,7 +19,8 @@ const CITY_ALIASES = {
 
   // Vadodara / Baroda
   vadodara: "Vadodara",
-  baroda: "Vadodara",
+  baroda: "baroda",
+  // baroda: "Vadodara",
   vadodra: "Vadodara",
   vadodara: "Vadodara",
 

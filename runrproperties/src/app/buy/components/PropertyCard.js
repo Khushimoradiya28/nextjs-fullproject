@@ -54,23 +54,23 @@ export default function PropertyCard({ property, viewMode }) {
           </p>
         </div>
 
-        <div className={styles.cardDetails}>
+        {/* <div className={styles.cardDetails}>
           {property.bhk > 0 && <span className={styles.detailItem}>{property.bhk} BHK</span>}
           {property.bathrooms > 0 && <span className={styles.detailItem}>{property.bathrooms} Bath</span>}
           {property.area > 0 && <span className={styles.detailItem}>{property.area.toLocaleString("en-IN")} Sq.Ft.</span>}
           {property.parking && <span className={styles.detailItem}>{property.parking}</span>}
-        </div>
+        </div> */}
 
-        {property.amenities && property.amenities.length > 0 && (
+        {/* {property.amenities && property.amenities.length > 0 && (
           <div className={styles.amenities}>
             {property.amenities.slice(0, 3).map((a) => (<span key={a} className={styles.amenityTag}>{a}</span>))}
             {property.amenities.length > 3 && <span className={styles.amenityMore}>+{property.amenities.length - 3}</span>}
           </div>
-        )}
+        )} */}
 
-        {property.description && (
+        {/* {property.description && (
           <p className={styles.cardDesc}>{property.description.length > 80 ? property.description.substring(0, 80) + "..." : property.description}</p>
-        )}
+        )} */}
 
         <div className={styles.cardFooter}>
           <div className={styles.priceBlock}>

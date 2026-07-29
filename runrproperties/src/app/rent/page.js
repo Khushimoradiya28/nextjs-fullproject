@@ -47,13 +47,21 @@ function readInitialParams() {
 }
 
 export default function RentPage() {
-  const initial = useRef(readInitialParams());
+  // const initial = useRef(readInitialParams());
   const initialized = useRef(false);
 
-  const [pending, setPending] = useState(initial.current.filters);
-  const [applied, setApplied] = useState(initial.current.filters);
-  const [sortBy, setSortBy] = useState(initial.current.sortBy);
-  const [currentPage, setCurrentPage] = useState(initial.current.page);
+  // const [pending, setPending] = useState(initial.current.filters);
+  // const [applied, setApplied] = useState(initial.current.filters);
+  // const [sortBy, setSortBy] = useState(initial.current.sortBy);
+  // const [currentPage, setCurrentPage] = useState(initial.current.page);
+  const [pending, setPending] = useState(EMPTY_FILTERS);
+  const [applied, setApplied] = useState(EMPTY_FILTERS);
+  const [sortBy, setSortBy] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [viewMode, setViewMode] = useState("grid");
 
   const [properties, setProperties] = useState([]);
@@ -153,6 +161,8 @@ export default function RentPage() {
     setApplied(EMPTY_FILTERS);
     setCurrentPage(1);
   };
+
+  if (!mounted) return null;
 
   return (
     <div className={styles.rentPage}>
