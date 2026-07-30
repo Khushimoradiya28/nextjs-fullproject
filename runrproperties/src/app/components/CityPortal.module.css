@@ -63,9 +63,9 @@
 .sliderButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 28px rgba(30, 58, 95, 0.12);
-  background: #f0fdf4;
-  border-color: rgba(63, 166, 107, 0.3);
-  color: #3fa66b;
+  background: #e6f4fb;
+  border-color: rgba(0, 123, 189, 0.3);
+  color: #007bbd;
 }
 
 /* Horizontal slider */

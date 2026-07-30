@@ -3,9 +3,9 @@
 
 /* Hero */
 .hero { padding: 48px 0 40px; }
-.heroLabel { text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; color: #3fa66b; font-weight: 700; }
+.heroLabel { text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; color: #007bbd; font-weight: 700; }
 .heroTitle { margin: 12px 0 16px; font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 800; color: #10203b; line-height: 1.1; }
-.highlight { color: #3fa66b; }
+.highlight { color: #007bbd; }
 .heroText { color: #5a6f85; font-size: 1.05rem; line-height: 1.7; max-width: 600px; margin: 0; }
 
 /* Calculator */
@@ -20,11 +20,11 @@
 .sliderWrap { display: flex; flex-direction: column; gap: 8px; }
 .inputValue { font-size: 1.15rem; font-weight: 800; color: #1e3a5f; }
 .rangeSlider { width: 100%; height: 6px; border-radius: 3px; appearance: none; background: #e2e8f0; outline: none; cursor: pointer; }
-.rangeSlider::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #3fa66b, #2f8f58); box-shadow: 0 4px 12px rgba(63,166,107,0.3); cursor: pointer; }
-.rangeSlider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #3fa66b, #2f8f58); border: none; cursor: pointer; }
+.rangeSlider::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #007bbd; box-shadow: 0 4px 12px rgba(0,123,189,0.3); cursor: pointer; }
+.rangeSlider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #007bbd; border: none; cursor: pointer; }
 .rangeLabels { display: flex; justify-content: space-between; font-size: 0.72rem; color: #94a3b8; }
 
-.calcResult { background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border-radius: 18px; border: 1px solid rgba(63,166,107,0.12); padding: 28px 24px; display: flex; flex-direction: column; gap: 20px; }
+.calcResult { background: linear-gradient(135deg, #e6f4fb, #daf0f9); border-radius: 18px; border: 1px solid rgba(0,123,189,0.12); padding: 28px 24px; display: flex; flex-direction: column; gap: 20px; }
 .emiCard { text-align: center; padding: 20px; background: #ffffff; border-radius: 14px; box-shadow: 0 6px 20px rgba(30,58,95,0.06); }
 .emiLabel { font-size: 0.78rem; color: #5a6f85; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
 .emiValue { margin: 8px 0 0; font-size: 2rem; font-weight: 800; color: #1e3a5f; }
@@ -40,7 +40,7 @@
 .stepsGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
 .stepCard { background: #ffffff; border-radius: 20px; border: 1px solid rgba(30,58,95,0.08); padding: 28px 22px; text-align: center; transition: transform 0.25s ease, box-shadow 0.25s ease; }
 .stepCard:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(30,58,95,0.1); }
-.stepNumber { display: inline-block; width: 44px; height: 44px; line-height: 44px; border-radius: 50%; background: linear-gradient(135deg, #3fa66b, #2f8f58); color: #ffffff; font-weight: 800; font-size: 0.9rem; margin-bottom: 16px; }
+.stepNumber { display: inline-block; width: 44px; height: 44px; line-height: 44px; border-radius: 50%; background: #007bbd; color: #ffffff; font-weight: 800; font-size: 0.9rem; margin-bottom: 16px; }
 .stepTitle { margin: 0 0 10px; font-size: 1.02rem; }
 .stepText { margin: 0; color: #5a6f85; font-size: 0.85rem; line-height: 1.6; }
 
@@ -53,8 +53,8 @@
 .bankInitials { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.04em; }
 .bankBody { padding: 18px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .bankName { margin: 0; font-size: 0.85rem; color: #5a6f85; }
-.bankRate { margin: 0; font-size: 0.95rem; color: #3fa66b; font-weight: 700; }
-.bankTag { font-size: 0.75rem; color: #3fa66b; font-weight: 600; margin-top: 4px; }
+.bankRate { margin: 0; font-size: 0.95rem; color: #007bbd; font-weight: 700; }
+.bankTag { font-size: 0.75rem; color: #007bbd; font-weight: 600; margin-top: 4px; }
 .bankCta { margin-top: 6px; padding: 8px 18px; border-radius: 10px; border: 1px solid rgba(30,58,95,0.12); background: #f8fafc; color: #1e3a5f; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.18s ease; }
 .bankCta:hover { background: #1e3a5f; color: #ffffff; border-color: #1e3a5f; }
 
@@ -73,7 +73,7 @@
 .faqOpen { border-color: rgba(63,166,107,0.2); }
 .faqQuestion { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; background: none; border: none; text-align: left; font-size: 0.95rem; font-weight: 600; color: #10203b; cursor: pointer; }
 .faqIcon { width: 20px; height: 20px; flex-shrink: 0; color: #64748b; transition: transform 0.25s ease; }
-.faqOpen .faqIcon { transform: rotate(180deg); color: #3fa66b; }
+.faqOpen .faqIcon { transform: rotate(180deg); color: #007bbd; }
 .faqAnswer { padding: 0 22px 18px; color: #5a6f85; font-size: 0.9rem; line-height: 1.7; margin: 0; }
 
 /* Responsive */

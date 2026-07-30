@@ -38,7 +38,7 @@
   background-position: right 10px center;
 }
 
-.sortSelect:focus { outline: none; border-color: rgba(63, 166, 107, 0.4); }
+.sortSelect:focus { outline: none; border-color: rgba(0, 123, 189, 0.4); }
 
 .viewToggle { display: flex; border-radius: 10px; border: 1px solid rgba(30, 58, 95, 0.1); overflow: hidden; }
 
@@ -51,7 +51,7 @@
 }
 
 .viewBtn svg { width: 18px; height: 18px; }
-.viewBtn:hover { background: #f0fdf4; color: #3fa66b; }
+.viewBtn:hover { background: #e6f4fb; color: #007bbd; }
 .viewBtnActive { background: #1e3a5f; color: #ffffff; }
 .viewBtnActive:hover { background: #1e3a5f; color: #ffffff; }
 
@@ -87,13 +87,13 @@
   cursor: pointer; transition: all 0.18s ease;
 }
 
-.pageBtn:hover:not(:disabled) { background: #f0fdf4; border-color: rgba(63, 166, 107, 0.3); color: #3fa66b; transform: translateY(-1px); }
+.pageBtn:hover:not(:disabled) { background: #e6f4fb; border-color: rgba(0, 123, 189, 0.3); color: #007bbd; transform: translateY(-1px); }
 .pageBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .pageBtnActive {
-  background: linear-gradient(135deg, #3fa66b 0%, #2f8f58 100%);
-  border-color: #3fa66b; color: #ffffff;
-  box-shadow: 0 6px 16px rgba(63, 166, 107, 0.25);
+  background: #007bbd;
+  border-color: #007bbd; color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 123, 189, 0.25);
 }
 
 .pageBtnActive:hover:not(:disabled) { background: linear-gradient(135deg, #358f5c 0%, #28794c 100%); color: #ffffff; }

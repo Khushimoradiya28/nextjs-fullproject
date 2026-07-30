@@ -150,7 +150,7 @@ export default function HeroBanner() {
             </div>
 
             <form className={styles.bannerSearchCard} onSubmit={handleSearch}>
-              <div className={styles.fieldGroup}>
+              <div className={`${styles.fieldGroup} ${styles.fieldWithDivider}`}>
                 <label className={styles.fieldLabel} htmlFor="hero-location">
                   Location
                 </label>

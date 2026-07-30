@@ -141,7 +141,7 @@
 .cardBadge {
   padding: 3px 13px;
   border-radius: 6px;
-  background: linear-gradient(#3fa66b 0%, #34995f 100%);
+  background: #007bbd;
   color: #ffffff;
   font-size: 0.8rem;
   font-weight: 700;

@@ -1,7 +1,7 @@
 .footer {
   position: relative;
-  background: linear-gradient(180deg, #0f1f3d 0%, #0a1730 100%);
-  color: #cbd5e1;
+  background: #007bbd;
+  color: #ffffff;
   overflow: hidden;
   padding-top: 4px;
 }
@@ -9,14 +9,7 @@
 .glowLine {
   height: 3px;
   width: 100%;
-  background: linear-gradient(90deg, transparent, #22c55e, #4ade80, #22c55e, transparent);
-  background-size: 200% 100%;
-  animation: shimmer 4s linear infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .footerContainer {
@@ -43,37 +36,13 @@
 }
 
 .logoMark {
-  width: 46px;
-  height: 46px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 10px rgba(63, 166, 107, 0.25));
-  transition: transform 0.35s ease, filter 0.35s ease;
-}
-
-.logo:hover .logoMark{
-  transform: rotate(-8deg) scale(1.08);
-  box-shadow: 0 0 28px rgba(34, 197, 94, 0.65);
-}
-
-.logo h2 {
-  color: #fff;
-  font-size: 20px;
-  letter-spacing: 1px;
-  margin: 0;
-  line-height: 1.1;
-}
-
-.logo span {
-  font-size: 11px;
-  letter-spacing: 3px;
-  color: #22c55e;
-  font-weight: 600;
 }
 
 .tagline {
   font-size: 14px;
   line-height: 1.6;
-  color: #94a3b8;
+  color: #ffffff;
   max-width: 260px;
 }
 
@@ -90,23 +59,21 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  color: #cbd5e1;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: color 0.3s ease, background 0.3s ease;
 }
 
 .socials a:hover {
-  background: #22c55e;
-  color: #0f1f3d;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* Link Columns */
 .linkCol h3,
 .contactCol h3 {
-  color: #fff;
+  color: #ffffff;
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 20px;
@@ -122,7 +89,7 @@
   bottom: 0;
   width: 28px;
   height: 2px;
-  background: #22c55e;
+  background: #ffffff;
   border-radius: 2px;
 }
 
@@ -136,36 +103,16 @@
 }
 
 .linkCol a {
-  color: #94a3b8;
+  color: #ffffff;
   text-decoration: none;
   font-size: 14px;
   position: relative;
   width: fit-content;
-  transition: color 0.3s ease, padding-left 0.3s ease;
-}
-
-.linkCol a::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #22c55e;
-  opacity: 0;
-  transition: opacity 0.3s ease, left 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .linkCol a:hover {
-  color: #fff;
-  padding-left: 14px;
-}
-
-.linkCol a:hover::before {
-  opacity: 1;
-  left: 0;
+  color: #fff8f8b3;
 }
 
 /* Contact */
@@ -183,29 +130,29 @@
   align-items: flex-start;
   gap: 10px;
   font-size: 14px;
-  color: #94a3b8;
+  color: #ffffff;
 }
 
 .contactCol a {
-  color: #94a3b8;
+  color: #ffffff;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .contactCol a:hover {
-  color: #22c55e;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .icon {
   font-size: 18px;
-  color: #22c55e;
+  color: #ffffff;
   margin-top: 2px;
   flex-shrink: 0;
 }
 
 /* Bottom bar */
 .bottomBar {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
   padding: 20px;
 }
@@ -213,7 +160,7 @@
 .bottomBar p {
   margin: 0;
   font-size: 13px;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* Responsive */
@@ -238,10 +185,6 @@
 
   .brandSection {
     grid-column: auto;
-  }
-
-  .logo h2 {
-    font-size: 18px;
   }
 
   .tagline {
@@ -289,10 +232,5 @@
   .footerContainer {
     padding: 30px 16px 24px;
     gap: 20px;
-  }
-
-  .logoMark {
-    width: 38px;
-    height: 38px;
   }
 }

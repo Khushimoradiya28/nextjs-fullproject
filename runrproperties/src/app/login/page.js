@@ -71,6 +71,9 @@ export default function LoginPage() {
       <Header />
       <main className={styles.main}>
         <div className={styles.authCard}>
+          <div className={styles.cardLogo}>
+            <img src="/logo/runr-logo.svg" alt="Runr Properties" />
+          </div>
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Welcome Back</h1>
             <p className={styles.authSubtitle}>Sign in to your Runr Properties account</p>

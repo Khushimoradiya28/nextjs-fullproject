@@ -1,0 +1,395 @@
+/* ═══════════════════════════════════════════════════
+   PREMIUM ENQUIRY MODAL
+   ═══════════════════════════════════════════════════ */
+
+/* Backdrop */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 180ms ease-out forwards;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  width: 90vw;
+  max-width: 750px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 32px 80px rgba(10, 30, 60, 0.25);
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  animation: modalIn 200ms ease-out forwards;
+}
+
+/* Close button */
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #007bbd3d;
+  color: #007bbd;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* ── Left Column — Owner Details ── */
+
+.leftPanel {
+  background: #007bbd;
+  border-radius: 22px 0 0 22px;
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.leftPanel::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.leftPanel::after {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ownerAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #007bbd;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  font-weight: 800;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.ownerName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.ownerLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+  margin: -12px 0 0;
+}
+
+.ownerContact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.contactItem svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.revealHint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.80rem;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.revealHint svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.propertyInfo {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.propertyTitle {
+  font-size: 0.90rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.propertyCity {
+  font-size: 0.80rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* ── Right Column — Enquiry Form ── */
+
+.rightPanel {
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.formTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #10203b;
+}
+
+.formSubtitle {
+  margin: -10px 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #3f556d;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  background: #f8fafc;
+  font-size: 0.88rem;
+  color: #1e3a5f;
+  font-weight: 500;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(0, 123, 189, 0.45);
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.08);
+  background: #ffffff;
+}
+
+.textarea {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  background: #f8fafc;
+  font-size: 0.88rem;
+  color: #1e3a5f;
+  font-weight: 500;
+  min-height: 90px;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: rgba(0, 123, 189, 0.45);
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.08);
+  background: #ffffff;
+}
+
+.submitBtn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  background: #007bbd;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 18px rgba(0, 123, 189, 0.2);
+  margin-top: 4px;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #005f94;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 123, 189, 0.28);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorMsg {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.06);
+  color: #dc2626;
+  font-size: 0.82rem;
+}
+
+.successMsg {
+  padding: 24px;
+  text-align: center;
+  color: #007bbd;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* ── Animations ── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, -47%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 640px) {
+  .modal {
+    grid-template-columns: 1fr;
+    width: 94vw;
+    max-width: 420px;
+    max-height: 85vh;
+  }
+
+  .leftPanel {
+    border-radius: 22px 22px 0 0;
+    padding: 28px 22px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .ownerAvatar {
+    width: 56px;
+    height: 56px;
+    font-size: 1.4rem;
+  }
+
+  .ownerName {
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  .ownerLabel {
+    margin: 0;
+  }
+
+  .propertyInfo {
+    margin-top: 10px;
+  }
+
+  .rightPanel {
+    padding: 24px 22px;
+  }
+
+  .closeBtn {
+    background: rgba(0, 0, 0, 0.1);
+    color: #1e3a5f;
+  }
+
+  .closeBtn:hover {
+    background: rgba(0, 0, 0, 0.15);
+  }
+}
+
+@media (max-width: 400px) {
+  .modal {
+    border-radius: 18px;
+  }
+
+  .leftPanel {
+    border-radius: 18px 18px 0 0;
+    padding: 22px 18px;
+  }
+
+  .rightPanel {
+    padding: 20px 18px;
+  }
+}

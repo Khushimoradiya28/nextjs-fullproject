@@ -1,7 +1,18 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary: #007bbd;
+  --color-primary-dark: #005f94;
+  --color-primary-light: #e6f4fb;
+  --color-primary-hover: #0069a3;
 }
+
+@font-face {
+    font-family: 'Rimouski Sb';
+    src: url('/font/RimouskiSb-Regular.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -28,7 +39,7 @@ body {
   flex-direction: column;
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Rimouski Sb';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -50,7 +61,11 @@ button,
 .bannerCTA,
 .sliderButton,
 .iconButton {
-  transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, color 0.22s ease;
+  transition:
+    transform 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease,
+    color 0.22s ease;
 }
 
 button:hover,
@@ -101,7 +116,7 @@ h4 {
   line-height: 1.65;
   color: #3f5a7d;
 }
-.gray-bg{
+.gray-bg {
   background-color: #f9f9f9;
 }
 

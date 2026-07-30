@@ -102,10 +102,10 @@
   padding: 5px 12px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.92);
-  color: #166534;
+  color: #007bbd;
   font-size: 0.72rem;
   font-weight: 700;
-  border: 1px solid rgba(63, 166, 107, 0.2);
+  border: 1px solid rgba(0, 123, 189, 0.2);
 }
 
 /* Like button */
@@ -147,6 +147,8 @@
   flex-direction: column;
   gap: 12px;
   flex: 1;
+  position: relative;
+  overflow: hidden;
 }
 
 .cardTop {
@@ -195,7 +197,7 @@
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-  color: #3fa66b;
+  color: #007bbd;
 }
 
 /* Details row */
@@ -234,7 +236,7 @@
   padding: 4px 10px;
   border-radius: 6px;
   background: #ecfdf5;
-  color: #166534;
+  color: #007bbd;
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -283,9 +285,9 @@
 .enquiryBtn {
   padding: 8px 18px;
   border-radius: 10px;
-  border: 1px solid rgba(63,166,107,0.2);
-  background: rgba(63,166,107,0.08);
-  color: #166534;
+  border: 1px solid rgba(0,123,189,0.2);
+  background: rgba(0,123,189,0.08);
+  color: #007bbd;
   font-weight: 700;
   font-size: 0.78rem;
   cursor: pointer;
@@ -294,9 +296,9 @@
 }
 
 .enquiryBtn:hover {
-  background: #3fa66b;
+  background: #007bbd;
   color: #ffffff;
-  border-color: #3fa66b;
+  border-color: #007bbd;
 }
 
 /* ——————————————————————————————————
@@ -377,4 +379,55 @@
   .detailItem {
     font-size: 0.78rem;
   }
+}
+
+/* Contact Owner icon button - slides in from right on card hover */
+.contactIconBtn {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #007bbd;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.3);
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 250ms ease, transform 250ms ease;
+  z-index: 3;
+}
+
+.contactIconBtn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.card:hover .contactIconBtn {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.cardFooter {
+  position: relative;
+}
+
+/* Featured badge on image */
+.featuredBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #f59e0b;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  z-index: 2;
+  letter-spacing: 0.3px;
 }

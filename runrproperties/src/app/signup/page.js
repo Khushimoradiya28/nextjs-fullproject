@@ -24,7 +24,6 @@ export default function SignupPage() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setApiError("");
-    // Clear error on valid input
     if (touched[name]) validateField(name, value);
   };
 
@@ -94,6 +93,9 @@ export default function SignupPage() {
       <Header />
       <main className={styles.main}>
         <div className={styles.authCard}>
+          <div className={styles.cardLogo}>
+            <img src="/logo/runr-logo.svg" alt="Runr Properties" />
+          </div>
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Create Account</h1>
             <p className={styles.authSubtitle}>Join Runr Properties to find your dream property</p>
