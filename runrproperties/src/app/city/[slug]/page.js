@@ -10,7 +10,7 @@ import EnquiryModal from "../../components/EnquiryModal";
 import { searchProperties } from "../../services/api";
 import styles from "./city.module.css";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 8;
 
 const cityInfo = {
   ahmedabad: { name: "Ahmedabad", description: "Explore premium residential and commercial listings in Ahmedabad." },
@@ -46,10 +46,6 @@ function PropertyCard({ property }) {
       <div className={styles.cardBody}>
         <h3 className={styles.cardTitle}>{property.title}</h3>
         <p className={styles.cardLocation}>{property.location}{property.city ? `, ${property.city}` : ""}</p>
-        <div className={styles.cardDetails}>
-          {property.bhk > 0 && <span>{property.bhk} BHK</span>}
-          {property.area > 0 && <span>{property.area.toLocaleString("en-IN")} Sq.Ft.</span>}
-        </div>
         <p className={styles.cardPrice}>{formatPrice(property.price)}</p>
         <button className={styles.enquiryBtn} onClick={() => setShowEnquiry(true)}>Enquiry</button>
       </div>
@@ -66,6 +62,7 @@ export default function CityPage() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function loadProperties() {
@@ -81,12 +78,23 @@ export default function CityPage() {
     loadProperties();
   }, [city.name]);
 
+  // Filter by search
+  const filteredProperties = useMemo(() => {
+    if (!searchQuery.trim()) return properties;
+    const q = searchQuery.toLowerCase();
+    return properties.filter(p =>
+      p.title?.toLowerCase().includes(q) ||
+      p.location?.toLowerCase().includes(q) ||
+      p.type?.toLowerCase().includes(q)
+    );
+  }, [properties, searchQuery]);
+
   // Pagination
-  const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
   const paginatedProperties = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return properties.slice(start, start + ITEMS_PER_PAGE);
-  }, [properties, currentPage]);
+    return filteredProperties.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredProperties, currentPage]);
 
   const getPageNumbers = () => {
     const pages = [];
@@ -98,25 +106,52 @@ export default function CityPage() {
     return pages;
   };
 
+  // Reset page when search changes
+  useEffect(() => { setCurrentPage(1); }, [searchQuery]);
+
   return (
     <div className={styles.page}>
       <Header />
 
       <main className={styles.main}>
-        <section className={styles.hero}>
-          <div className={styles.breadcrumb}>
-            <Link href="/" className={styles.breadcrumbLink}>← Back to Home</Link>
-            <span className={styles.breadcrumbSep}>/</span>
-            <span className={styles.breadcrumbCurrent}>{city.name}</span>
+        {/* Header Banner */}
+        <section className={styles.heroBanner}>
+          <div className={styles.heroLeft}>
+            <div className={styles.breadcrumb}>
+              <Link href="/" className={styles.breadcrumbLink}>← Back to Home</Link>
+              <span className={styles.breadcrumbSep}>/</span>
+              <span className={styles.breadcrumbCurrent}>{city.name}</span>
+            </div>
+            <h1 className={styles.heroTitle}>Properties in <span className={styles.cityHighlight}>{city.name}</span></h1>
+            <p className={styles.heroText}>{city.description}</p>
           </div>
-          <h1 className={styles.heroTitle}>Properties in {city.name}</h1>
-          <p className={styles.heroText}>{city.description}</p>
+          <div className={styles.heroRight}>
+            <span className={styles.countBadge}>{filteredProperties.length} Properties Found</span>
+          </div>
         </section>
+
+        {/* Search bar */}
+        <div className={styles.searchWrap}>
+          <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="#007bbd" strokeWidth="2"/>
+            <path d="M16.5 16.5L21 21" stroke="#007bbd" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by title, locality, type..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+          {searchQuery && (
+            <button className={styles.searchClear} onClick={() => setSearchQuery("")} aria-label="Clear search">✕</button>
+          )}
+        </div>
 
         {loading ? (
           <div className={styles.cardsGrid}>
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className={styles.card} style={{ opacity: 0.5, minHeight: 320 }}>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+              <div key={i} className={styles.card} style={{ opacity: 0.5, minHeight: 300 }}>
                 <div className={styles.cardImageWrap} style={{ background: "#e2e8f0" }} />
                 <div className={styles.cardBody}>
                   <div style={{ height: 16, background: "#e2e8f0", borderRadius: 6, marginBottom: 10, width: "70%" }} />
@@ -147,9 +182,19 @@ export default function CityPage() {
           </>
         ) : (
           <div className={styles.empty}>
-            <h3>No properties available in {city.name}</h3>
-            <p>Check back soon for new listings.</p>
-            <Link href="/" className={styles.browseCta}>Back to Home</Link>
+            {searchQuery ? (
+              <>
+                <h3>No properties found for &ldquo;{searchQuery}&rdquo; in {city.name}</h3>
+                <p>Try a different search term.</p>
+                <button className={styles.clearBtn} onClick={() => setSearchQuery("")}>Clear Search</button>
+              </>
+            ) : (
+              <>
+                <h3>No properties available in {city.name}</h3>
+                <p>Check back soon for new listings.</p>
+                <Link href="/" className={styles.browseCta}>Back to Home</Link>
+              </>
+            )}
           </div>
         )}
       </main>

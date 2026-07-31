@@ -73,7 +73,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className={styles.teamSection}>
+        {/* <section className={styles.teamSection}>
           <h2 className={styles.sectionTitle}>Meet Our Team</h2>
           <p className={styles.sectionSubtitle}>The people behind Runr Properties</p>
           <div className={styles.teamGrid}>
@@ -85,7 +85,7 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
       </main>
 
       <Footer />

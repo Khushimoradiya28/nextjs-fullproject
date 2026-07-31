@@ -72,7 +72,7 @@ export default function LoginPage() {
       <main className={styles.main}>
         <div className={styles.authCard}>
           <div className={styles.cardLogo}>
-            <img src="/logo/runr-logo.svg" alt="Runr Properties" />
+            <img src="/logo/runr-logo.png" alt="Runr Properties" />
           </div>
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Welcome Back</h1>

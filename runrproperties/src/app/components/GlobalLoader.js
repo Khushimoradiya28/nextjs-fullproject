@@ -1,195 +1,187 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-const ANIMATION_DURATION = 4500;
+const ANIMATION_DURATION = 2500;
 
 export default function GlobalLoader() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [animKey, setAnimKey] = useState(0);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     setVisible(true);
     setAnimKey((k) => k + 1);
     const timer = setTimeout(() => setVisible(false), ANIMATION_DURATION);
     return () => clearTimeout(timer);
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return (
-    <div style={{
+    <div className="loaderWrapper" style={{
       position: "fixed", inset: 0, zIndex: 99999,
-      background: "#fbfcfd",
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0",
+      background: "#ffffff",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px",
       opacity: visible ? 1 : 0,
       pointerEvents: visible ? "all" : "none",
       transition: "opacity 0.4s ease",
     }}>
-      <div key={animKey} style={{ position: "relative", width: "280px", height: "280px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div key={animKey} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
 
-        {/* Soft glow behind logo - present throughout */}
-        <div style={{
-          position: "absolute",
-          width: "100px", height: "100px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(0,123,189,0.1) 0%, transparent 70%)",
-          animation: "breatheGlow 2s ease-in-out infinite",
-          zIndex: 0,
-        }} />
+        {/* Scene */}
+        <div className="scene" style={{ position: "relative" }}>
+          <svg className="citySvg" viewBox="0 0 300 180" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
+            width: "300px", height: "180px",
+            filter: "drop-shadow(0 8px 24px rgba(0,123,189,0.15))",
+          }}>
+            {/* Building 1 - Left tall */}
+            <rect className="b1" x="30" y="60" width="50" height="110" rx="3" stroke="#007bbd" strokeWidth="2.5" fill="#e6f4fb"/>
+            <rect x="40" y="75" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="58" y="75" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="40" y="95" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="58" y="95" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="40" y="115" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="58" y="115" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
 
-        {/* Logo - always visible, the hero of the animation */}
-        <img
-          src="/logo/runr-logo.svg"
-          alt="Runr Properties"
-          style={{
-            height: "44px",
-            width: "auto",
-            position: "relative",
-            zIndex: 3,
-            animation: "logoLife 4.5s ease forwards",
-          }}
-        />
+            {/* Building 2 - Center tallest */}
+            <rect className="b2" x="100" y="20" width="65" height="150" rx="3" stroke="#007bbd" strokeWidth="2.5" fill="#cce9f6"/>
+            <rect x="112" y="35" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            <rect x="132" y="35" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            <rect x="112" y="58" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            <rect x="132" y="58" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            <rect x="112" y="81" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            <rect x="132" y="81" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            <rect x="112" y="104" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            <rect x="132" y="104" width="12" height="12" rx="1" fill="#007bbd" opacity="0.6" className="win"/>
+            {/* Antenna */}
+            <line x1="132" y1="20" x2="132" y2="5" stroke="#007bbd" strokeWidth="2" strokeLinecap="round" className="antenna"/>
+            <circle cx="132" cy="4" r="2.5" fill="#007bbd" className="antennaDot"/>
 
-        {/* Blueprint lines emerging from logo center, growing into house */}
-        <svg viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
-          position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 1,
+            {/* Building 3 - Right medium */}
+            <rect className="b3" x="185" y="50" width="55" height="120" rx="3" stroke="#007bbd" strokeWidth="2.5" fill="#e6f4fb"/>
+            <rect x="196" y="65" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="214" y="65" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="196" y="85" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="214" y="85" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="196" y="105" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+            <rect x="214" y="105" width="10" height="10" rx="1" fill="#007bbd" opacity="0.5" className="win"/>
+
+            {/* Building 4 - Far right small */}
+            <rect className="b4" x="255" y="90" width="35" height="80" rx="3" stroke="#007bbd" strokeWidth="2" fill="#e6f4fb" opacity="0.7"/>
+
+            {/* Ground / Road */}
+            <line x1="10" y1="170" x2="290" y2="170" stroke="#007bbd" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="60" y1="170" x2="80" y2="170" stroke="white" strokeWidth="1.5" strokeDasharray="6 8" strokeLinecap="round"/>
+            <line x1="130" y1="170" x2="160" y2="170" stroke="white" strokeWidth="1.5" strokeDasharray="6 8" strokeLinecap="round"/>
+            <line x1="210" y1="170" x2="240" y2="170" stroke="white" strokeWidth="1.5" strokeDasharray="6 8" strokeLinecap="round"/>
+
+            {/* Moving car */}
+            <g className="car">
+              <rect x="0" y="158" width="28" height="12" rx="3" fill="#007bbd"/>
+              <rect x="5" y="153" width="18" height="8" rx="2" fill="#005f94"/>
+              <circle cx="6" cy="171" r="4" fill="#003a5c"/>
+              <circle cx="22" cy="171" r="4" fill="#003a5c"/>
+              <rect x="8" y="155" width="5" height="5" rx="1" fill="#cce9f6" opacity="0.8"/>
+              <rect x="15" y="155" width="5" height="5" rx="1" fill="#cce9f6" opacity="0.8"/>
+            </g>
+
+            {/* Crane */}
+            <g className="crane">
+              <line x1="155" y1="20" x2="155" y2="0" stroke="#007bbd" strokeWidth="2"/>
+              <line x1="155" y1="2" x2="195" y2="2" stroke="#007bbd" strokeWidth="2"/>
+              <line x1="195" y1="2" x2="195" y2="15" stroke="#007bbd" strokeWidth="1.5" strokeDasharray="3 2"/>
+            </g>
+          </svg>
+
+          {/* Reflection shadow */}
+          <div style={{
+            width: "200px", height: "20px",
+            background: "radial-gradient(ellipse, rgba(0,123,189,0.12) 0%, transparent 70%)",
+            margin: "0 auto", borderRadius: "50%",
+          }}/>
+        </div>
+
+        {/* Logo */}
+        <img src="/logo/runr-logo.png" alt="Runr Properties" style={{ height: "36px", width: "auto", marginTop: "-4px" }}/>
+
+        {/* Progress bar */}
+        <div className="progressTrack" style={{
+          width: "200px", height: "3px", background: "#e6f4fb", borderRadius: "99px", overflow: "hidden",
         }}>
-          {/* Radiating lines from center - emerge 0.5s to 1.2s */}
-          <line x1="140" y1="140" x2="140" y2="200" stroke="#1e3a5f" strokeWidth="0.6" strokeLinecap="round" style={{
-            strokeDasharray: 60,
-            strokeDashoffset: 60,
-            animation: "drawLine 0.7s ease 0.5s forwards",
-            opacity: 0.4,
-          }} />
-          <line x1="140" y1="140" x2="95" y2="200" stroke="#1e3a5f" strokeWidth="0.5" strokeLinecap="round" style={{
-            strokeDasharray: 75,
-            strokeDashoffset: 75,
-            animation: "drawLine 0.7s ease 0.6s forwards",
-            opacity: 0.3,
-          }} />
-          <line x1="140" y1="140" x2="185" y2="200" stroke="#1e3a5f" strokeWidth="0.5" strokeLinecap="round" style={{
-            strokeDasharray: 75,
-            strokeDashoffset: 75,
-            animation: "drawLine 0.7s ease 0.6s forwards",
-            opacity: 0.3,
-          }} />
+          <div className="progressBar" style={{
+            height: "100%", background: "#007bbd", borderRadius: "99px",
+          }}/>
+        </div>
 
-          {/* House blueprint - draws 1.2s to 2.6s */}
-          {/* Foundation */}
-          <path d="M80 230 L200 230" stroke="#1e3a5f" strokeWidth="1.2" strokeLinecap="round" style={{
-            strokeDasharray: 120,
-            strokeDashoffset: 120,
-            animation: "drawLine 0.5s ease 1.2s forwards",
-            opacity: 0.5,
-          }} />
-          {/* Walls */}
-          <path d="M92 230 L92 185 L188 185 L188 230" stroke="#1e3a5f" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" style={{
-            strokeDasharray: 190,
-            strokeDashoffset: 190,
-            animation: "drawLine 0.8s ease 1.5s forwards",
-            opacity: 0.6,
-          }} />
-          {/* Roof */}
-          <path d="M85 185 L140 158 L195 185" stroke="#1e3a5f" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={{
-            strokeDasharray: 130,
-            strokeDashoffset: 130,
-            animation: "drawLine 0.6s ease 2.0s forwards",
-            opacity: 0.7,
-          }} />
-          {/* Door */}
-          <rect x="128" y="206" width="16" height="24" rx="2" stroke="#1e3a5f" strokeWidth="1" style={{
-            strokeDasharray: 80,
-            strokeDashoffset: 80,
-            animation: "drawLine 0.4s ease 2.3s forwards",
-            opacity: 0.5,
-          }} />
-          {/* Windows */}
-          <rect x="98" y="194" width="14" height="14" rx="2" stroke="#3fa66b" strokeWidth="1" fill="none" style={{
-            strokeDasharray: 56,
-            strokeDashoffset: 56,
-            animation: "drawLine 0.4s ease 2.4s forwards",
-            opacity: 0.5,
-          }} />
-          <rect x="168" y="194" width="14" height="14" rx="2" stroke="#3fa66b" strokeWidth="1" fill="none" style={{
-            strokeDasharray: 56,
-            strokeDashoffset: 56,
-            animation: "drawLine 0.4s ease 2.5s forwards",
-            opacity: 0.5,
-          }} />
-          {/* Window glow fills */}
-          <rect x="98" y="194" width="14" height="14" rx="2" fill="#3fa66b" style={{
-            opacity: 0,
-            animation: "windowGlow 0.6s ease 2.7s forwards",
-          }} />
-          <rect x="168" y="194" width="14" height="14" rx="2" fill="#3fa66b" style={{
-            opacity: 0,
-            animation: "windowGlow 0.6s ease 2.8s forwards",
-          }} />
-
-          {/* House morphs back (fades) while logo stays - 3.2s to 3.8s */}
-          <rect x="80" y="155" width="140" height="80" fill="#fbfcfd" style={{
-            opacity: 0,
-            animation: "houseFade 0.6s ease 3.2s forwards",
-          }} />
-        </svg>
-
-        {/* Golden light sweep across logo - 3.5s */}
-        <div style={{
-          position: "absolute",
-          width: "160px", height: "60px",
-          background: "linear-gradient(105deg, transparent 25%, rgba(212,175,55,0.2) 48%, rgba(255,255,255,0.4) 52%, transparent 75%)",
-          backgroundSize: "300% 100%",
-          backgroundPosition: "200% 0",
-          animation: "goldSweep 0.7s ease 3.5s forwards",
-          borderRadius: "8px",
-          pointerEvents: "none",
-          zIndex: 4,
-        }} />
+        {/* Tagline */}
+        <p className="tagline" style={{
+          fontSize: "13px", color: "#64748b", letterSpacing: "0.5px", margin: 0,
+        }}>Finding your perfect property...</p>
       </div>
 
-      {/* Text - appears at 3.4s */}
-      <p style={{
-        margin: "16px 0 0",
-        fontSize: "0.88rem",
-        fontWeight: 500,
-        color: "#5a6f85",
-        letterSpacing: "0.03em",
-        opacity: 0,
-        animation: "textFade 0.6s ease 3.4s forwards",
-      }}>
-        Finding Your Perfect Property...
-      </p>
-
       <style>{`
-        @keyframes drawLine {
-          to { stroke-dashoffset: 0; }
+        .b1 { animation: riseUp 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.1s both; transform-origin: bottom; transform-box: fill-box; }
+        .b2 { animation: riseUp 0.7s cubic-bezier(0.34,1.56,0.64,1) 0s both; transform-origin: bottom; transform-box: fill-box; }
+        .b3 { animation: riseUp 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; transform-origin: bottom; transform-box: fill-box; }
+        .b4 { animation: riseUp 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.35s both; transform-origin: bottom; transform-box: fill-box; }
+
+        @keyframes riseUp {
+          from { transform: scaleY(0); opacity: 0; }
+          to { transform: scaleY(1); opacity: 1; }
         }
-        @keyframes breatheGlow {
-          0%, 100% { opacity: 0.6; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.08); }
+
+        .win {
+          animation: winGlow 1.5s ease-in-out infinite alternate;
         }
-        @keyframes logoLife {
-          0% { opacity: 0; transform: scale(0.88); }
-          8% { opacity: 1; transform: scale(1); }
-          70% { opacity: 1; transform: scale(1); }
-          75% { opacity: 1; transform: scale(0.95); }
-          82% { opacity: 1; transform: scale(1.02); }
-          100% { opacity: 1; transform: scale(1); }
+        @keyframes winGlow {
+          from { opacity: 0.2; }
+          to { opacity: 0.8; }
         }
-        @keyframes windowGlow {
-          to { opacity: 0.15; }
+
+        .antennaDot {
+          animation: blink 1s ease-in-out infinite;
         }
-        @keyframes houseFade {
-          to { opacity: 1; }
+        @keyframes blink {
+          0%, 100% { opacity: 1; fill: #007bbd; }
+          50% { opacity: 0.3; fill: #ff4444; }
         }
-        @keyframes goldSweep {
-          from { background-position: 200% 0; }
-          to { background-position: -100% 0; }
+
+        .car {
+          animation: driveCar 2.5s linear infinite;
         }
-        @keyframes textFade {
-          to { opacity: 1; }
+        @keyframes driveCar {
+          from { transform: translateX(-40px); }
+          to { transform: translateX(320px); }
+        }
+
+        .crane {
+          animation: sway 2s ease-in-out infinite alternate;
+          transform-origin: 155px 20px;
+        }
+        @keyframes sway {
+          from { transform: rotate(-3deg); }
+          to { transform: rotate(3deg); }
+        }
+
+        .loaderLogo {
+          animation: fadeInLogo 0.5s ease 0.6s both;
+        }
+        @keyframes fadeInLogo {
+          from { opacity: 0; transform: translateY(-6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progressBar {
+          animation: progress 2s ease-in-out infinite;
+        }
+        @keyframes progress {
+          0% { width: 0%; margin-left: 0; }
+          50% { width: 70%; margin-left: 0; }
+          100% { width: 0%; margin-left: 100%; }
+        }
+
+        .tagline {
+          animation: fadeInLogo 0.5s ease 0.8s both;
         }
       `}</style>
     </div>

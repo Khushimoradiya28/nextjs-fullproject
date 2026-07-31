@@ -58,7 +58,7 @@ export default function Header() {
         <Link href="/" className={styles.brand} aria-label="Runr Properties home">
           <img
             className={styles.logoMark}
-            src="/logo/runr-logo.svg"
+            src="/logo/runr-logo.png"
             alt="Runr Properties logo"
             style={{ height: "40px", width: "auto" }}
           />
