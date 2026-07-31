@@ -4,9 +4,10 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import EnquiryModal from "../../components/EnquiryModal";
+import PremiumEnquiryModal from "../../components/PremiumEnquiryModal";
 import { getPropertyById, searchProperties } from "../../services/api";
 import { useWishlist } from "../../context/WishlistContext";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./propertydetail.module.css";
 function formatPrice(price) { if (!price) return "₹ 0"; if (price >= 10000000) return `₹ ${(price / 10000000).toFixed(2)} Cr`; if (price >= 100000) return `₹ ${(price / 100000).toFixed(1)} Lakh`; return `₹ ${price.toLocaleString("en-IN")}`; }
@@ -16,6 +17,7 @@ export default function PropertyDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const { isInWishlist, toggleWishlist } = useWishlist();
+ const { requireAuth } = useAuthGuard();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -95,9 +97,9 @@ export default function PropertyDetailPage() {
         {/* Breadcrumb */}
         <div className={styles.breadcrumb}>
           <Link href="/" className={styles.breadcrumbLink}>Home</Link>
-          <span className={styles.breadcrumbSep}>/</span>
+          <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
           <Link href={property.listingType === "rent" ? "/rent" : "/buy"} className={styles.breadcrumbLink}>{property.listingType === "rent" ? "Rent" : "Buy"}</Link>
-          <span className={styles.breadcrumbSep}>/</span>
+          <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
           <span className={styles.breadcrumbCurrent}>{property.title}</span>
         </div>
 
@@ -197,14 +199,14 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* Location */}
-            <div className={styles.sectionBlock}>
+            {/* <div className={styles.sectionBlock}>
               <h3 className={styles.sectionTitle}><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-6-5-8.4-9.1A5.6 5.6 0 0112 4.6a5.6 5.6 0 018.4 7.3C18 16 12 21 12 21Z" stroke="currentColor" strokeWidth="2" /><circle cx="12" cy="11" r="2" stroke="currentColor" strokeWidth="2" /></svg>Location</h3>
               <div className={styles.locationDetails}>
                 {property.location && <div className={styles.locationRow}><svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V7l7-4 7 4v14" stroke="currentColor" strokeWidth="1.5" /></svg><span>Locality: {property.location}</span></div>}
                 {property.city && <div className={styles.locationRow}><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-6-5-8.4-9.1A5.6 5.6 0 0112 4.6a5.6 5.6 0 018.4 7.3C18 16 12 21 12 21Z" stroke="currentColor" strokeWidth="1.5" /></svg><span>City: {property.city}</span></div>}
                 {property.address && <div className={styles.locationRow}><svg viewBox="0 0 24 24" fill="none"><path d="M9 20l-5.4-2.7A1 1 0 013 16.4V5.6a1 1 0 011.4-.9L9 7m0 13l6-3m-6 3V7m6 10l5.6 2.8A1 1 0 0021 18.4V7.6a1 1 0 00-.6-.9L15 4m0 13V4m0 0L9 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg><span>Address: {property.address}</span></div>}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column */}
@@ -217,14 +219,14 @@ export default function PropertyDetailPage() {
               </div>
               <div className={styles.ownerDetails}>
                 {owner.email && <div className={styles.ownerDetailRow}><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" /><path d="M22 6l-10 7L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>{owner.email}</div>}
-                {owner.mobile && <div className={styles.ownerDetailRow}><svg viewBox="0 0 24 24" fill="none"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.9.6 2.8.7a2 2 0 011.7 2z" stroke="currentColor" strokeWidth="1.5" /></svg>{owner.mobile}</div>}
+                {owner.mobile && <div className={styles.ownerDetailRow}><svg viewBox="0 0 24 24" fill="none"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.9.6 2.8.7a2 2 0 011.7 2z" stroke="currentColor" strokeWidth="1.5" /></svg>{owner.mobile.slice(0, -2).replace(/./g, "*") + owner.mobile.slice(-2)}</div>}
               </div>
-              <button className={styles.ownerContactBtn} onClick={() => setShowEnquiry(true)}>Contact Owner</button>
+              <button className={styles.ownerContactBtn} onClick={() => requireAuth(() => setShowEnquiry(true))}>Contact Owner</button>
             </div>}
             <div className={styles.enquiryCard}>
               <h4 className={styles.enquiryCardTitle}>Interested in this property?</h4>
               <p className={styles.enquiryCardSub}>Send an enquiry to get more details.</p>
-              <button className={styles.enquirySubmitBtn} onClick={() => setShowEnquiry(true)}>Send Enquiry</button>
+              <button className={styles.enquirySubmitBtn} onClick={() => requireAuth(() => setShowEnquiry(true))}>Send Enquiry</button>
             </div>
           </div>
         </div>
@@ -249,8 +251,8 @@ export default function PropertyDetailPage() {
       {stickyVisible && <div className={styles.stickyContact}><div className={styles.stickyContactInner}>
         <div><span className={styles.stickyPrice}>{formatPrice(property.price)}</span><span className={styles.stickyTitle}>{property.title}</span></div>
         <div className={styles.stickyActions}>
-          <button className={`${styles.stickyBtn} ${styles.stickyBtnSecondary}`} onClick={() => toggleWishlist(property)}>{liked ? "♥ Saved" : "♡ Save"}</button>
-          <button className={`${styles.stickyBtn} ${styles.stickyBtnPrimary}`} onClick={() => setShowEnquiry(true)}>Send Enquiry</button>
+          <button className={`${styles.stickyBtn} ${styles.stickyBtnSecondary}`} onClick={() => requireAuth(() => toggleWishlist(property))}>{liked ? "♥ Saved" : "♡ Save"}</button>
+          <button className={`${styles.stickyBtn} ${styles.stickyBtnPrimary}`} onClick={() => requireAuth(() => setShowEnquiry(true))}>Send Enquiry</button>
         </div>
       </div></div>}
 
@@ -265,8 +267,13 @@ export default function PropertyDetailPage() {
         </>}
       </div>}
 
-      {showEnquiry && <EnquiryModal property={property} onClose={() => setShowEnquiry(false)} />}
+      {showEnquiry && <PremiumEnquiryModal property={property} onClose={() => setShowEnquiry(false)} />}
       <Footer />
     </div>
   );
 }
+
+
+
+
+

@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useWishlist } from "../context/WishlistContext";
+import { useAuth } from "../context/AuthContext";
+import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ConfirmDialog from "../components/ConfirmDialog";
 import Link from "next/link";
 import styles from "./wishlist.module.css";
 
@@ -23,6 +27,24 @@ function capitalizeFirst(str) {
 
 export default function WishlistPage() {
   const { wishlist, loaded, removeFromWishlist, clearWishlist } = useWishlist();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [confirmId, setConfirmId] = useState(null);
+  const [confirmAll, setConfirmAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 12;
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login?redirect=/wishlist");
+    }
+  }, [user, loading, router]);
+
+  const totalPages = Math.ceil(wishlist.length / ITEMS_PER_PAGE);
+  const paginatedWishlist = wishlist.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  if (!user) return null;
+
   return (
     <div className={styles.wishlistPage}>
       <Header />
@@ -34,7 +56,7 @@ export default function WishlistPage() {
             <Link href="/" className={styles.breadcrumbLink}>
               Home
             </Link>
-            <span className={styles.breadcrumbSep}>/</span>
+            <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
             <span className={styles.breadcrumbCurrent}>My Wishlist</span>
           </div>
           <div className={styles.pageHeaderInner}>
@@ -49,7 +71,7 @@ export default function WishlistPage() {
               </p>
             </div>
             {wishlist.length > 0 && (
-              <button className={styles.clearAllBtn} onClick={clearWishlist}>
+              <button className={styles.clearAllBtn} onClick={() => setConfirmAll(true)}>
                 Clear All
               </button>
             )}
@@ -64,8 +86,9 @@ export default function WishlistPage() {
             ))}
           </div>
         ) : wishlist.length > 0 ? (
+          <>
           <div className={styles.wishlistGrid}>
-            {wishlist.map((property) => (
+            {paginatedWishlist.map((property) => (
               <article key={property.id} className={styles.wishlistCard}>
                 <Link
                   href={`/property/${property.id}`}
@@ -128,9 +151,9 @@ export default function WishlistPage() {
                         <button
                           className={styles.removeBtn}
                           onClick={(e) => {
-                            e.stopPropagation(); // ← ye add karo
+                            e.stopPropagation();
                             e.preventDefault();
-                            removeFromWishlist(property.id);
+                            setConfirmId(property.id);
                           }}
                           aria-label={`Remove ${property.title} from wishlist`}
                         >
@@ -162,6 +185,15 @@ export default function WishlistPage() {
               </article>
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <div className={styles.pagination}>
+              <button className={styles.pageBtn} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>← Previous</button>
+              <span className={styles.pageInfo}>Page {currentPage} of {totalPages}</span>
+              <button className={styles.pageBtn} disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>Next →</button>
+            </div>
+          )}
+        </>
         ) : (
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>
@@ -195,6 +227,32 @@ export default function WishlistPage() {
       </main>
 
       <Footer />
+
+      <ConfirmDialog
+        isOpen={!!confirmId}
+        title="Remove Property?"
+        message="This property will be removed from your wishlist."
+        confirmText="Yes, Remove"
+        cancelText="Keep It"
+        onCancel={() => setConfirmId(null)}
+        onConfirm={() => {
+          removeFromWishlist(confirmId);
+          setConfirmId(null);
+        }}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmAll}
+        title="Clear Entire Wishlist?"
+        message="All saved properties will be removed. This cannot be undone."
+        confirmText="Yes, Clear All"
+        cancelText="Cancel"
+        onCancel={() => setConfirmAll(false)}
+        onConfirm={() => {
+          clearWishlist();
+          setConfirmAll(false);
+        }}
+      />
     </div>
   );
 }

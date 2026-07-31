@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useWishlist } from "../../context/WishlistContext";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
 import PremiumEnquiryModal from "../../components/PremiumEnquiryModal";
 import styles from "./RentPropertyCard.module.css";
 
@@ -21,6 +22,7 @@ export default function RentPropertyCard({ property, viewMode }) {
   const router = useRouter();
   
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { requireAuth } = useAuthGuard();
   const [showEnquiry, setShowEnquiry] = useState(false);
   const liked = isInWishlist(property.id);
   const isListView = viewMode === "list";
@@ -34,7 +36,7 @@ export default function RentPropertyCard({ property, viewMode }) {
         </div>
         <button
           className={`${styles.likeBtn} ${liked ? styles.liked : ""}`}
-          onClick={(e) => { e.stopPropagation(); toggleWishlist(property); }}
+          onClick={(e) => { e.stopPropagation(); requireAuth(() => toggleWishlist(property)); }}
           aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
           aria-pressed={liked}
         >
@@ -66,7 +68,7 @@ export default function RentPropertyCard({ property, viewMode }) {
             <span className={styles.rentValue}>{formatRent(property.rent || property.price)}</span>
             <span className={styles.rentLabel}>/month</span>
           </div>
-          <button className={styles.contactIconBtn} onClick={(e) => { e.stopPropagation(); setShowEnquiry(true); }} aria-label="Contact Owner" title="Contact Owner">
+          <button className={styles.contactIconBtn} onClick={(e) => { e.stopPropagation(); requireAuth(() => setShowEnquiry(true)); }} aria-label="Contact Owner" title="Contact Owner">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
           </button>
         </div>

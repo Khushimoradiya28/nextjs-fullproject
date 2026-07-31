@@ -79,11 +79,6 @@ export default function PropertyFilters({ filters, onFilterChange, onApplyFilter
             <h3 className={styles.filterTitle}>Filters</h3>
           </div>
           <div className={styles.filterHeaderRight}>
-            {hasActiveFilters && (
-              <button className={styles.clearBtn} onClick={onClearFilters}>
-                Clear All
-              </button>
-            )}
             <button
               className={styles.mobileCloseBtn}
               onClick={() => setMobileOpen(false)}

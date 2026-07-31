@@ -94,7 +94,7 @@ export default function SignupPage() {
       <main className={styles.main}>
         <div className={styles.authCard}>
           <div className={styles.cardLogo}>
-            <img src="/logo/runr-logo.png" alt="Runr Properties" />
+            <img src="/logo/runr-logo-new.svg" alt="Runr Properties" />
           </div>
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Create Account</h1>

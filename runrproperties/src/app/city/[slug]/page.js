@@ -6,11 +6,11 @@ import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useWishlist } from "../../context/WishlistContext";
-import EnquiryModal from "../../components/EnquiryModal";
+import PremiumEnquiryModal from "../../components/PremiumEnquiryModal";
 import { searchProperties } from "../../services/api";
 import styles from "./city.module.css";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 20;
 
 const cityInfo = {
   ahmedabad: { name: "Ahmedabad", description: "Explore premium residential and commercial listings in Ahmedabad." },
@@ -33,11 +33,11 @@ function PropertyCard({ property }) {
   const liked = isInWishlist(property.id);
 
   return (
-    <article className={styles.card}>
+    <Link href={`/property/${property.id}`} className={styles.cardLink}><article className={styles.card}>
       <div className={styles.cardImageWrap}>
         <img src={property.image || "/img/buy-properties/1.jpg"} alt={property.title} className={styles.cardImg} loading="lazy" />
         <span className={styles.badge}>{property.type}</span>
-        <button className={`${styles.likeBtn} ${liked ? styles.liked : ""}`} onClick={() => toggleWishlist(property)} aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}>
+        <button className={`${styles.likeBtn} ${liked ? styles.liked : ""}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(property); }} aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill={liked ? "#e0245e" : "transparent"} stroke={liked ? "none" : "#ffffff"} strokeWidth="1.6" />
           </svg>
@@ -47,10 +47,10 @@ function PropertyCard({ property }) {
         <h3 className={styles.cardTitle}>{property.title}</h3>
         <p className={styles.cardLocation}>{property.location}{property.city ? `, ${property.city}` : ""}</p>
         <p className={styles.cardPrice}>{formatPrice(property.price)}</p>
-        <button className={styles.enquiryBtn} onClick={() => setShowEnquiry(true)}>Enquiry</button>
+        <button className={styles.contactIconBtn} onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowEnquiry(true); }} aria-label="Contact Owner" title="Contact Owner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg></button>
       </div>
-      {showEnquiry && <EnquiryModal property={property} onClose={() => setShowEnquiry(false)} />}
-    </article>
+      {showEnquiry && <PremiumEnquiryModal property={property} onClose={() => setShowEnquiry(false)} />}
+    </article></Link>
   );
 }
 
@@ -119,14 +119,14 @@ export default function CityPage() {
           <div className={styles.heroLeft}>
             <div className={styles.breadcrumb}>
               <Link href="/" className={styles.breadcrumbLink}>← Back to Home</Link>
-              <span className={styles.breadcrumbSep}>/</span>
+              <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
               <span className={styles.breadcrumbCurrent}>{city.name}</span>
             </div>
             <h1 className={styles.heroTitle}>Properties in <span className={styles.cityHighlight}>{city.name}</span></h1>
             <p className={styles.heroText}>{city.description}</p>
           </div>
           <div className={styles.heroRight}>
-            <span className={styles.countBadge}>{filteredProperties.length} Properties Found</span>
+            <div className={styles.countBadge}><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="#007bbd" strokeWidth="1.8" fill="#e6f4fb"/><path d="M9 21V12h6v9" stroke="#007bbd" strokeWidth="1.8" strokeLinecap="round"/></svg><span className={styles.countNumber}>{filteredProperties.length}</span><span className={styles.countText}>Properties Available</span></div>
           </div>
         </section>
 
@@ -203,3 +203,12 @@ export default function CityPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+

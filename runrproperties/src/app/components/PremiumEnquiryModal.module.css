@@ -113,6 +113,7 @@
   margin: 0;
   position: relative;
   z-index: 1;
+  color: #fff;
 }
 
 .ownerLabel {
@@ -329,27 +330,28 @@
 
 /* ── Responsive ── */
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .modal {
     grid-template-columns: 1fr;
-    width: 94vw;
+    width: 95vw;
     max-width: 420px;
-    max-height: 85vh;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   .leftPanel {
     border-radius: 22px 22px 0 0;
-    padding: 28px 22px;
+    padding: 24px 20px;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
   }
 
   .ownerAvatar {
-    width: 56px;
-    height: 56px;
-    font-size: 1.4rem;
+    width: 52px;
+    height: 52px;
+    font-size: 1.3rem;
   }
 
   .ownerName {
@@ -357,39 +359,28 @@
     text-align: left;
   }
 
-  .ownerLabel {
-    margin: 0;
-  }
-
-  .propertyInfo {
-    margin-top: 10px;
-  }
-
-  .rightPanel {
-    padding: 24px 22px;
-  }
+  .ownerLabel { margin: 0; }
+  .propertyInfo { margin-top: 8px; }
+  .rightPanel { padding: 22px 20px; }
 
   .closeBtn {
     background: rgba(0, 0, 0, 0.1);
     color: #1e3a5f;
-  }
-
-  .closeBtn:hover {
-    background: rgba(0, 0, 0, 0.15);
   }
 }
 
 @media (max-width: 400px) {
   .modal {
     border-radius: 18px;
+    width: 96vw;
   }
 
   .leftPanel {
     border-radius: 18px 18px 0 0;
-    padding: 22px 18px;
+    padding: 20px 16px;
   }
 
   .rightPanel {
-    padding: 20px 18px;
+    padding: 18px 16px;
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import PasswordInput from "../components/PasswordInput";
@@ -12,6 +12,8 @@ import styles from "./auth.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/profile";
   const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -58,7 +60,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result.success) {
-      router.push("/profile");
+      router.push(redirectUrl);
     } else {
       setApiError(result.message);
     }
@@ -72,7 +74,7 @@ export default function LoginPage() {
       <main className={styles.main}>
         <div className={styles.authCard}>
           <div className={styles.cardLogo}>
-            <img src="/logo/runr-logo.png" alt="Runr Properties" />
+            <img src="/logo/runr-logo-new.svg" alt="Runr Properties" />
           </div>
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Welcome Back</h1>

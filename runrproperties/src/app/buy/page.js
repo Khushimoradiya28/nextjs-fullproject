@@ -202,7 +202,7 @@ export default function BuyPage() {
             <a href="/" className={styles.breadcrumbLink}>
               Home
             </a>
-            <span className={styles.breadcrumbSep}>/</span>
+            <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
             <span className={styles.breadcrumbCurrent}>Buy Properties</span>
           </div>
           <div className={styles.pageHeaderInner}>

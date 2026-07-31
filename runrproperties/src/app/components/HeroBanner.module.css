@@ -397,7 +397,6 @@
 @media (max-width: 880px) {
   .bannerInner {
     min-height: 75vh;
-    border-radius: 22px;
     padding: 40px 0;
   }
 
@@ -468,7 +467,6 @@
 @media (max-width: 640px) {
   .bannerInner {
     min-height: 70vh;
-    border-radius: 18px;
     padding: 36px 0;
   }
 

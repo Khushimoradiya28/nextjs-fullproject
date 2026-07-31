@@ -102,7 +102,7 @@ export default function GlobalLoader() {
         </div>
 
         {/* Logo */}
-        <img src="/logo/runr-logo.png" alt="Runr Properties" style={{ height: "36px", width: "auto", marginTop: "-4px" }}/>
+        <img src="/logo/runr-logo-new.svg" alt="Runr Properties" style={{ height: "36px", width: "auto", marginTop: "-4px" }}/>
 
         {/* Progress bar */}
         <div className="progressTrack" style={{

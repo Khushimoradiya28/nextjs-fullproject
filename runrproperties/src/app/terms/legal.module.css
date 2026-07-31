@@ -7,6 +7,6 @@
 .content ul { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 10px; }
 .content li { font-size: 0.95rem; }
 .content li a { color: #1e3a5f; text-decoration: none; font-weight: 500; transition: color 0.18s ease; }
-.content li a:hover { color: #3fa66b; }
+.content li a:hover { color: #007bbd; }
 @media (max-width: 880px) { .main { width: calc(100vw - 40px); max-width: calc(100vw - 40px); } .content { padding: 24px 20px; } }
 @media (max-width: 640px) { .main { width: calc(100vw - 24px); max-width: calc(100vw - 24px); } }

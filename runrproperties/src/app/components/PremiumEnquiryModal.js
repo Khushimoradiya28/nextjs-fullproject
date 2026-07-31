@@ -9,7 +9,7 @@ import styles from "./PremiumEnquiryModal.module.css";
 
 function maskPhone(phone) {
   if (!phone || phone.length < 4) return "•••••••••••";
-  return phone.slice(0, 2) + "•".repeat(phone.length - 4) + phone.slice(-2);
+  return "•".repeat(phone.length - 2) + phone.slice(-2);
 }
 
 export default function PremiumEnquiryModal({ property, onClose }) {
