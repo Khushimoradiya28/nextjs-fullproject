@@ -113,8 +113,9 @@ export default function CityPortal() {
     <section className={`${styles.citySection} gray-bg theme-padding`}>
       <div className={styles.cityHeader}>
         <div className={styles.sectionTitle}>
+          <span className={styles.sectionTag}>✦ Explore Cities</span>
           <h2>Explore Properties in Top Cities</h2>
-          <h4 className={styles.titleTagline}>Find listings by city, across Gujarat</h4>
+          <span className={styles.titleUnderline} />
         </div>
 
         <div className={styles.sliderControls}>

@@ -27,8 +27,9 @@ export default function BlogSection() {
     <section className={styles.blogSection}>
       <div className={styles.blogHeader}>
         <div>
-          <p className={styles.label}>Latest from Blog</p>
-          <h2 className={styles.sectionTitle}>Real estate insights for buyers & investors</h2>
+          <span className={styles.label}>✦ Insights</span>
+          <h2 className={styles.sectionTitle}>Latest from Blog</h2>
+          <div className={styles.titleUnderline} />
         </div>
         <a href="/blog" className={styles.viewAll}>
           View All Blogs →

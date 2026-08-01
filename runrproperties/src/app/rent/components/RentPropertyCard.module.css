@@ -17,31 +17,152 @@
 
 /* List view variant */
 .cardList {
+  display: flex;
   flex-direction: row;
-  border-radius: 18px;
-  height: auto;
+  width: 100%;
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  transition: box-shadow 0.25s, transform 0.25s;
+  position: relative;
+}
+
+.cardList:hover {
+  box-shadow: 0 8px 28px rgba(0,123,189,0.12);
+  transform: translateY(-2px);
 }
 
 .cardList .cardImageWrap {
-  flex: 0 0 260px;
-  max-width: 260px;
-  height: auto;
+  width: 320px;
+  min-width: 320px;
+  height: 100%;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .cardList .cardImage {
-  height: 100%;
-  min-height: 200px;
-  border-radius: 18px 0 0 18px;
+  height: 180px;
+  min-height: 180px;
+  border-radius: 0;
 }
 
 .cardList .cardImg {
+  width: 100%;
   height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.cardList:hover .cardImg {
+  transform: scale(1.04);
+}
+
+.cardList .featuredBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  padding: 3px 10px;
+  z-index: 2;
+}
+
+.cardList .likeBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
 }
 
 .cardList .cardContent {
   flex: 1;
-  padding: 22px 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 24px;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cardList .cardTop {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardList .cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardList .cardLocation {
+  font-size: 13px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+.cardList .cardFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: center;
+  gap: 12px;
+  min-width: 180px;
+  padding-left: 24px;
+  border-left: 1px solid #e2e8f0;
+  margin-top: 0;
+  border-top: none;
+}
+
+.cardList .priceBlock {
+  text-align: right;
+}
+
+.cardList .rentValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  display: block;
+}
+
+.cardList .rentLabel {
+  font-size: 12px;
+  color: #94a3b8;
+  display: block;
+  margin-top: 2px;
+}
+
+.cardList .contactIconBtn {
+  position: static;
+  opacity: 1 !important;
+  transform: none !important;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #007bbd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardList .contactIconBtn:hover {
+  background: #005f94;
 }
 
 /* Image area */
@@ -397,4 +518,211 @@
   border-radius: 20px;
   z-index: 2;
   letter-spacing: 0.3px;
+}
+
+/* List view meta details */
+.listMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.metaItem svg {
+  color: #007bbd;
+  flex-shrink: 0;
+}
+
+.metaTag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #007bbd;
+  color: white;
+  letter-spacing: 0.3px;
+}
+
+/* Owner row in list view */
+.ownerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.ownerAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ownerAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ownerInitial {
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+}
+
+.ownerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ownerName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.ownerLabel {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* List view price in content area */
+.listPrice {
+  margin-top: 6px;
+}
+
+.listPriceValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.listPriceLabel {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-left: 4px;
+}
+
+.cardList .cardFooter .priceBlock {
+  display: none;
+}
+
+/* List view right panel - owner + call */
+.cardList .cardFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 160px;
+  max-width: 160px;
+  padding: 16px 14px;
+  border-left: 1px solid #e2e8f0;
+  gap: 10px;
+}
+
+.ownerPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  width: 100%;
+}
+
+.ownerAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.ownerAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ownerInitial {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+
+.ownerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.ownerName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+  word-break: break-word;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ownerLabel {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.cardList .callBtn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 90%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #007bbd;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,123,189,0.2);
+  transition: background 0.2s, box-shadow 0.2s;
+  position: static !important;
+  opacity: 1 !important;
+  transform: none !important;
+  height: auto !important;
+  width: 90% !important;
+}
+
+.cardList .callBtn:hover {
+  background: #005f94;
+  box-shadow: 0 4px 12px rgba(0,123,189,0.3);
 }

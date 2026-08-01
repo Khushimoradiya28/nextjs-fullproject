@@ -11,7 +11,29 @@ const { verifyEmailConnection } = require('./utils/sendEmail');
 dotenv.config();
 
 // Connect to MongoDB
-connectDB();
+connectDB().then(() => {
+  // Backfill avatarColor for all existing users missing it (runs once on startup)
+  const User = require('./models/User');
+  const { getRandomAvatarColor } = require('./utils/avatarColors');
+
+  User.find({ $or: [{ avatarColor: null }, { avatarColor: { $exists: false } }] })
+    .select('_id')
+    .then(async (users) => {
+      if (users.length > 0) {
+        const bulkOps = users.map((u) => ({
+          updateOne: {
+            filter: { _id: u._id },
+            update: { $set: { avatarColor: getRandomAvatarColor() } },
+          },
+        }));
+        await User.bulkWrite(bulkOps);
+        console.log(`[AVATAR-COLOR] Backfilled ${users.length} users with avatar colors`);
+      }
+    })
+    .catch((err) => {
+      console.error('[AVATAR-COLOR] Backfill error:', err.message);
+    });
+});
 
 // Verify SMTP connection once at startup
 verifyEmailConnection();

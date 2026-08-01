@@ -3,7 +3,7 @@
 
 /* Left Sidebar */
 .sidebar { background: #ffffff; border-radius: 20px; border: 1px solid rgba(30,58,95,0.08); box-shadow: 0 12px 36px rgba(30,58,95,0.05); padding: 24px 20px; position: sticky; top: 90px; }
-.sidebarAvatar { width: 72px; height: 72px; border-radius: 50%; background: #007bbd; display: grid; place-items: center; font-size: 2rem; color: #ffffff; font-weight: 800; margin: 0 auto 14px; }
+.sidebarAvatar { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; font-size: 2rem; color: #ffffff; font-weight: 800; margin: 0 auto 14px; }
 .sidebarName { text-align: center; margin: 0 0 4px; font-size: 1.05rem; }
 .sidebarRole { text-align: center; display: block; padding: 4px 12px; border-radius: 6px; background: rgba(0,123,189,0.1); color: #007bbd; font-size: 0.72rem; font-weight: 700; margin: 0 auto 20px; width: fit-content; }
 .sidebarNav { display: flex; flex-direction: column; gap: 4px; }
@@ -68,3 +68,14 @@
 .skelLineShort { height: 12px; background: #e2e8f0; border-radius: 6px; margin: 0 auto; width: 40%; animation: skelPulse 1.5s infinite; }
 .skelSection { height: 180px; background: #e2e8f0; border-radius: 18px; margin-bottom: 16px; animation: skelPulse 1.5s infinite; }
 @keyframes skelPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* Avatar upload section */
+.avatarSection { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; }
+.avatarWrap { position: relative; width: 88px; height: 88px; }
+.avatarImg { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 3px solid #e2e8f0; }
+.avatarPlaceholder { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid #e2e8f0; }
+.avatarInitial { font-size: 32px; font-weight: 700; color: white; }
+.avatarUploadBtn { position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; border-radius: 50%; background: #007bbd; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: background 0.2s; }
+.avatarUploadBtn:hover { background: #005f94; }
+.avatarFileInput { display: none; }
+.avatarHint { font-size: 11px; color: #94a3b8; margin: 0; }

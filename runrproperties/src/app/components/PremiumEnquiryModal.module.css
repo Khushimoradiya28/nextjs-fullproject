@@ -95,8 +95,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #ffffff;
-  color: #007bbd;
+  color: #ffffff;
   display: grid;
   place-items: center;
   font-size: 2rem;

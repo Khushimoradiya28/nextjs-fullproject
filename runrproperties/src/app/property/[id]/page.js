@@ -7,6 +7,7 @@ import Footer from "../../components/Footer";
 import PremiumEnquiryModal from "../../components/PremiumEnquiryModal";
 import { getPropertyById, searchProperties } from "../../services/api";
 import { useWishlist } from "../../context/WishlistContext";
+
 import { useAuthGuard } from "../../hooks/useAuthGuard";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./propertydetail.module.css";
@@ -214,7 +215,7 @@ export default function PropertyDetailPage() {
             {owner && owner.name && <div className={styles.ownerCard}>
               <h4 className={styles.ownerCardTitle}>Property Owner</h4>
               <div className={styles.ownerProfile}>
-                <div className={styles.ownerAvatar}>{owner.name?.charAt(0)?.toUpperCase()}</div>
+                <div className={styles.ownerAvatar} style={{ background: owner.profilePhoto ? "transparent" : (owner.avatarColor || "#2980b9"), overflow: "hidden" }}>{owner.profilePhoto ? <img src={owner.profilePhoto} alt={owner.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : owner.name?.charAt(0)?.toUpperCase()}</div>
                 <div className={styles.ownerInfo}><span className={styles.ownerName}>{owner.name}</span><span className={styles.ownerRole}>Owner</span></div>
               </div>
               <div className={styles.ownerDetails}>
@@ -272,6 +273,10 @@ export default function PropertyDetailPage() {
     </div>
   );
 }
+
+
+
+
 
 
 

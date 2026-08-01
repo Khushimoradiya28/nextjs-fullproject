@@ -15,28 +15,33 @@
 }
 
 .sectionTitle {
-  position: relative;
-  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.sectionTitle::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 6px;
-  width: 4px;
-  height: 80px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #2f6dff 0%, #4fb1ff 100%);
+.sectionTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #007bbd;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 
 .sectionTitle h2 {
-  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.titleTagline {
-  margin: 0;
-  max-width: 640px;
+.titleUnderline {
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: #007bbd;
+  border-radius: 99px;
 }
 
 /* Slider controls */
@@ -162,8 +167,8 @@
     align-self: flex-end;
   }
 
-  .sectionTitle::before {
-    height: 60px;
+  .sectionTitle h2 {
+    font-size: 1.4rem;
   }
 
   .cityCard {

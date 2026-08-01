@@ -82,7 +82,13 @@ export default function PremiumEnquiryModal({ property, onClose }) {
 
         {/* Left Panel — Owner Details */}
         <div className={styles.leftPanel}>
-          <div className={styles.ownerAvatar}>{ownerInitial}</div>
+          <div className={styles.ownerAvatar} style={{ background: owner.profilePhoto ? "transparent" : (owner.avatarColor || "#2980b9") }}>
+            {owner.profilePhoto ? (
+              <img src={owner.profilePhoto} alt={owner.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+            ) : (
+              ownerInitial
+            )}
+          </div>
           <h3 className={styles.ownerName}>{owner.name || "Property Owner"}</h3>
           <span className={styles.ownerLabel}>Property Owner</span>
 

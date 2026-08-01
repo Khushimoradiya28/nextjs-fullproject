@@ -23,17 +23,31 @@
   padding-right: 8px;
 }
 
+.sectionTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #007bbd;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: block;
+  margin-bottom: 6px;
+}
+
 .sectionTitleBox h2,
 .calcHeader h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0 0 8px;
+  line-height: 1.2;
 }
 
 .titleUnderline {
   display: block;
-  width: 52px;
+  width: 48px;
   height: 3px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #007bbd 0%, #339fd4 100%);
+  border-radius: 99px;
+  background: #007bbd;
 }
 
 .benefitGrid {

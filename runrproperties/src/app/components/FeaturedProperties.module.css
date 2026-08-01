@@ -7,27 +7,66 @@
 
 .featuredHeader {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 30px;
+  margin-bottom: 16px;
+  padding: 0;
+}
+
+.sectionTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #007bbd;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 
 .sectionTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0;
+  line-height: 1.2;
 }
 
-.viewAll {
-  color: #1e3a5f;
-  font-weight: 700;
+.titleUnderline {
+  width: 48px;
+  height: 3px;
+  background: #007bbd;
+  border-radius: 99px;
+}
+
+.viewAllLink {
+  font-size: 14px;
+  font-weight: 600;
+  color: #007bbd;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1.5px solid #007bbd;
+  border-radius: 8px;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+}
+
+.viewAllLink:hover {
+  background: #007bbd;
+  color: white;
 }
 
 .sliderControls {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .sliderButton {

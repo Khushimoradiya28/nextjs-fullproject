@@ -172,10 +172,12 @@ export default function FeaturedProperties() {
   return (
     <section className={styles.featuredSection}>
       <div className={styles.featuredHeader}>
-        <div>
+        <div className={styles.sectionTitleBlock}>
+          <span className={styles.sectionTag}>✦ Hand-Picked</span>
           <h2 className={styles.sectionTitle}>Featured Properties</h2>
+          <div className={styles.titleUnderline} />
         </div>
-        <a href="/buy" className={styles.viewAll}>View All →</a>
+        <a href="/buy" className={styles.viewAllLink}>View All <span>→</span></a>
       </div>
 
       {needsSlider && (

@@ -106,7 +106,7 @@ const getAllProperties = async (query = {}) => {
 
   const [properties, total] = await Promise.all([
     Property.find(filter)
-      .populate("owner", "name email mobile")
+      .populate("owner", "name email mobile avatarColor profilePhoto")
       .sort(sort)
       .skip(skip)
       .limit(Number(limit)),
@@ -151,7 +151,7 @@ const searchProperties = async (query = {}) => {
 
   const [properties, total] = await Promise.all([
     Property.find(filter)
-      .populate("owner", "name email mobile")
+      .populate("owner", "name email mobile avatarColor profilePhoto")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit)),
@@ -177,7 +177,7 @@ const getFeaturedProperties = async (query = {}) => {
   const { limit = 8 } = query;
 
   const properties = await Property.find({ featured: true, status: "active" })
-    .populate("owner", "name email mobile")
+    .populate("owner", "name email mobile avatarColor profilePhoto")
     .sort({ createdAt: -1 })
     .limit(Number(limit));
 
@@ -193,7 +193,7 @@ const getFeaturedProperties = async (query = {}) => {
 const getPropertyById = async (id, requestingUserId = null) => {
   const property = await Property.findById(id).populate(
     "owner",
-    "name email mobile",
+    "name email mobile avatarColor profilePhoto",
   );
   if (!property) {
     const error = new Error("Property not found");
@@ -224,7 +224,7 @@ const getPropertyById = async (id, requestingUserId = null) => {
     listingType: property.listingType,
     status: "active",
   })
-    .populate("owner", "name email mobile")
+    .populate("owner", "name email mobile avatarColor profilePhoto")
     .sort({ createdAt: -1 })
     .limit(4);
 

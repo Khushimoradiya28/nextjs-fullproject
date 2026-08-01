@@ -20,26 +20,47 @@
 }
 
 .label {
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.72rem;
+  font-size: 12px;
+  font-weight: 600;
   color: #007bbd;
-  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   margin: 0 0 6px;
 }
 
 .sectionTitle {
-  margin: 0;
-  font-size: clamp(1.8rem, 2.25vw, 2.5rem);
-  line-height: 1.05;
-  color: #0f172a;
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1e293b;
+}
+
+.titleUnderline {
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: #007bbd;
+  border-radius: 99px;
 }
 
 .viewAll {
-  color: #0f172a;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
+  color: #007bbd;
   text-decoration: none;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1.5px solid #007bbd;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.viewAll:hover {
+  background: #007bbd;
+  color: white;
 }
 
 .blogGrid {

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { getRandomAvatarColor } = require('../utils/avatarColors');
 
 const userSchema = new mongoose.Schema(
   {
@@ -33,6 +34,16 @@ const userSchema = new mongoose.Schema(
       enum: ['buyer', 'owner'],
       default: 'buyer',
     },
+    avatarColor: {
+      type: String,
+      default: function () {
+        return getRandomAvatarColor();
+      },
+    },
+    profilePhoto: {
+      type: String,
+      default: '',
+    },
     resetPasswordToken: {
       type: String,
       select: false,
@@ -47,6 +58,14 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// Assign avatar color on first save (creation) if not already set
+userSchema.pre('save', function (next) {
+  if (this.isNew && !this.avatarColor) {
+    this.avatarColor = getRandomAvatarColor();
+  }
+  next();
+});
+
 // Hash password before saving
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
@@ -58,5 +77,43 @@ userSchema.pre('save', async function () {
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+/**
+ * Post-query hooks to auto-backfill avatarColor for existing users.
+ * This ensures that any user fetched (including via populate) gets a
+ * permanent avatarColor assigned and saved if missing.
+ */
+async function backfillAvatarColor(doc) {
+  if (doc && !doc.avatarColor) {
+    doc.avatarColor = getRandomAvatarColor();
+    await mongoose.model('User').updateOne(
+      { _id: doc._id, avatarColor: null },
+      { $set: { avatarColor: doc.avatarColor } }
+    );
+  }
+}
+
+userSchema.post('findOne', async function (doc) {
+  await backfillAvatarColor(doc);
+});
+
+userSchema.post('find', async function (docs) {
+  if (!docs || docs.length === 0) return;
+  const updates = [];
+  for (const doc of docs) {
+    if (doc && !doc.avatarColor) {
+      doc.avatarColor = getRandomAvatarColor();
+      updates.push({
+        updateOne: {
+          filter: { _id: doc._id, avatarColor: null },
+          update: { $set: { avatarColor: doc.avatarColor } },
+        },
+      });
+    }
+  }
+  if (updates.length > 0) {
+    await mongoose.model('User').bulkWrite(updates);
+  }
+});
 
 module.exports = mongoose.model('User', userSchema);

@@ -130,7 +130,7 @@
 .listLayout {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
   animation: fadeIn 0.4s ease;
 }
 

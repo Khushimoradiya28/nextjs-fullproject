@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import { changePassword } from "../services/api";
+import { changePassword, uploadProfilePhoto } from "../services/api";
 import MobileInput from "../components/MobileInput";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -14,6 +14,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, loading, isAuthenticated, logout, update, isOwner } = useAuth();
   const [editing, setEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editForm, setEditForm] = useState({ name: "", mobile: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [passForm, setPassForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
@@ -63,6 +64,17 @@ export default function ProfilePage() {
     if (result.success) { setPassForm({ currentPassword: "", newPassword: "", confirmPassword: "" }); setTimeout(() => setPassMsg(""), 3000); }
   };
 
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    const res = await uploadProfilePhoto(file);
+    if (res.success && res.data) {
+      update(res.data);
+    }
+    setUploading(false);
+  };
+
   const handleLogout = () => { logout(); router.push("/"); };
 
   return (
@@ -71,7 +83,22 @@ export default function ProfilePage() {
       <main className={styles.main}>
         {/* Left Sidebar */}
         <aside className={styles.sidebar}>
-          <div className={styles.sidebarAvatar}>{user.name?.charAt(0).toUpperCase()}</div>
+          <div className={styles.avatarSection}>
+            <div className={styles.avatarWrap}>
+              {user.profilePhoto ? (
+                <img src={user.profilePhoto} alt={user.name} className={styles.avatarImg} />
+              ) : (
+                <div className={styles.avatarPlaceholder} style={{ background: user.avatarColor || "#2980b9" }}>
+                  <span className={styles.avatarInitial}>{user.name?.charAt(0).toUpperCase()}</span>
+                </div>
+              )}
+              <label className={styles.avatarUploadBtn} title="Change photo">
+                <input type="file" accept="image/jpeg,image/png,image/webp" className={styles.avatarFileInput} onChange={handlePhotoUpload} />
+                {uploading ? <span style={{ color: "white", fontSize: "10px" }}>...</span> : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
+              </label>
+            </div>
+            <p className={styles.avatarHint}>{user.profilePhoto ? "Click to change photo" : "Upload photo"}</p>
+          </div>
           <h3 className={styles.sidebarName}>{user.name}</h3>
           <span className={styles.sidebarRole}>{isOwner ? "Property Owner" : "Buyer"}</span>
 

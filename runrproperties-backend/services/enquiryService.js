@@ -37,8 +37,8 @@ const createEnquiry = async (buyerId, data) => {
 const getBuyerEnquiries = async (buyerId) => {
   const enquiries = await Enquiry.find({ buyer: buyerId })
     .populate('property')
-    .populate('owner', 'name email mobile')
-    .populate('buyer', 'name email mobile')
+    .populate('owner', 'name email mobile avatarColor profilePhoto')
+    .populate('buyer', 'name email mobile avatarColor profilePhoto')
     .sort({ createdAt: -1 });
   return enquiries;
 };
@@ -46,8 +46,8 @@ const getBuyerEnquiries = async (buyerId) => {
 const getOwnerEnquiries = async (ownerId) => {
   const enquiries = await Enquiry.find({ owner: ownerId })
     .populate('property')
-    .populate('buyer', 'name email mobile')
-    .populate('owner', 'name email mobile')
+    .populate('buyer', 'name email mobile avatarColor profilePhoto')
+    .populate('owner', 'name email mobile avatarColor profilePhoto')
     .sort({ createdAt: -1 });
   return enquiries;
 };

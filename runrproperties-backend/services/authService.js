@@ -2,6 +2,7 @@ const User = require('../models/User');
 const PasswordAudit = require('../models/PasswordAudit');
 const generateToken = require('../utils/generateToken');
 const { sendResetPasswordEmail } = require('../utils/sendEmail');
+const { getRandomAvatarColor } = require('../utils/avatarColors');
 const crypto = require('crypto');
 
 /**
@@ -29,6 +30,8 @@ const registerUser = async ({ name, email, password, mobile, role }) => {
       email: user.email,
       mobile: user.mobile,
       role: user.role,
+      avatarColor: user.avatarColor,
+      profilePhoto: user.profilePhoto,
       createdAt: user.createdAt,
     },
     token,
@@ -55,6 +58,12 @@ const loginUser = async ({ email, password }) => {
     throw error;
   }
 
+  // Backfill avatarColor for existing users who don't have one
+  if (!user.avatarColor) {
+    user.avatarColor = getRandomAvatarColor();
+    await User.findByIdAndUpdate(user._id, { avatarColor: user.avatarColor });
+  }
+
   // Generate token
   const token = generateToken(user._id);
 
@@ -65,6 +74,8 @@ const loginUser = async ({ email, password }) => {
       email: user.email,
       mobile: user.mobile,
       role: user.role,
+      avatarColor: user.avatarColor,
+      profilePhoto: user.profilePhoto,
       createdAt: user.createdAt,
     },
     token,
@@ -81,6 +92,13 @@ const getCurrentUser = async (userId) => {
     error.statusCode = 404;
     throw error;
   }
+
+  // Backfill avatarColor for existing users who don't have one
+  if (!user.avatarColor) {
+    user.avatarColor = getRandomAvatarColor();
+    await User.findByIdAndUpdate(user._id, { avatarColor: user.avatarColor });
+  }
+
   return user;
 };
 

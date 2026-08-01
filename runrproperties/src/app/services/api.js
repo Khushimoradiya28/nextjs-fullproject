@@ -111,6 +111,17 @@ export async function changePassword({ currentPassword, newPassword }) {
   });
 }
 
+export async function uploadProfilePhoto(file) {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append("profilePhoto", file);
+  return await request(`${API_BASE}/auth/profile/photo`, {
+    method: "PUT",
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: formData,
+  });
+}
+
 export async function forgotPassword({ email }) {
   return await request(`${API_BASE}/auth/forgot-password`, {
     method: "POST",
@@ -469,6 +480,8 @@ function mapProperty(p) {
           name: ownerData.name || "",
           email: ownerData.email || "",
           mobile: ownerData.mobile || "",
+          avatarColor: ownerData.avatarColor || "",
+          profilePhoto: ownerData.profilePhoto || "",
         }
       : null,
     title: p.title || "",
