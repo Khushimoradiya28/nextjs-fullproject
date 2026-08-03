@@ -413,3 +413,17 @@
     height: 180px;
   }
 }
+
+/* Smooth auto-scroll carousel */
+.carouselWrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carouselTrack {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  will-change: transform;
+  cursor: grab;
+}

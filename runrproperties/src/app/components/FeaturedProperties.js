@@ -67,11 +67,10 @@ function PropertyCard({ item }) {
 export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const sliderRef = useRef(null);
-  const cardWidthRef = useRef(0);
-  const scrollTimeoutRef = useRef(null);
-  const autoScrollRef = useRef(null);
-  const isHoveredRef = useRef(false);
+  const trackRef = useRef(null);
+  const animationRef = useRef(null);
+  const positionRef = useRef(0);
+  const isPausedRef = useRef(false);
 
   const needsSlider = properties.length > 3;
 
@@ -87,86 +86,97 @@ export default function FeaturedProperties() {
     loadFeatured();
   }, []);
 
-  // Infinite loop items (tripled for seamless scrolling)
-  const loopItems = needsSlider
-    ? [...properties, ...properties, ...properties]
-    : properties;
-  const coreSectionStart = needsSlider ? properties.length : 0;
-
-  // Calculate card width and set initial scroll position
+  // Smooth auto-scroll using requestAnimationFrame
   useEffect(() => {
     if (!needsSlider) return;
-    const slider = sliderRef.current;
-    if (!slider) return;
-    const card = slider.querySelector(`.${styles.propertyCard}`);
-    if (!card) return;
+    const track = trackRef.current;
+    if (!track) return;
 
-    const gap = 24;
-    const cardWidth = card.offsetWidth + gap;
-    cardWidthRef.current = cardWidth;
-    slider.scrollLeft = cardWidth * coreSectionStart;
-  }, [properties, coreSectionStart, needsSlider]);
+    const speed = 1.5;
 
-  // Infinite scroll normalization
-  useEffect(() => {
-    if (!needsSlider) return;
-    const slider = sliderRef.current;
-    if (!slider) return;
-
-    const normalizePosition = () => {
-      const cardWidth = cardWidthRef.current;
-      if (!cardWidth) return;
-      const min = cardWidth * 0.5;
-      const max = cardWidth * (coreSectionStart * 2) - cardWidth * 0.5;
-
-      if (slider.scrollLeft <= min) {
-        slider.scrollLeft += cardWidth * properties.length;
-      } else if (slider.scrollLeft >= max) {
-        slider.scrollLeft -= cardWidth * properties.length;
+    const animate = () => {
+      if (!isPausedRef.current) {
+        positionRef.current += speed;
+        if (positionRef.current >= track.scrollWidth / 2) {
+          positionRef.current = 0;
+        }
+        track.style.transform = `translateX(-${positionRef.current}px)`;
       }
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    const onScroll = () => {
-      if (scrollTimeoutRef.current) window.clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = window.setTimeout(normalizePosition, 80);
-    };
+    animationRef.current = requestAnimationFrame(animate);
 
-    slider.addEventListener("scroll", onScroll);
     return () => {
-      slider.removeEventListener("scroll", onScroll);
-      if (scrollTimeoutRef.current) window.clearTimeout(scrollTimeoutRef.current);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [properties, coreSectionStart, needsSlider]);
+  }, [properties, needsSlider]);
 
-  // Auto-scroll every 3.5 seconds
-  const scrollNext = useCallback(() => {
-    const slider = sliderRef.current;
-    if (!slider || isHoveredRef.current) return;
-    const cardWidth = cardWidthRef.current || 300;
-    slider.scrollBy({ left: cardWidth, behavior: "smooth" });
-  }, []);
-
-  useEffect(() => {
-    if (!needsSlider) return;
-    autoScrollRef.current = setInterval(scrollNext, 3500);
-    return () => { if (autoScrollRef.current) clearInterval(autoScrollRef.current); };
-  }, [needsSlider, scrollNext]);
-
-  const handleMouseEnter = () => { isHoveredRef.current = true; };
-  const handleMouseLeave = () => { isHoveredRef.current = false; };
+  const handleMouseEnter = () => { isPausedRef.current = true; };
+  const handleMouseLeave = () => { isPausedRef.current = false; };
 
   const handlePrev = () => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-    const cardWidth = cardWidthRef.current || 300;
-    slider.scrollBy({ left: -cardWidth, behavior: "smooth" });
+    isPausedRef.current = true;
+    const cardWidth = 320;
+    const targetPosition = Math.max(0, positionRef.current - cardWidth);
+
+    const startPosition = positionRef.current;
+    const distance = startPosition - targetPosition;
+    const duration = 400;
+    const startTime = performance.now();
+
+    const smoothScroll = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      positionRef.current = startPosition - (distance * ease);
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(-${positionRef.current}px)`;
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(smoothScroll);
+      } else {
+        positionRef.current = targetPosition;
+        setTimeout(() => { isPausedRef.current = false; }, 2500);
+      }
+    };
+    requestAnimationFrame(smoothScroll);
   };
 
   const handleNext = () => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-    const cardWidth = cardWidthRef.current || 300;
-    slider.scrollBy({ left: cardWidth, behavior: "smooth" });
+    isPausedRef.current = true;
+    const cardWidth = 320;
+    const targetPosition = positionRef.current + cardWidth;
+
+    const startPosition = positionRef.current;
+    const distance = targetPosition - startPosition;
+    const duration = 400;
+    const startTime = performance.now();
+
+    const smoothScroll = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      positionRef.current = startPosition + (distance * ease);
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(-${positionRef.current}px)`;
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(smoothScroll);
+      } else {
+        positionRef.current = targetPosition;
+        setTimeout(() => { isPausedRef.current = false; }, 2500);
+      }
+    };
+    requestAnimationFrame(smoothScroll);
   };
 
   return (
@@ -214,16 +224,20 @@ export default function FeaturedProperties() {
           ))}
         </div>
       ) : properties.length > 0 ? (
-        <div
-          ref={sliderRef}
-          className={styles.featuredGrid}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          suppressHydrationWarning
-        >
-          {loopItems.map((item, index) => (
-            <PropertyCard key={`${item.id}-${index}`} item={item} />
-          ))}
+        <div className={styles.carouselWrapper}>
+          <div
+            ref={trackRef}
+            className={styles.carouselTrack}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {properties.map((item) => (
+              <PropertyCard key={item.id} item={item} />
+            ))}
+            {properties.map((item) => (
+              <PropertyCard key={`clone-${item.id}`} item={item} />
+            ))}
+          </div>
         </div>
       ) : (
         <div className={styles.emptyState}>

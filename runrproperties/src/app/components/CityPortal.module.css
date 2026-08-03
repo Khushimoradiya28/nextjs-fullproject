@@ -79,7 +79,8 @@
   gap: 18px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding-bottom: 8px;
+  padding-bottom: 12px;
+  padding-top: 8px;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

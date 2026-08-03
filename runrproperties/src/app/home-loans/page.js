@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import BankEnquiryModal from "./BankEnquiryModal";
 import styles from "./homeloans.module.css";
 
 function calculateEMI(principal, annualRate, years) {
@@ -64,14 +67,28 @@ export default function HomeLoansPage() {
   const [tenure, setTenure] = useState(20);
   const [openFaq, setOpenFaq] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
+  const [enquiryBank, setEnquiryBank] = useState(null);
+  const { user } = useAuth();
+  const router = useRouter();
 
   const emi = useMemo(() => calculateEMI(loanAmount, interestRate, tenure), [loanAmount, interestRate, tenure]);
   const totalPayment = emi * tenure * 12;
   const totalInterest = totalPayment - loanAmount;
 
   const handleCheckOffer = (bank) => {
-    setSelectedBank(bank);
-    setInterestRate(parseFloat(bank.rate));
+    if (!user) {
+      router.push("/login?redirect=/home-loans");
+      return;
+    }
+    setEnquiryBank(bank);
+  };
+
+  const handleEnquirySuccess = (bank) => {
+    if (bank?.rate) {
+      setInterestRate(parseFloat(bank.rate));
+      setSelectedBank(bank);
+    }
+    setEnquiryBank(null);
   };
 
   const marqueeRow1 = [...row1Banks, ...row1Banks, ...row1Banks, ...row1Banks];
@@ -152,7 +169,6 @@ export default function HomeLoansPage() {
           </div>
         </section>
 
-        {/* Banks with marquee */}
         <section className={styles.banksSection}>
           <h2 className={styles.sectionTitle}>Our Banking Partners</h2>
           <p className={styles.sectionSubtitle}>Compare rates and choose the best offer for you</p>
@@ -183,6 +199,10 @@ export default function HomeLoansPage() {
       </main>
 
       <Footer />
+
+      {enquiryBank && (
+        <BankEnquiryModal bank={enquiryBank} onClose={() => setEnquiryBank(null)} onSuccess={handleEnquirySuccess} />
+      )}
     </div>
   );
 }
