@@ -59,17 +59,19 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
       const token = typeof window !== "undefined" ? localStorage.getItem("runr_token") : null;
-      await fetch(`${API_BASE}/enquiries`, {
+      await fetch(`${API_BASE}/bank-partners/leads`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          type: "home_loan",
-          bankName: bank?.name,
-          bankRate: bank?.rate,
-          ...form,
+          bankId: bank?._id,
+          name: form.name,
+          email: form.email,
+          phone: form.mobile,
+          loanAmount: form.loanAmount,
+          message: form.message,
         }),
       });
       setSubmitted(true);

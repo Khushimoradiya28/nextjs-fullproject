@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-const ANIMATION_DURATION = 2500;
+const ANIMATION_DURATION = 3000;
 
 export default function GlobalLoader() {
   const [visible, setVisible] = useState(false);

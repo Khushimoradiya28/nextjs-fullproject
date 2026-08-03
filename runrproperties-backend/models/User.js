@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['buyer', 'owner'],
+      enum: ['buyer', 'owner', 'bank_partner'],
       default: 'buyer',
     },
     avatarColor: {
@@ -59,11 +59,10 @@ const userSchema = new mongoose.Schema(
 );
 
 // Assign avatar color on first save (creation) if not already set
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function () {
   if (this.isNew && !this.avatarColor) {
     this.avatarColor = getRandomAvatarColor();
   }
-  next();
 });
 
 // Hash password before saving

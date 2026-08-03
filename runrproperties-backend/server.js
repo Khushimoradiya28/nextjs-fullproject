@@ -94,6 +94,7 @@ app.use('/api/wishlist', require('./routes/wishlistRoutes'));
 app.use('/api/properties', require('./routes/propertyRoutes'));
 app.use('/api/enquiries', require('./routes/enquiryRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/bank-partners', require('./routes/bankPartnerRoutes'));
 
 // 404 handler
 app.use((req, res) => {

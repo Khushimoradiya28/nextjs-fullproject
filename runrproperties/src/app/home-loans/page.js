@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import BankEnquiryModal from "./BankEnquiryModal";
 import styles from "./homeloans.module.css";
+
+import dynamic from "next/dynamic";
+const BankEnquiryModal = dynamic(() => import("./BankEnquiryModal"), { ssr: false });
 
 function calculateEMI(principal, annualRate, years) {
   const months = years * 12;
@@ -17,7 +19,7 @@ function calculateEMI(principal, annualRate, years) {
   return (principal * monthlyRate * rateFactor) / (rateFactor - 1);
 }
 
-const partnerBanks = [
+const fallbackBanks = [
   { name: "SBI", rate: "8.40%", tagline: "State Bank of India", image: "/img/banks/sbi.jpg" },
   { name: "HDFC", rate: "8.50%", tagline: "HDFC Bank Ltd", image: "/img/banks/hdfc.jpg" },
   { name: "ICICI", rate: "8.60%", tagline: "ICICI Bank", image: "/img/banks/icici.webp" },
@@ -25,9 +27,6 @@ const partnerBanks = [
   { name: "Bank of Baroda", rate: "8.45%", tagline: "BOB", image: "/img/banks/bob.jpg" },
   { name: "PNB", rate: "8.50%", tagline: "Punjab National Bank", image: "/img/banks/pnb.jpg" },
 ];
-
-const row1Banks = partnerBanks.slice(0, 3);
-const row2Banks = partnerBanks.slice(3, 6);
 
 const steps = [
   { number: "01", title: "Check Eligibility", description: "Enter your income and existing EMIs to check your loan eligibility instantly." },
@@ -68,8 +67,22 @@ export default function HomeLoansPage() {
   const [openFaq, setOpenFaq] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
   const [enquiryBank, setEnquiryBank] = useState(null);
-  const { user } = useAuth();
+  const [dynamicBanks, setDynamicBanks] = useState([]);
+  const auth = useAuth() || {};
+  const user = auth.user;
   const router = useRouter();
+
+  useEffect(() => {
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
+    fetch(`${API_BASE}/bank-partners/public`)
+      .then(r => { if (!r.ok) throw new Error("Not ok"); return r.json(); })
+      .then(data => { if (data.success && data.data?.length > 0) setDynamicBanks(data.data); })
+      .catch(() => {});
+  }, []);
+
+  const displayBanks = dynamicBanks.length > 0
+    ? dynamicBanks.map(b => ({ _id: b._id, name: b.bankName, rate: b.interestRate, tagline: b.tagline || b.bankName, image: b.logo || "/img/banks/sbi.jpg" }))
+    : fallbackBanks;
 
   const emi = useMemo(() => calculateEMI(loanAmount, interestRate, tenure), [loanAmount, interestRate, tenure]);
   const totalPayment = emi * tenure * 12;
@@ -91,8 +104,7 @@ export default function HomeLoansPage() {
     setEnquiryBank(null);
   };
 
-  const marqueeRow1 = [...row1Banks, ...row1Banks, ...row1Banks, ...row1Banks];
-  const marqueeRow2 = [...row2Banks, ...row2Banks, ...row2Banks, ...row2Banks];
+  const marqueeRow1 = [...displayBanks, ...displayBanks, ...displayBanks, ...displayBanks];
 
   return (
     <div className={styles.page}>

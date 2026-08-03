@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const PasswordAudit = require('../models/PasswordAudit');
+const BankPartner = require('../models/BankPartner');
 const generateToken = require('../utils/generateToken');
 const { sendResetPasswordEmail } = require('../utils/sendEmail');
 const { getRandomAvatarColor } = require('../utils/avatarColors');
@@ -56,6 +57,21 @@ const loginUser = async ({ email, password }) => {
     const error = new Error('Invalid email or password');
     error.statusCode = 401;
     throw error;
+  }
+
+  // Bank partner approval status check
+  if (user.role === 'bank_partner') {
+    const bankProfile = await BankPartner.findOne({ userId: user._id });
+    if (!bankProfile || bankProfile.status === 'pending') {
+      const error = new Error('Your account is pending admin approval. Please wait.');
+      error.statusCode = 403;
+      throw error;
+    }
+    if (bankProfile.status === 'rejected') {
+      const error = new Error('Your account has been rejected. Contact support.');
+      error.statusCode = 403;
+      throw error;
+    }
   }
 
   // Backfill avatarColor for existing users who don't have one
