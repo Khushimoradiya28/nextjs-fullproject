@@ -1,16 +1,45 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 const inputStyle = {width:"100%",padding:"11px 14px",border:"1px solid #e0e0da",borderRadius:"8px",fontSize:"14px",color:"#111",background:"#fff",outline:"none",boxSizing:"border-box"};
 const labelStyle = {fontSize:"11px",fontWeight:"600",color:"#888",letterSpacing:"0.8px",textTransform:"uppercase",display:"block",marginBottom:"6px"};
 const focusIn = (e) => { e.target.style.borderColor = "#1a6fd4"; };
 const focusOut = (e) => { e.target.style.borderColor = "#e0e0da"; };
 
-export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm, setShowAddForm, newOffer, setNewOffer, handleSaveNewOffer, setEditForm, setActiveTab }) {
-  const [isEditing, setIsEditing] = useState(false);
+export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm: showAddFormProp, setShowAddForm, newOffer, setNewOffer, handleSaveNewOffer, setEditForm, setActiveTab, handleLogoUpload, profile }) {
+  const [isEditing, setIsEditing] = useState(!!newOffer.interestRate || !!newOffer.loanType);
+  const [localShowForm, setLocalShowForm] = useState(showAddFormProp);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [bankLogo, setBankLogo] = useState(profile?.logo || null);
+  const [bankName, setBankName] = useState(profile?.bankName || "");
+
+  useState(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("runr_token") : null;
+    if (!token) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "/api"}/bank-partners/profile`, { headers: { "Content-Type":"application/json", Authorization:`Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.success) { setBankLogo(d.data?.logo || ""); setBankName(d.data?.bankName || ""); } })
+      .catch(() => {});
+  }, []);
+
+  const showForm = localShowForm || showAddFormProp;
+
+  const internalLogoUpload = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    if (handleLogoUpload) { handleLogoUpload(e); return; }
+    const fd = new FormData(); fd.append("logo", f);
+    const token = typeof window !== "undefined" ? localStorage.getItem("runr_token") : null;
+    try {
+      const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "/api"}/bank-partners/profile/logo`, { method: "POST", headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: fd });
+      const d = await r.json();
+      if (d.success) setLogoPreview(d.data?.logo || URL.createObjectURL(f));
+    } catch(err) {}
+  };
 
   const handleEditOffer = (offer) => {
     const featuresStr = Array.isArray(offer.features) ? offer.features.join(", ") : (offer.features || "");
     setNewOffer({
+      _id: offer._id || "",
       interestRate: offer.interestRate || "",
       processingFee: offer.processingFee || "",
       loanType: offer.loanType || "",
@@ -19,9 +48,11 @@ export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm, s
     });
     setIsEditing(true);
     setShowAddForm(true);
+    setActiveTab("Add Offer");
   };
 
   const handleCancel = () => {
+    setLocalShowForm(false);
     setShowAddForm(false);
     setIsEditing(false);
     setNewOffer({ interestRate:"", processingFee:"", loanType:"", maxTenure:"", features:"" });
@@ -29,12 +60,31 @@ export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm, s
 
   return (<div>
     {/* Add/Edit Offer Form */}
-    {showAddForm && (
+    {showForm && (
       <div style={{background:"#fff",border:"1px solid #e5e5e0",borderRadius:"12px",padding:"28px 32px",marginBottom:"20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
           <div style={{borderLeft:"4px solid #1a6fd4",paddingLeft:"14px"}}><h3 style={{fontSize:"16px",fontWeight:"600",color:"#111",margin:0}}>{isEditing ? "Edit Offer" : "Add New Offer"}</h3><p style={{fontSize:"13px",color:"#888",marginTop:"4px",margin:0}}>Set interest rate and loan parameters</p></div>
           <button onClick={handleCancel} style={{background:"none",border:"none",fontSize:"20px",color:"#aaa",cursor:"pointer",lineHeight:1}}>✕</button>
         </div>
+
+        {/* Logo Upload Section */}
+        <div style={{background:"#f8f8f5",border:"1px solid #e5e5e0",borderRadius:"10px",padding:"20px 24px",marginBottom:"24px",display:"flex",alignItems:"center",gap:"20px"}}>
+          <div style={{width:"72px",height:"72px",borderRadius:"10px",border:"1px solid #e5e5e0",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",background:"#fff",flexShrink:0}}>
+            {(logoPreview || bankLogo)
+              ? <img src={logoPreview || bankLogo} style={{width:"100%",height:"100%",objectFit:"contain"}} />
+              : <span style={{fontSize:"20px",fontWeight:"700",color:"#ccc"}}>🖼️</span>
+            }
+          </div>
+          <div>
+            <div style={{fontSize:"14px",fontWeight:"500",color:"#111",marginBottom:"4px"}}>Bank Logo</div>
+            <div style={{fontSize:"12px",color:"#888",marginBottom:"10px"}}>Recommended: 400×160px, PNG with transparent background</div>
+            <label style={{fontSize:"13px",color:"#1a6fd4",border:"1px solid #1a6fd4",padding:"6px 16px",borderRadius:"7px",cursor:"pointer",background:"#fff",display:"inline-block"}}>
+              {isEditing ? "Change Logo" : "Upload Logo"}
+              <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" style={{display:"none"}} onChange={internalLogoUpload} />
+            </label>
+          </div>
+        </div>
+
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"20px"}}>
           <div><label style={labelStyle}>Interest Rate (%) *</label><input type="number" placeholder="e.g. 8.50" value={newOffer.interestRate} onChange={e=>setNewOffer({...newOffer,interestRate:e.target.value})} style={inputStyle} onFocus={focusIn} onBlur={focusOut}/></div>
           <div><label style={labelStyle}>Processing Fee (%)</label><input type="number" placeholder="e.g. 0.5" value={newOffer.processingFee} onChange={e=>setNewOffer({...newOffer,processingFee:e.target.value})} style={inputStyle} onFocus={focusIn} onBlur={focusOut}/></div>
@@ -51,9 +101,8 @@ export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm, s
 
     {/* Offers List */}
     <div style={{background:"#fff",border:"1px solid #e5e5e0",borderRadius:"10px",overflow:"hidden"}}>
-      <div style={{padding:"16px 24px",borderBottom:"1px solid #f0f0ea",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <div style={{padding:"16px 24px",borderBottom:"1px solid #f0f0ea"}}>
         <span style={{fontSize:"15px",fontWeight:"600",color:"#111"}}>All Offers</span>
-        <button onClick={()=>{setNewOffer({interestRate:"",processingFee:"",loanType:"",maxTenure:"",features:""});setIsEditing(false);setShowAddForm(true);}} style={{fontSize:"13px",background:"#1a6fd4",color:"#fff",border:"none",padding:"8px 18px",borderRadius:"7px",cursor:"pointer",fontWeight:"500"}}>+ Add Offer</button>
       </div>
       {offers.length===0?(
         <div style={{padding:"60px 20px",textAlign:"center"}}><div style={{fontSize:"36px",marginBottom:"12px"}}>🏷️</div><p style={{fontSize:"14px",color:"#999"}}>No offers yet. Create your first offer.</p></div>
@@ -61,9 +110,9 @@ export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm, s
         <div key={i} style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px",borderBottom:"1px solid #f0f0ea"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:"16px"}}>
             <div style={{width:"60px",height:"60px",borderRadius:"10px",border:"1px solid #e5e5e0",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",background:"#f8f8f5",flexShrink:0}}>
-              {offer.logo||offer.logoUrl
-                ? <img src={offer.logo||offer.logoUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} />
-                : <span style={{fontSize:"16px",fontWeight:"700",color:"#1a6fd4"}}>{(offer.bankName||"").slice(0,2).toUpperCase()}</span>
+              {bankLogo
+                ? <img src={bankLogo} style={{width:"100%",height:"100%",objectFit:"contain"}} />
+                : <span style={{fontSize:"16px",fontWeight:"700",color:"#1a6fd4"}}>{(bankName||"BP").slice(0,2).toUpperCase()}</span>
               }
             </div>
             <div>
@@ -81,10 +130,11 @@ export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm, s
           </div>
           <div style={{display:"flex",gap:"8px",flexShrink:0,marginTop:"4px"}}>
             <button onClick={()=>handleEditOffer(offer)} style={{fontSize:"13px",padding:"8px 18px",border:"1px solid #1a6fd4",borderRadius:"7px",background:"#fff",color:"#1a6fd4",cursor:"pointer",fontWeight:"500"}}>Edit</button>
-            <button onClick={()=>handleDeleteOffer(offer._id)} style={{fontSize:"13px",padding:"8px 18px",border:"1px solid #fca5a5",borderRadius:"7px",background:"#fff",color:"#dc2626",cursor:"pointer",fontWeight:"500"}}>Delete</button>
+            <button onClick={()=>setDeleteConfirm(offer._id)} style={{fontSize:"13px",padding:"8px 18px",border:"1px solid #fca5a5",borderRadius:"7px",background:"#fff",color:"#dc2626",cursor:"pointer",fontWeight:"500"}}>Delete</button>
           </div>
         </div>
       ))}
     </div>
+    {deleteConfirm && (<><div onClick={()=>setDeleteConfirm(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:9998}} /><div style={{position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",background:"#fff",borderRadius:"16px",padding:"32px",width:"360px",textAlign:"center",zIndex:9999,boxShadow:"0 20px 60px rgba(0,0,0,0.2)"}}><div style={{width:"56px",height:"56px",borderRadius:"50%",background:"#fef2f2",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:"24px"}}>🗑️</div><h3 style={{margin:"0 0 8px",fontSize:"18px",fontWeight:"600",color:"#111"}}>Delete Offer?</h3><p style={{margin:"0 0 24px",fontSize:"14px",color:"#6b7280"}}>This action cannot be undone. The offer will be permanently removed.</p><div style={{display:"flex",gap:"12px",justifyContent:"center"}}><button onClick={()=>setDeleteConfirm(null)} style={{padding:"10px 24px",borderRadius:"8px",border:"1px solid #e0e0da",background:"#fff",color:"#374151",fontSize:"14px",fontWeight:"500",cursor:"pointer"}}>Cancel</button><button onClick={()=>{handleDeleteOffer(deleteConfirm);setDeleteConfirm(null);}} style={{padding:"10px 24px",borderRadius:"8px",border:"none",background:"#dc2626",color:"#fff",fontSize:"14px",fontWeight:"500",cursor:"pointer"}}>Delete</button></div></div></>)}
   </div>);
 }

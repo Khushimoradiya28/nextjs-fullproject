@@ -48,4 +48,9 @@ router.post('/profile/logo', protect, bankPartnerOnly, upload.single('logo'), ct
 router.get('/leads', protect, bankPartnerOnly, ctrl.getLeads);
 router.patch('/leads/:leadId', protect, bankPartnerOnly, ctrl.updateLead);
 
+// Offers CRUD
+router.post('/offers', protect, bankPartnerOnly, ctrl.addOffer);
+router.put('/offers/:offerId', protect, bankPartnerOnly, ctrl.updateOffer);
+router.delete('/offers/:offerId', protect, bankPartnerOnly, ctrl.deleteOffer);
+
 module.exports = router;

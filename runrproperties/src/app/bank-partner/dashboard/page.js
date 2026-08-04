@@ -51,6 +51,7 @@ export default function BankPartnerDashboard() {
     maxTenure: "",
     features: "",
   });
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     if (!getToken()) {
@@ -62,7 +63,7 @@ export default function BankPartnerDashboard() {
     loadNotifications();
   }, []);
   useEffect(() => {
-    if (activeTab === "All Offers") fetchOffers();
+    if (activeTab === "All Offers" || activeTab === "Add Offer") fetchOffers();
   }, [activeTab]);
 
   const loadNotifications = () => {
@@ -115,7 +116,10 @@ export default function BankPartnerDashboard() {
       });
       if (!r.ok) return;
       const d = await r.json();
-      if (d.success) setOffers(d.data?.offers || (d.data ? [d.data] : []));
+      if (d.success) {
+        const offersArr = d.data?.offers || [];
+        setOffers(offersArr);
+      }
     } catch (e) {}
   };
 
@@ -180,14 +184,16 @@ export default function BankPartnerDashboard() {
     } catch (e) {}
   };
   const handleDeleteOffer = async (id) => {
-    if (!confirm("Delete this offer?")) return;
     try {
-      await fetch(`${API}/bank-partners/offers/${id}`, {
+      const res = await fetch(`${API}/bank-partners/offers/${id}`, {
         method: "DELETE",
         headers: authHeaders(),
       });
-      showToast("Offer deleted");
-      fetchOffers();
+      const d = await res.json();
+      if (res.ok && d.success) {
+        showToast("Offer deleted");
+        fetchOffers();
+      }
     } catch (e) {}
   };
   const handleSaveNewOffer = async () => {
@@ -205,22 +211,21 @@ export default function BankPartnerDashboard() {
       maxTenure: newOffer.maxTenure || "",
       features: featuresArr,
     };
-    console.log("Sending offer payload:", payload);
     try {
-      const res = await fetch(`${API}/bank-partners/profile`, {
-        method: "PUT",
+      const url = newOffer._id
+        ? `${API}/bank-partners/offers/${newOffer._id}`
+        : `${API}/bank-partners/offers`;
+      const method = newOffer._id ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
         headers: authHeaders(),
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      console.log("Offer response:", data);
       if (res.ok && data.success) {
         setShowAddForm(false);
         setNewOffer({ interestRate: "", processingFee: "", loanType: "", maxTenure: "", features: "" });
-        showToast("Offer saved successfully!");
-        addNotification("New offer added");
-        loadNotifications();
-        fetchProfile();
+        showToast(newOffer._id ? "Offer updated!" : "Offer saved successfully!");
         fetchOffers();
       } else {
         alert(data.message || "Failed to save offer");

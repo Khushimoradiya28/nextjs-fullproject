@@ -3,7 +3,7 @@ const BankLead = require('../models/BankLead');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
-// Register bank partner
+// 1. Register bank partner
 const registerBankPartner = async (data) => {
   const { name, bankName, email, mobile, password } = data;
 
@@ -31,7 +31,7 @@ const registerBankPartner = async (data) => {
   return { user, bankPartner };
 };
 
-// Get bank partner profile by userId
+// 2. Get bank partner profile by userId
 const getBankPartnerProfile = async (userId) => {
   const profile = await BankPartner.findOne({ userId });
   if (!profile) {
@@ -42,7 +42,7 @@ const getBankPartnerProfile = async (userId) => {
   return profile;
 };
 
-// Update bank partner profile
+// 3. Update bank partner profile
 const updateBankPartnerProfile = async (userId, data) => {
   const {
     bankName,
@@ -56,7 +56,6 @@ const updateBankPartnerProfile = async (userId, data) => {
     isActive,
   } = data;
 
-  // Build update object with only provided fields
   const updateFields = {};
   if (bankName !== undefined) updateFields.bankName = bankName;
   if (tagline !== undefined) updateFields.tagline = tagline;
@@ -81,7 +80,7 @@ const updateBankPartnerProfile = async (userId, data) => {
   return profile;
 };
 
-// Upload logo
+// 4. Upload logo
 const updateBankLogo = async (userId, logoPath) => {
   const profile = await BankPartner.findOneAndUpdate(
     { userId },
@@ -91,7 +90,66 @@ const updateBankLogo = async (userId, logoPath) => {
   return profile;
 };
 
-// Get all leads for this bank partner
+// 5. Add offer
+const addOffer = async (userId, data) => {
+  const profile = await BankPartner.findOne({ userId });
+  if (!profile) {
+    const e = new Error('Bank partner not found');
+    e.statusCode = 404; throw e;
+  }
+  profile.offers.push({
+    interestRate: data.interestRate || '',
+    processingFee: data.processingFee || '',
+    loanType: data.loanType || '',
+    maxTenure: data.maxTenure || '',
+    features: data.features || [],
+  });
+  await profile.save();
+  return profile;
+};
+
+// 6. Delete offer
+const deleteOffer = async (userId, offerId) => {
+  const profile = await BankPartner.findOne({ userId });
+  if (!profile) {
+    const e = new Error('Bank partner not found');
+    e.statusCode = 404; throw e;
+  }
+  profile.offers = profile.offers.filter(
+    o => o._id.toString() !== offerId
+  );
+  await profile.save();
+  return profile;
+};
+
+// 7. Update offer
+const updateOffer = async (userId, offerId, data) => {
+  const profile = await BankPartner.findOne({ userId });
+  if (!profile) {
+    const e = new Error('Bank partner not found');
+    e.statusCode = 404; throw e;
+  }
+  const offer = profile.offers.id(offerId);
+  if (!offer) {
+    const e = new Error('Offer not found');
+    e.statusCode = 404; throw e;
+  }
+  if (data.interestRate !== undefined) offer.interestRate = data.interestRate;
+  if (data.processingFee !== undefined) offer.processingFee = data.processingFee;
+  if (data.loanType !== undefined) offer.loanType = data.loanType;
+  if (data.maxTenure !== undefined) offer.maxTenure = data.maxTenure;
+  if (data.features !== undefined) offer.features = data.features;
+  // Sync top-level fields for public display
+  profile.interestRate = offer.interestRate;
+  profile.loanType = offer.loanType;
+  profile.processingFee = offer.processingFee;
+  profile.maxTenure = offer.maxTenure;
+  profile.features = offer.features;
+  await profile.save();
+  return profile;
+};
+
+// 8. Get all leads for this bank partner
 const getBankLeads = async (userId, query = {}) => {
   const profile = await BankPartner.findOne({ userId });
   if (!profile) {
@@ -124,7 +182,7 @@ const getBankLeads = async (userId, query = {}) => {
   };
 };
 
-// Update lead status + notes
+// 9. Update lead status + notes
 const updateLeadStatus = async (userId, leadId, data) => {
   const profile = await BankPartner.findOne({ userId });
   if (!profile) {
@@ -149,7 +207,7 @@ const updateLeadStatus = async (userId, leadId, data) => {
   return lead;
 };
 
-// Submit lead (user side)
+// 10. Submit lead (user side)
 const submitLead = async (data, userId = null) => {
   const bank = await BankPartner.findById(data.bankId);
   if (!bank || bank.status !== 'approved') {
@@ -173,7 +231,7 @@ const submitLead = async (data, userId = null) => {
   return lead;
 };
 
-// Get all approved bank partners (public)
+// 11. Get all approved bank partners (public)
 const getApprovedBanks = async () => {
   const banks = await BankPartner.find({
     status: 'approved',
@@ -187,6 +245,9 @@ module.exports = {
   getBankPartnerProfile,
   updateBankPartnerProfile,
   updateBankLogo,
+  addOffer,
+  deleteOffer,
+  updateOffer,
   getBankLeads,
   updateLeadStatus,
   submitLead,

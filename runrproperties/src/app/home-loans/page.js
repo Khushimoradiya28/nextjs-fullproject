@@ -154,7 +154,6 @@ export default function HomeLoansPage() {
         if (!r.ok) throw new Error("Not ok");
         return r.json();
       })
-      // .then(data => { if (data.success && data.data?.length > 0) setDynamicBanks(data.data); })
       .then((data) => {
         if (data.success && data.data?.length > 0) {
           // Deduplicate by _id
@@ -170,13 +169,18 @@ export default function HomeLoansPage() {
 
   const displayBanks =
     dynamicBanks.length > 0
-      ? dynamicBanks.map((b) => ({
-          _id: b._id,
-          name: b.bankName,
-          rate: b.interestRate,
-          tagline: b.tagline || b.bankName,
-          image: b.logo || "/img/banks/sbi.jpg",
-        }))
+      ? dynamicBanks.map((b) => {
+          // Get rate from offers array (latest offer) or fall back to profile-level field
+          const latestOffer = b.offers && b.offers.length > 0 ? b.offers[b.offers.length - 1] : null;
+          const rate = latestOffer?.interestRate || b.interestRate;
+          return {
+            _id: b._id,
+            name: b.bankName,
+            rate: rate,
+            tagline: b.tagline || b.bankName,
+            image: b.logo || "/img/banks/sbi.jpg",
+          };
+        })
       : fallbackBanks;
 
   const emi = useMemo(
