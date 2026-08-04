@@ -8,7 +8,9 @@ import Footer from "../components/Footer";
 import styles from "./homeloans.module.css";
 
 import dynamic from "next/dynamic";
-const BankEnquiryModal = dynamic(() => import("./BankEnquiryModal"), { ssr: false });
+const BankEnquiryModal = dynamic(() => import("./BankEnquiryModal"), {
+  ssr: false,
+});
 
 function calculateEMI(principal, annualRate, years) {
   const months = years * 12;
@@ -20,34 +22,103 @@ function calculateEMI(principal, annualRate, years) {
 }
 
 const fallbackBanks = [
-  { name: "SBI", rate: "8.40%", tagline: "State Bank of India", image: "/img/banks/sbi.jpg" },
-  { name: "HDFC", rate: "8.50%", tagline: "HDFC Bank Ltd", image: "/img/banks/hdfc.jpg" },
-  { name: "ICICI", rate: "8.60%", tagline: "ICICI Bank", image: "/img/banks/icici.webp" },
-  { name: "Axis Bank", rate: "8.55%", tagline: "Axis Bank Ltd", image: "/img/banks/axis.webp" },
-  { name: "Bank of Baroda", rate: "8.45%", tagline: "BOB", image: "/img/banks/bob.jpg" },
-  { name: "PNB", rate: "8.50%", tagline: "Punjab National Bank", image: "/img/banks/pnb.jpg" },
+  {
+    name: "SBI",
+    rate: "8.40%",
+    tagline: "State Bank of India",
+    image: "/img/banks/sbi.jpg",
+  },
+  {
+    name: "HDFC",
+    rate: "8.50%",
+    tagline: "HDFC Bank Ltd",
+    image: "/img/banks/hdfc.jpg",
+  },
+  {
+    name: "ICICI",
+    rate: "8.60%",
+    tagline: "ICICI Bank",
+    image: "/img/banks/icici.webp",
+  },
+  {
+    name: "Axis Bank",
+    rate: "8.55%",
+    tagline: "Axis Bank Ltd",
+    image: "/img/banks/axis.webp",
+  },
+  {
+    name: "Bank of Baroda",
+    rate: "8.45%",
+    tagline: "BOB",
+    image: "/img/banks/bob.jpg",
+  },
+  {
+    name: "PNB",
+    rate: "8.50%",
+    tagline: "Punjab National Bank",
+    image: "/img/banks/pnb.jpg",
+  },
 ];
 
 const steps = [
-  { number: "01", title: "Check Eligibility", description: "Enter your income and existing EMIs to check your loan eligibility instantly." },
-  { number: "02", title: "Compare Offers", description: "Compare interest rates and terms from multiple partner banks at once." },
-  { number: "03", title: "Apply Online", description: "Submit your application digitally with minimal documentation required." },
-  { number: "04", title: "Get Disbursement", description: "Receive loan amount directly in your account within 3-5 working days." },
+  {
+    number: "01",
+    title: "Check Eligibility",
+    description:
+      "Enter your income and existing EMIs to check your loan eligibility instantly.",
+  },
+  {
+    number: "02",
+    title: "Compare Offers",
+    description:
+      "Compare interest rates and terms from multiple partner banks at once.",
+  },
+  {
+    number: "03",
+    title: "Apply Online",
+    description:
+      "Submit your application digitally with minimal documentation required.",
+  },
+  {
+    number: "04",
+    title: "Get Disbursement",
+    description:
+      "Receive loan amount directly in your account within 3-5 working days.",
+  },
 ];
 
 const faqs = [
-  { q: "What is the minimum income required for a home loan?", a: "Most banks require a minimum monthly income of ₹25,000 for salaried individuals and ₹3 Lakh annual income for self-employed applicants." },
-  { q: "What documents are needed for home loan application?", a: "You'll need identity proof, address proof, income proof (salary slips/ITR), bank statements (6 months), property documents, and passport-size photographs." },
-  { q: "How long does the home loan approval take?", a: "Typically 7-15 working days from application submission, depending on document verification and property valuation." },
-  { q: "Can I prepay my home loan without penalty?", a: "Yes, as per RBI guidelines, banks cannot charge prepayment penalty on floating rate home loans for individual borrowers." },
-  { q: "What is the maximum tenure for a home loan?", a: "Most banks offer home loans for up to 30 years, subject to the borrower's age at loan maturity not exceeding 60-65 years." },
+  {
+    q: "What is the minimum income required for a home loan?",
+    a: "Most banks require a minimum monthly income of ₹25,000 for salaried individuals and ₹3 Lakh annual income for self-employed applicants.",
+  },
+  {
+    q: "What documents are needed for home loan application?",
+    a: "You'll need identity proof, address proof, income proof (salary slips/ITR), bank statements (6 months), property documents, and passport-size photographs.",
+  },
+  {
+    q: "How long does the home loan approval take?",
+    a: "Typically 7-15 working days from application submission, depending on document verification and property valuation.",
+  },
+  {
+    q: "Can I prepay my home loan without penalty?",
+    a: "Yes, as per RBI guidelines, banks cannot charge prepayment penalty on floating rate home loans for individual borrowers.",
+  },
+  {
+    q: "What is the maximum tenure for a home loan?",
+    a: "Most banks offer home loans for up to 30 years, subject to the borrower's age at loan maturity not exceeding 60-65 years.",
+  },
 ];
 
 function BankCard({ bank, onCheck, selected }) {
   return (
     <div className={styles.bankCard}>
       <div className={styles.bankBanner}>
-        <img src={bank.image} alt={bank.name} className={styles.bankBannerImg} />
+        <img
+          src={bank.image}
+          alt={bank.name}
+          className={styles.bankBannerImg}
+        />
       </div>
       <div className={styles.bankBody}>
         <h3 className={styles.bankName}>{bank.tagline}</h3>
@@ -75,16 +146,39 @@ export default function HomeLoansPage() {
   useEffect(() => {
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
     fetch(`${API_BASE}/bank-partners/public`)
-      .then(r => { if (!r.ok) throw new Error("Not ok"); return r.json(); })
-      .then(data => { if (data.success && data.data?.length > 0) setDynamicBanks(data.data); })
+      .then((r) => {
+        if (!r.ok) throw new Error("Not ok");
+        return r.json();
+      })
+      // .then(data => { if (data.success && data.data?.length > 0) setDynamicBanks(data.data); })
+      .then((data) => {
+        if (data.success && data.data?.length > 0) {
+          // Deduplicate by _id
+          const unique = data.data.filter(
+            (bank, index, self) =>
+              index === self.findIndex((b) => b._id === bank._id),
+          );
+          setDynamicBanks(unique);
+        }
+      })
       .catch(() => {});
   }, []);
 
-  const displayBanks = dynamicBanks.length > 0
-    ? dynamicBanks.map(b => ({ _id: b._id, name: b.bankName, rate: b.interestRate, tagline: b.tagline || b.bankName, image: b.logo || "/img/banks/sbi.jpg" }))
-    : fallbackBanks;
+  const displayBanks =
+    dynamicBanks.length > 0
+      ? dynamicBanks.map((b) => ({
+          _id: b._id,
+          name: b.bankName,
+          rate: b.interestRate,
+          tagline: b.tagline || b.bankName,
+          image: b.logo || "/img/banks/sbi.jpg",
+        }))
+      : fallbackBanks;
 
-  const emi = useMemo(() => calculateEMI(loanAmount, interestRate, tenure), [loanAmount, interestRate, tenure]);
+  const emi = useMemo(
+    () => calculateEMI(loanAmount, interestRate, tenure),
+    [loanAmount, interestRate, tenure],
+  );
   const totalPayment = emi * tenure * 12;
   const totalInterest = totalPayment - loanAmount;
 
@@ -104,7 +198,12 @@ export default function HomeLoansPage() {
     setEnquiryBank(null);
   };
 
-  const marqueeRow1 = [...displayBanks, ...displayBanks, ...displayBanks, ...displayBanks];
+  const marqueeRow1 = [
+    ...displayBanks,
+    ...displayBanks,
+    ...displayBanks,
+    ...displayBanks,
+  ];
 
   return (
     <div className={styles.page}>
@@ -113,14 +212,21 @@ export default function HomeLoansPage() {
       <main className={styles.main}>
         <section className={styles.hero}>
           <span className={styles.heroLabel}>Home Loans</span>
-          <h1 className={styles.heroTitle}>Get Your Dream Home <span className={styles.highlight}>Funded</span></h1>
-          <p className={styles.heroText}>Compare rates from top banks, calculate EMI, and apply online. Lowest interest rates starting at 8.40% p.a.</p>
+          <h1 className={styles.heroTitle}>
+            Get Your Dream Home <span className={styles.highlight}>Funded</span>
+          </h1>
+          <p className={styles.heroText}>
+            Compare rates from top banks, calculate EMI, and apply online.
+            Lowest interest rates starting at 8.40% p.a.
+          </p>
         </section>
 
         <section className={styles.calcSection}>
           <div className={styles.calcHeader}>
             <h2>EMI Calculator</h2>
-            <p className={styles.calcSubtitle}>Plan your home loan with accurate monthly payment estimates</p>
+            <p className={styles.calcSubtitle}>
+              Plan your home loan with accurate monthly payment estimates
+            </p>
           </div>
 
           <div className={styles.calcGrid}>
@@ -128,18 +234,44 @@ export default function HomeLoansPage() {
               <div className={styles.inputGroup}>
                 <label className={styles.inputLabel}>Loan Amount</label>
                 <div className={styles.sliderWrap}>
-                  <span className={styles.inputValue}>₹ {loanAmount.toLocaleString("en-IN")}</span>
-                  <input type="range" min="0" max="50000000" step="100000" value={loanAmount} onChange={(e) => setLoanAmount(Number(e.target.value))} className={styles.rangeSlider} />
-                  <div className={styles.rangeLabels}><span>₹ 0</span><span>₹ 5 Cr</span></div>
+                  <span className={styles.inputValue}>
+                    ₹ {loanAmount.toLocaleString("en-IN")}
+                  </span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="50000000"
+                    step="100000"
+                    value={loanAmount}
+                    onChange={(e) => setLoanAmount(Number(e.target.value))}
+                    className={styles.rangeSlider}
+                  />
+                  <div className={styles.rangeLabels}>
+                    <span>₹ 0</span>
+                    <span>₹ 5 Cr</span>
+                  </div>
                 </div>
               </div>
 
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Interest Rate (% p.a.)</label>
+                <label className={styles.inputLabel}>
+                  Interest Rate (% p.a.)
+                </label>
                 <div className={styles.sliderWrap}>
                   <span className={styles.inputValue}>{interestRate}%</span>
-                  <input type="range" min="1" max="15" step="0.1" value={interestRate} onChange={(e) => setInterestRate(Number(e.target.value))} className={styles.rangeSlider} />
-                  <div className={styles.rangeLabels}><span>1%</span><span>15%</span></div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="15"
+                    step="0.1"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(Number(e.target.value))}
+                    className={styles.rangeSlider}
+                  />
+                  <div className={styles.rangeLabels}>
+                    <span>1%</span>
+                    <span>15%</span>
+                  </div>
                 </div>
               </div>
 
@@ -147,8 +279,19 @@ export default function HomeLoansPage() {
                 <label className={styles.inputLabel}>Loan Tenure (Years)</label>
                 <div className={styles.sliderWrap}>
                   <span className={styles.inputValue}>{tenure} Years</span>
-                  <input type="range" min="1" max="30" step="1" value={tenure} onChange={(e) => setTenure(Number(e.target.value))} className={styles.rangeSlider} />
-                  <div className={styles.rangeLabels}><span>1 Yr</span><span>30 Yrs</span></div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="30"
+                    step="1"
+                    value={tenure}
+                    onChange={(e) => setTenure(Number(e.target.value))}
+                    className={styles.rangeSlider}
+                  />
+                  <div className={styles.rangeLabels}>
+                    <span>1 Yr</span>
+                    <span>30 Yrs</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -156,13 +299,34 @@ export default function HomeLoansPage() {
             <div className={styles.calcResult}>
               <div className={styles.emiCard}>
                 <span className={styles.emiLabel}>Monthly EMI</span>
-                <p className={styles.emiValue}>₹ {Math.round(emi).toLocaleString("en-IN")}</p>
-                {selectedBank && <span className={styles.bankTag}>via {selectedBank.name}</span>}
+                <p className={styles.emiValue}>
+                  ₹ {Math.round(emi).toLocaleString("en-IN")}
+                </p>
+                {selectedBank && (
+                  <span className={styles.bankTag}>
+                    via {selectedBank.name}
+                  </span>
+                )}
               </div>
               <div className={styles.breakdownGrid}>
-                <div className={styles.breakdownItem}><span className={styles.breakdownLabel}>Principal</span><span className={styles.breakdownValue}>₹ {loanAmount.toLocaleString("en-IN")}</span></div>
-                <div className={styles.breakdownItem}><span className={styles.breakdownLabel}>Total Interest</span><span className={styles.breakdownValue}>₹ {Math.round(totalInterest).toLocaleString("en-IN")}</span></div>
-                <div className={styles.breakdownItem}><span className={styles.breakdownLabel}>Total Payment</span><span className={styles.breakdownValue}>₹ {Math.round(totalPayment).toLocaleString("en-IN")}</span></div>
+                <div className={styles.breakdownItem}>
+                  <span className={styles.breakdownLabel}>Principal</span>
+                  <span className={styles.breakdownValue}>
+                    ₹ {loanAmount.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className={styles.breakdownItem}>
+                  <span className={styles.breakdownLabel}>Total Interest</span>
+                  <span className={styles.breakdownValue}>
+                    ₹ {Math.round(totalInterest).toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className={styles.breakdownItem}>
+                  <span className={styles.breakdownLabel}>Total Payment</span>
+                  <span className={styles.breakdownValue}>
+                    ₹ {Math.round(totalPayment).toLocaleString("en-IN")}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -182,15 +346,30 @@ export default function HomeLoansPage() {
         </section>
 
         <section className={styles.banksSection}>
-          <h2 className={styles.sectionTitle}>Our Banking Partners</h2>
-          <p className={styles.sectionSubtitle}>Compare rates and choose the best offer for you</p>
+          <h2 className={styles.banksSectionTitle}>Our Banking Partners</h2>
+          <p className={styles.banksSectionSubtitle}>
+            Compare rates and choose the best offer for you
+          </p>
 
-          <div className={styles.marqueeWrap}>
-            <div className={styles.marqueeTrack}>
-              {marqueeRow1.map((bank, i) => (
-                <BankCard key={`r1-${i}`} bank={bank} onCheck={handleCheckOffer} selected={selectedBank?.name === bank.name} />
-              ))}
+          <div className={styles.banksCarouselWrap}>
+            <div className={styles.marqueeWrap}>
+              <div className={styles.marqueeTrack}>
+                {marqueeRow1.map((bank, i) => (
+                  <BankCard
+                    key={`r1-${i}`}
+                    bank={bank}
+                    onCheck={handleCheckOffer}
+                    selected={selectedBank?.name === bank.name}
+                  />
+                ))}
+              </div>
             </div>
+          </div>
+
+          <div className={styles.banksDots}>
+            {displayBanks.slice(0, 5).map((_, i) => (
+              <span key={i} className={`${styles.banksDot} ${i === 0 ? styles.banksDotActive : ""}`} />
+            ))}
           </div>
         </section>
 
@@ -198,10 +377,29 @@ export default function HomeLoansPage() {
           <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
           <div className={styles.faqList}>
             {faqs.map((faq, i) => (
-              <div key={i} className={`${styles.faqItem} ${openFaq === i ? styles.faqOpen : ""}`}>
-                <button className={styles.faqQuestion} onClick={() => setOpenFaq(openFaq === i ? null : i)} aria-expanded={openFaq === i}>
+              <div
+                key={i}
+                className={`${styles.faqItem} ${openFaq === i ? styles.faqOpen : ""}`}
+              >
+                <button
+                  className={styles.faqQuestion}
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
+                >
                   <span>{faq.q}</span>
-                  <svg className={styles.faqIcon} viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  <svg
+                    className={styles.faqIcon}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M6 9l6 6 6-6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
                 {openFaq === i && <p className={styles.faqAnswer}>{faq.a}</p>}
               </div>
@@ -213,7 +411,11 @@ export default function HomeLoansPage() {
       <Footer />
 
       {enquiryBank && (
-        <BankEnquiryModal bank={enquiryBank} onClose={() => setEnquiryBank(null)} onSuccess={handleEnquirySuccess} />
+        <BankEnquiryModal
+          bank={enquiryBank}
+          onClose={() => setEnquiryBank(null)}
+          onSuccess={handleEnquirySuccess}
+        />
       )}
     </div>
   );

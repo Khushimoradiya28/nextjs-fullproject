@@ -12,7 +12,7 @@ export function Nav({ activeTab, setActiveTab, profile, showNotifs, setShowNotif
     <nav style={{ background:"#fff", borderBottom:"1px solid #e5e5e0", padding:"0 28px", height:"60px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:50 }}>
       <img src="/logo/runr-logo-new.svg" alt="runr" style={{ height:"34px", objectFit:"contain" }} />
       <div style={{ display:"flex", gap:"4px" }}>
-        {["Overview","Leads","Profile & Offer","All Offers"].map(tab => (
+        {["Overview","Leads","Profile","Add offer","All Offers"].map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding:"6px 18px", borderRadius:"6px", border:"none", fontSize:"13px", fontWeight: activeTab===tab ? "600" : "400", background: activeTab===tab ? "#eff6ff" : "transparent", color: activeTab===tab ? "#1a6fd4" : "#666", cursor:"pointer" }}>{tab}</button>
         ))}
       </div>
@@ -52,7 +52,7 @@ export function Sidebar({ activeTab, setActiveTab, handleLogout }) {
     <aside style={{ width:"240px", background:"#fff", borderRight:"1px solid #e5e5e0", display:"flex", flexDirection:"column", minHeight:"calc(100vh - 60px)", position:"sticky", top:"60px" }}>
       <div style={{ padding:"20px 0", flex:1 }}>
         <p style={{ fontSize:"11px", color:"#aaa", letterSpacing:"1.4px", textTransform:"uppercase", padding:"16px 24px 6px" }}>Main</p>
-        {[{label:"Overview",icon:"📊"},{label:"Leads",icon:"👥"},{label:"Profile & Offer",icon:"📄"},{label:"All Offers",icon:"🏷️"}].map(item => (
+        {[{label:"Overview",icon:"📊"},{label:"Leads",icon:"👥"},{label:"Profile",icon:"📄"},{label:"Add Offer",icon:"➕"},{label:"All Offers",icon:"🏷️"}].map(item => (
           <div key={item.label} onClick={() => setActiveTab(item.label)} style={{ display:"flex", alignItems:"center", gap:"12px", padding:"12px 24px", fontSize:"14px", cursor:"pointer", borderLeft: activeTab===item.label ? "3px solid #1a6fd4" : "3px solid transparent", background: activeTab===item.label ? "#eff6ff" : "transparent", color: activeTab===item.label ? "#1a6fd4" : "#444", fontWeight: activeTab===item.label ? "600" : "400", transition:"all 0.15s" }}><span style={{fontSize:"18px"}}>{item.icon}</span>{item.label}</div>
         ))}
         <p style={{ fontSize:"11px", color:"#aaa", letterSpacing:"1.4px", textTransform:"uppercase", padding:"16px 24px 6px" }}>Reports</p>
