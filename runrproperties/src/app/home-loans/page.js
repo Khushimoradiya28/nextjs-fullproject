@@ -112,18 +112,22 @@ const faqs = [
 
 function BankCard({ bank, onCheck, selected }) {
   return (
-    <div className={styles.bankCard}>
-      <div className={styles.bankBanner}>
-        <img
-          src={bank.image}
-          alt={bank.name}
-          className={styles.bankBannerImg}
-        />
+    <div style={{background:"#ffffff",border:"1px solid #e8e8e3",borderRadius:"16px",padding:"20px",width:"220px",minWidth:"220px",display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+      <div style={{width:"100%",height:"90px",display:"flex",alignItems:"center",justifyContent:"center"}}>
+        {bank.image
+          ? <img src={bank.image} alt={bank.name} style={{maxWidth:"160px",maxHeight:"80px",width:"auto",height:"auto",objectFit:"contain"}} />
+          : <div style={{width:"64px",height:"64px",background:"#eff6ff",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"center",color:"#1a6fd4",fontWeight:"700",fontSize:"20px"}}>{(bank.name || bank.tagline || "").slice(0,2).toUpperCase()}</div>
+        }
       </div>
-      <div className={styles.bankBody}>
-        <h3 className={styles.bankName}>{bank.tagline}</h3>
-        <p className={styles.bankRate}>From {bank.rate} p.a.</p>
-        <button className={styles.bankCta} onClick={() => onCheck(bank)}>
+      <div style={{width:"100%",height:"1px",background:"#f0f0ea",margin:"0"}} />
+      <div style={{height:"44px",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 12px"}}>
+        <span style={{fontSize:"13px",fontWeight:"500",color:"#333",textAlign:"center",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"100%"}}>{bank.tagline || bank.name}</span>
+      </div>
+      <div style={{height:"28px",display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <span style={{fontSize:"14px",color:"#1a6fd4",fontWeight:"500"}}>{bank.rate ? `From ${bank.rate}% p.a.` : "Rate on request"}</span>
+      </div>
+      <div style={{marginTop:"16px",width:"100%"}}>
+        <button onClick={() => onCheck(bank)} style={{border:"1.5px solid #1a6fd4",borderRadius:"8px",padding:"9px 0",fontSize:"13px",color: selected ? "#fff" : "#1a6fd4",background: selected ? "#1a6fd4" : "#fff",cursor:"pointer",fontWeight:"500",width:"100%"}}>
           {selected ? "✓ Applied" : "Check Offer"}
         </button>
       </div>

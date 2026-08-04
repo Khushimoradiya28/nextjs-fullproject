@@ -104,7 +104,7 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
                 {bank?.image && <img src={bank.image} alt={bank.name} className={styles.bankLogo} />}
                 <div>
                   <h3 className={styles.modalTitle}>Apply for Home Loan</h3>
-                  <p className={styles.bankRate}>{bank?.name} • From {bank?.rate}</p>
+                  <p className={styles.bankRate}>{bank?.name} • From {bank?.rate}%</p>
                 </div>
               </div>
             </div>

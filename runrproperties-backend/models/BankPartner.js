@@ -42,6 +42,11 @@ const bankPartnerSchema = new mongoose.Schema({
     required: false,
     default: '',
   },
+  features: {
+    type: [String],
+    required: false,
+    default: [],
+  },
   description: {
     type: String,
     required: false,

@@ -44,18 +44,33 @@ const getBankPartnerProfile = async (userId) => {
 
 // Update bank partner profile
 const updateBankPartnerProfile = async (userId, data) => {
+  const {
+    bankName,
+    tagline,
+    description,
+    interestRate,
+    loanType,
+    processingFee,
+    maxTenure,
+    features,
+    isActive,
+  } = data;
+
+  // Build update object with only provided fields
+  const updateFields = {};
+  if (bankName !== undefined) updateFields.bankName = bankName;
+  if (tagline !== undefined) updateFields.tagline = tagline;
+  if (description !== undefined) updateFields.description = description;
+  if (interestRate !== undefined) updateFields.interestRate = interestRate;
+  if (loanType !== undefined) updateFields.loanType = loanType;
+  if (processingFee !== undefined) updateFields.processingFee = processingFee;
+  if (maxTenure !== undefined) updateFields.maxTenure = maxTenure;
+  if (features !== undefined) updateFields.features = features;
+  if (isActive !== undefined) updateFields.isActive = isActive;
+
   const profile = await BankPartner.findOneAndUpdate(
     { userId },
-    {
-      bankName: data.bankName,
-      tagline: data.tagline,
-      interestRate: data.interestRate,
-      loanType: data.loanType,
-      processingFee: data.processingFee,
-      maxTenure: data.maxTenure,
-      description: data.description,
-      isActive: data.isActive,
-    },
+    updateFields,
     { new: true }
   );
   if (!profile) {

@@ -196,30 +196,39 @@ export default function BankPartnerDashboard() {
       return;
     }
     const featuresArr = newOffer.features
-      ? newOffer.features
-          .split(",")
-          .map((f) => f.trim())
-          .filter(Boolean)
+      ? newOffer.features.split(",").map((f) => f.trim()).filter(Boolean)
       : [];
+    const payload = {
+      interestRate: newOffer.interestRate,
+      loanType: newOffer.loanType,
+      processingFee: newOffer.processingFee || "",
+      maxTenure: newOffer.maxTenure || "",
+      features: featuresArr,
+    };
+    console.log("Sending offer payload:", payload);
     try {
-      await fetch(`${API}/bank-partners/offers`, {
-        method: "POST",
+      const res = await fetch(`${API}/bank-partners/profile`, {
+        method: "PUT",
         headers: authHeaders(),
-        body: JSON.stringify({ ...newOffer, features: featuresArr }),
+        body: JSON.stringify(payload),
       });
-      setShowAddForm(false);
-      setNewOffer({
-        interestRate: "",
-        processingFee: "",
-        loanType: "",
-        maxTenure: "",
-        features: "",
-      });
-      showToast("Offer added successfully!");
-      addNotification("New offer added");
-      loadNotifications();
-      fetchOffers();
-    } catch (e) {}
+      const data = await res.json();
+      console.log("Offer response:", data);
+      if (res.ok && data.success) {
+        setShowAddForm(false);
+        setNewOffer({ interestRate: "", processingFee: "", loanType: "", maxTenure: "", features: "" });
+        showToast("Offer saved successfully!");
+        addNotification("New offer added");
+        loadNotifications();
+        fetchProfile();
+        fetchOffers();
+      } else {
+        alert(data.message || "Failed to save offer");
+      }
+    } catch (e) {
+      console.error("Save offer error:", e);
+      alert("Something went wrong");
+    }
   };
   const handleLogout = () => {
     localStorage.removeItem("runr_token");
