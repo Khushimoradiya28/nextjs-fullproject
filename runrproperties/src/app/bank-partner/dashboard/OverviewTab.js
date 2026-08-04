@@ -1,20 +1,46 @@
 "use client";
 export default function OverviewTab({ stats, leads, profile, setActiveTab }) {
-  const statusBg = (s) => s==="closed_won"?"#f0fdf4":s==="pending"?"#fffbeb":s==="contacted"?"#eff6ff":s==="closed_lost"?"#fef2f2":"#eff6ff";
-  const statusColor = (s) => s==="closed_won"?"#166534":s==="pending"?"#92400e":s==="contacted"?"#1e40af":s==="closed_lost"?"#dc2626":"#1e40af";
-  const cards = [{label:"Total Leads",value:stats.totalLeads,icon:"👥",iconBg:"#eff6ff",badge:"All time",badgeBg:"#eff6ff",badgeColor:"#1a6fd4"},{label:"Pending",value:stats.pending,icon:"⏳",iconBg:"#fffbeb",badge:"Action needed",badgeBg:"#fffbeb",badgeColor:"#92400e"},{label:"Closed Won",value:stats.closedWon,icon:"✅",iconBg:"#f0fdf4",badge:"Won",badgeBg:"#f0fdf4",badgeColor:"#166534"},{label:"Current Rate",value:profile?.interestRate?`${profile.interestRate}%`:"—",icon:"%",iconBg:"#f5f3ff",badge:"Live",badgeBg:"#f5f3ff",badgeColor:"#6d28d9",valueColor:"#1a6fd4"}];
-  return (<>
-    <div style={{marginBottom:"24px"}}><h1 style={{fontSize:"20px",fontWeight:"600",color:"#111"}}>Overview</h1><p style={{fontSize:"13px",color:"#888",marginTop:"4px"}}>Welcome back, {profile?.bankName||"Partner"}</p></div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"14px",marginBottom:"24px"}}>{cards.map(c=>(<div key={c.label} style={{background:"#fff",border:"1px solid #e5e5e0",borderRadius:"10px",padding:"18px 20px"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"14px"}}><div style={{width:"36px",height:"36px",background:c.iconBg,borderRadius:"8px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px"}}>{c.icon}</div><span style={{fontSize:"10px",background:c.badgeBg,color:c.badgeColor,padding:"2px 8px",borderRadius:"10px"}}>{c.badge}</span></div><div style={{fontSize:"26px",fontWeight:"600",color:c.valueColor||"#111",lineHeight:1}}>{c.value}</div><div style={{fontSize:"12px",color:"#888",marginTop:"5px"}}>{c.label}</div></div>))}</div>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 300px",gap:"16px"}}>
-      <div style={{background:"#fff",border:"1px solid #e5e5e0",borderRadius:"10px",overflow:"hidden"}}>
-        <div style={{padding:"14px 20px",borderBottom:"1px solid #f0f0ea",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:"14px",fontWeight:"500",color:"#111"}}>Recent Leads</span><span onClick={()=>setActiveTab("Leads")} style={{fontSize:"12px",color:"#1a6fd4",cursor:"pointer"}}>View all →</span></div>
-        {leads.length>0?(<table style={{width:"100%",borderCollapse:"collapse"}}><thead><tr style={{background:"#fafaf8"}}>{["Name","Amount","Status","Date"].map(h=><th key={h} style={{padding:"10px 16px",fontSize:"11px",color:"#aaa",textTransform:"uppercase",letterSpacing:"0.8px",textAlign:"left",borderBottom:"1px solid #f0f0ea"}}>{h}</th>)}</tr></thead><tbody>{leads.slice(0,5).map((l,i)=>(<tr key={i} style={{borderBottom:"1px solid #f5f5f0"}}><td style={{padding:"12px 16px",fontSize:"13px",fontWeight:"500",color:"#111"}}>{l.name||"—"}</td><td style={{padding:"12px 16px",fontSize:"13px",color:"#555"}}>₹{l.loanAmount||"—"}</td><td style={{padding:"12px 16px"}}><span style={{fontSize:"11px",padding:"3px 10px",borderRadius:"20px",background:statusBg(l.status),color:statusColor(l.status)}}>{(l.status||"new").replace("_"," ")}</span></td><td style={{padding:"12px 16px",fontSize:"12px",color:"#aaa"}}>{l.createdAt?new Date(l.createdAt).toLocaleDateString():"—"}</td></tr>))}</tbody></table>):(<div style={{padding:"48px 20px",textAlign:"center"}}><div style={{fontSize:"32px",marginBottom:"10px"}}>📭</div><p style={{fontSize:"13px",color:"#999"}}>No leads yet</p></div>)}
+  const statusBg = (s) => s==="closed_won"?"rgba(46,158,110,0.1)":s==="pending"?"rgba(212,98,31,0.1)":s==="contacted"?"rgba(0,123,189,0.08)":s==="closed_lost"?"rgba(220,38,38,0.08)":"rgba(0,123,189,0.06)";
+  const statusColor = (s) => s==="closed_won"?"#2E9E6E":s==="pending"?"#D4621F":s==="contacted"?"#007bbd":s==="closed_lost"?"#dc2626":"#007bbd";
+  const statusBorder = (s) => s==="closed_won"?"1px solid rgba(46,158,110,0.25)":s==="pending"?"1px solid rgba(212,98,31,0.25)":"1px solid rgba(0,123,189,0.2)";
+  const cards = [{label:"Total Leads",value:stats.totalLeads,icon:"👥",badge:"All time"},{label:"Pending",value:stats.pending,icon:"⏳",badge:"Action needed"},{label:"Closed Won",value:stats.closedWon,icon:"✅",badge:"Won"},{label:"Current Rate",value:profile?.interestRate?`${profile.interestRate}%`:"—",icon:"%",badge:"Live",isRate:true}];
+  return (<div style={{fontFamily:"'DM Sans',sans-serif"}}>
+    <div style={{marginBottom:"28px"}}><h1 style={{fontSize:"1.6rem",fontWeight:"600",color:"#1A1A1A",margin:0,fontFamily:"'Playfair Display',serif"}}>Overview</h1><p style={{fontSize:"13px",color:"#8A8A8A",marginTop:"4px"}}>Welcome back, {profile?.bankName||"Partner"}</p></div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"16px",marginBottom:"28px"}}>{cards.map(c=>(<div key={c.label} style={{background:"#fff",border:"1px solid rgba(0,123,189,0.12)",borderRadius:"14px",padding:"24px",boxShadow:"0 2px 20px rgba(0,123,189,0.07)",transition:"transform 0.2s ease, box-shadow 0.2s ease",cursor:"default"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 6px 28px rgba(0,123,189,0.12)";}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 2px 20px rgba(0,123,189,0.07)";}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"16px"}}><span style={{fontSize:"20px",color:"#007bbd"}}>{c.icon}</span><span style={{fontSize:"0.65rem",border:"1px solid rgba(0,123,189,0.3)",color:"#007bbd",padding:"2px 10px",borderRadius:"20px",fontWeight:"500",letterSpacing:"0.04em"}}>{c.badge}</span></div>
+      <div style={{fontSize:"2.4rem",fontWeight:"600",color:c.isRate?"#007bbd":"#1A1A1A",lineHeight:1,fontFamily:"'DM Mono',monospace"}}>{c.value}</div>
+      <div style={{fontSize:"12px",color:"#8A8A8A",marginTop:"6px"}}>{c.label}</div>
+    </div>))}</div>
+
+    <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:"16px"}}>
+      <div style={{background:"#fff",border:"1px solid rgba(0,123,189,0.12)",borderRadius:"14px",overflow:"hidden",boxShadow:"0 2px 20px rgba(0,123,189,0.07)"}}>
+        <div style={{padding:"16px 20px",borderBottom:"1px solid rgba(0,123,189,0.08)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontSize:"1.35rem",fontWeight:"600",color:"#1A1A1A",fontFamily:"'Playfair Display',serif",borderLeft:"3px solid #007bbd",paddingLeft:"12px"}}>Recent Leads</span>
+          <span onClick={()=>setActiveTab("Leads")} style={{fontSize:"12px",color:"#007bbd",cursor:"pointer",fontWeight:"500",transition:"all 0.2s"}} onMouseEnter={e=>e.target.style.textDecoration="underline"} onMouseLeave={e=>e.target.style.textDecoration="none"}>View all →</span>
+        </div>
+        {leads.length>0?(<table style={{width:"100%",borderCollapse:"collapse"}}><thead><tr>{["Name","Amount","Status","Date"].map(h=><th key={h} style={{padding:"10px 20px",fontSize:"0.68rem",color:"#AAAAAA",textTransform:"uppercase",letterSpacing:"0.08em",textAlign:"left",borderBottom:"1px solid rgba(0,123,189,0.06)",fontWeight:"500"}}>{h}</th>)}</tr></thead><tbody>{leads.slice(0,5).map((l,i)=>(<tr key={i} style={{borderBottom:"1px solid rgba(0,123,189,0.06)",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(0,123,189,0.03)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+          <td style={{padding:"12px 20px",fontSize:"13px",fontWeight:"500",color:"#1A1A1A"}}>{l.name||"—"}</td>
+          <td style={{padding:"12px 20px",fontSize:"13px",color:"#1A1A1A",fontFamily:"'DM Mono',monospace",fontWeight:"500"}}>₹{l.loanAmount||"—"}</td>
+          <td style={{padding:"12px 20px"}}><span style={{fontSize:"11px",padding:"3px 10px",borderRadius:"20px",background:statusBg(l.status),color:statusColor(l.status),border:statusBorder(l.status),fontWeight:"500"}}>{(l.status||"new").replace("_"," ")}</span></td>
+          <td style={{padding:"12px 20px",fontSize:"12px",color:"#AAAAAA",fontFamily:"'DM Mono',monospace"}}>{l.createdAt?new Date(l.createdAt).toLocaleDateString():"—"}</td>
+        </tr>))}</tbody></table>):(<div style={{padding:"48px 20px",textAlign:"center"}}><div style={{fontSize:"32px",marginBottom:"10px",opacity:0.5}}>📭</div><p style={{fontSize:"13px",color:"#8A8A8A"}}>No leads yet</p></div>)}
       </div>
-      <div style={{background:"#fff",border:"1px solid #e5e5e0",borderRadius:"10px",overflow:"hidden"}}>
-        <div style={{padding:"14px 20px",borderBottom:"1px solid #f0f0ea"}}><span style={{fontSize:"14px",fontWeight:"500",color:"#111"}}>Your Offer</span></div>
-        <div style={{padding:"20px"}}><div style={{fontSize:"40px",fontWeight:"700",color:"#1a6fd4",lineHeight:1}}>{profile?.interestRate||"—"}<span style={{fontSize:"20px",fontWeight:"400",color:"#aaa"}}>%</span></div><div style={{fontSize:"12px",color:"#aaa",marginTop:"4px"}}>Interest rate per annum</div><div style={{height:"1px",background:"#f0f0ea",margin:"16px 0"}}/>{[{l:"Bank",v:profile?.bankName||"—"},{l:"Loan Type",v:profile?.loanType||"—"},{l:"Status",v:profile?.status||"—"}].map(r=>(<div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"6px 0"}}><span style={{fontSize:"12px",color:"#888"}}>{r.l}</span><span style={{fontSize:"13px",fontWeight:"500",color:"#111",textTransform:"capitalize"}}>{r.v}</span></div>))}<button onClick={()=>setActiveTab("Profile & Offer")} style={{width:"100%",marginTop:"16px",padding:"9px",border:"1px solid #1a6fd4",borderRadius:"7px",color:"#1a6fd4",background:"#fff",fontSize:"13px",cursor:"pointer"}}>Edit Offer →</button></div>
+
+      <div style={{background:"#fff",border:"1px solid rgba(0,123,189,0.12)",borderRadius:"14px",overflow:"hidden",boxShadow:"0 2px 20px rgba(0,123,189,0.07)"}}>
+        <div style={{padding:"16px 20px",borderBottom:"1px solid rgba(0,123,189,0.08)"}}><span style={{fontSize:"1.1rem",fontWeight:"600",color:"#1A1A1A",fontFamily:"'Playfair Display',serif"}}>Your Offer</span></div>
+        <div style={{padding:"24px 20px"}}>
+          <div style={{fontSize:"3rem",fontWeight:"700",lineHeight:1,fontFamily:"'DM Mono',monospace",color:"#007bbd"}}>{profile?.interestRate||"—"}<span style={{fontSize:"1.4rem"}}>%</span></div>
+          <div style={{fontSize:"0.7rem",color:"#AAAAAA",marginTop:"6px",textTransform:"uppercase",letterSpacing:"0.06em"}}>Interest rate per annum</div>
+          <div style={{height:"1px",background:"rgba(0,123,189,0.1)",margin:"18px 0"}} />
+          {[{l:"Bank",v:profile?.bankName||"—"},{l:"Loan Type",v:profile?.loanType||"—"},{l:"Status",v:profile?.status||"—"}].map(r=>(
+            <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderTop:"1px solid rgba(0,123,189,0.06)"}}>
+              <span style={{fontSize:"12px",color:"#AAAAAA"}}>{r.l}</span>
+              {r.l==="Status"&&r.v==="approved"?<span style={{fontSize:"11px",fontWeight:"500",color:"#2E9E6E",background:"rgba(46,158,110,0.1)",border:"1px solid rgba(46,158,110,0.25)",padding:"2px 10px",borderRadius:"20px",textTransform:"capitalize"}}>{r.v}</span>:<span style={{fontSize:"13px",fontWeight:"500",color:"#1A1A1A",textTransform:"capitalize"}}>{r.v}</span>}
+            </div>
+          ))}
+          <button onClick={()=>setActiveTab("Add Offer")} style={{width:"100%",marginTop:"18px",padding:"10px",border:"1.5px solid #007bbd",borderRadius:"8px",color:"#007bbd",background:"transparent",fontSize:"13px",cursor:"pointer",fontWeight:"500",fontFamily:"'DM Sans',sans-serif",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.target.style.background="#007bbd";e.target.style.color="#fff";}} onMouseLeave={e=>{e.target.style.background="transparent";e.target.style.color="#007bbd";}}>Edit Offer →</button>
+        </div>
       </div>
     </div>
-  </>);
+  </div>);
 }

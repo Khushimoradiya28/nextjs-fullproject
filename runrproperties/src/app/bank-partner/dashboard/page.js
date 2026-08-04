@@ -252,7 +252,7 @@ export default function BankPartnerDashboard() {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        background: "#f0f0eb",
+        background: "#F4F7FA",
         fontFamily: "inherit",
       }}
     >
