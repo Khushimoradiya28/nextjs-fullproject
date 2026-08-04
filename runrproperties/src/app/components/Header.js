@@ -92,7 +92,7 @@ export default function Header() {
           </Link>
 
           {isAuthenticated ? (
-            <Link href="/profile" className={styles.ctaButton}>
+            <Link href={user?.role === "bank_partner" ? "/bank-partner/dashboard" : "/profile"} className={styles.ctaButton}>
               <span>{user?.name}</span>
             </Link>
           ) : (

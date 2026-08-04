@@ -2,42 +2,113 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 import styles from "./register.module.css";
+
+function PasswordField({ label, placeholder, value, onChange, error }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className={styles.formGroup}>
+      <label>{label}</label>
+      <div className={styles.passWrap}>
+        <input type={show ? "text" : "password"} placeholder={placeholder} value={value} onChange={onChange} className={error ? styles.inputError : ""} />
+        <button type="button" className={styles.eyeBtn} onClick={() => setShow(!show)} tabIndex={-1}>
+          {show ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6"/></svg>
+          )}
+        </button>
+      </div>
+      {error && <span className={styles.err}>{error}</span>}
+    </div>
+  );
+}
 
 export default function BankPartnerRegister() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
-    name: "", email: "", password: "", mobile: "",
-    bankName: "", interestRate: "", tagline: "", description: "",
+    name: "", bankName: "", email: "", mobile: "", password: "", confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
-  const validate = () => {
-    const errs = {};
-    if (!form.name.trim()) errs.name = "Contact person name required";
-    if (!form.email.trim()) errs.email = "Email required";
-    else if (!/^\S+@\S+\.\S+$/.test(form.email)) errs.email = "Invalid email";
-    if (!form.password || form.password.length < 6) errs.password = "Min 6 characters";
-    if (!form.mobile || !/^\d{10}$/.test(form.mobile)) errs.mobile = "Valid 10-digit number required";
-    if (!form.bankName.trim()) errs.bankName = "Bank name required";
-    if (!form.interestRate.trim()) errs.interestRate = "Interest rate required";
-    return errs;
+  const validateField = (name, value) => {
+    switch (name) {
+      case "name":
+        if (!value.trim()) return "Full name is required";
+        if (value.trim().length < 3) return "Name must be at least 3 characters";
+        return "";
+      case "bankName":
+        if (!value.trim()) return "Bank name is required";
+        if (value.trim().length < 2) return "Bank name too short";
+        return "";
+      case "email":
+        if (!value.trim()) return "Email is required";
+        if (!/^\S+@\S+\.\S+$/.test(value)) return "Please enter a valid email";
+        return "";
+      case "mobile":
+        if (!value.trim()) return "Mobile number is required";
+        if (!/^\d{10}$/.test(value)) return "Enter a valid 10-digit mobile number";
+        return "";
+      case "password":
+        if (!value) return "Password is required";
+        if (value.length < 6) return "Password must be at least 6 characters";
+        if (!/[A-Z]/.test(value)) return "Include at least one uppercase letter";
+        if (!/[0-9]/.test(value)) return "Include at least one number";
+        return "";
+      case "confirmPassword":
+        if (!value) return "Please confirm your password";
+        if (value !== form.password) return "Passwords do not match";
+        return "";
+      default: return "";
+    }
+  };
+
+  const handleChange = (name, value) => {
+    setForm(prev => ({ ...prev, [name]: value }));
+    setError("");
+    if (touched[name]) {
+      setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+    }
+  };
+
+  const handleBlur = (name) => {
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setErrors(prev => ({ ...prev, [name]: validateField(name, form[name]) }));
+  };
+
+  const validateAll = () => {
+    const newErrors = {};
+    let valid = true;
+    Object.keys(form).forEach(key => {
+      const err = validateField(key, form[key]);
+      if (err) { newErrors[key] = err; valid = false; }
+    });
+    setErrors(newErrors);
+    setTouched({ name:true, bankName:true, email:true, mobile:true, password:true, confirmPassword:true });
+    return valid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    setErrors({});
+    if (!validateAll()) return;
     setLoading(true);
     setError("");
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "/api"}/bank-partners/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.name,
+          bankName: form.bankName,
+          email: form.email,
+          mobile: form.mobile,
+          password: form.password,
+        }),
       });
       if (!res.ok && res.status === 404) {
         setError("API endpoint not found. Please check backend configuration.");
@@ -58,77 +129,62 @@ export default function BankPartnerRegister() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <img src="/logo/runr-logo-new.svg" alt="Runr" className={styles.logo} />
-          <h1 className={styles.title}>Bank Partner Registration</h1>
-          <p className={styles.subtitle}>Join Runr Properties as a banking partner</p>
+      <Header />
+      <main className={styles.main}>
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <img src="/logo/runr-logo-new.svg" alt="Runr" className={styles.logo} />
+            <h1 className={styles.title}>Bank Partner Registration</h1>
+            <p className={styles.subtitle}>Join Runr Properties as a banking partner</p>
+          </div>
+
+          {error && <div className={styles.errorAlert}>{error}</div>}
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label>Full Name *</label>
+                <input type="text" placeholder="Contact person name" value={form.name} onChange={(e) => handleChange("name", e.target.value)} onBlur={() => handleBlur("name")} className={errors.name ? styles.inputError : ""} />
+                {errors.name && <span className={styles.err}>{errors.name}</span>}
+              </div>
+              <div className={styles.formGroup}>
+                <label>Bank Name *</label>
+                <input type="text" placeholder="e.g. SBI Bank" value={form.bankName} onChange={(e) => handleChange("bankName", e.target.value)} onBlur={() => handleBlur("bankName")} className={errors.bankName ? styles.inputError : ""} />
+                {errors.bankName && <span className={styles.err}>{errors.bankName}</span>}
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label>Email *</label>
+                <input type="email" placeholder="your@bank.com" value={form.email} onChange={(e) => handleChange("email", e.target.value)} onBlur={() => handleBlur("email")} className={errors.email ? styles.inputError : ""} />
+                {errors.email && <span className={styles.err}>{errors.email}</span>}
+              </div>
+              <div className={styles.formGroup}>
+                <label>Mobile *</label>
+                <input type="tel" placeholder="10-digit number" value={form.mobile} onChange={(e) => handleChange("mobile", e.target.value)} onBlur={() => handleBlur("mobile")} className={errors.mobile ? styles.inputError : ""} />
+                {errors.mobile && <span className={styles.err}>{errors.mobile}</span>}
+              </div>
+            </div>
+            <div className={styles.formRow}>
+              <PasswordField label="Password *" placeholder="Min 6 characters" value={form.password} onChange={(e) => handleChange("password", e.target.value)} error={errors.password} />
+              <PasswordField label="Confirm Password *" placeholder="Re-enter password" value={form.confirmPassword} onChange={(e) => handleChange("confirmPassword", e.target.value)} error={errors.confirmPassword} />
+            </div>
+
+            <button type="submit" className={styles.submitBtn} disabled={loading}>
+              {loading ? "Submitting..." : "Submit Registration"}
+            </button>
+          </form>
+
+          <div className={styles.pendingNote}>
+            After registration, your account will be reviewed and approved by our team within 24-48 hours before you can login.
+          </div>
+
+          <p className={styles.loginLink}>
+            Already have an account? <Link href="/bank-partner/login">Login here</Link>
+          </p>
         </div>
-
-        {error && <div className={styles.errorAlert}>{error}</div>}
-
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.sectionLabel}>Contact Person Details</div>
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label>Full Name *</label>
-              <input type="text" placeholder="Contact person name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
-              {errors.name && <span className={styles.err}>{errors.name}</span>}
-            </div>
-            <div className={styles.formGroup}>
-              <label>Mobile *</label>
-              <input type="tel" placeholder="10-digit number" value={form.mobile} onChange={(e) => setForm({...form, mobile: e.target.value})} />
-              {errors.mobile && <span className={styles.err}>{errors.mobile}</span>}
-            </div>
-          </div>
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label>Email *</label>
-              <input type="email" placeholder="your@bank.com" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} />
-              {errors.email && <span className={styles.err}>{errors.email}</span>}
-            </div>
-            <div className={styles.formGroup}>
-              <label>Password *</label>
-              <input type="password" placeholder="Min 6 characters" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} />
-              {errors.password && <span className={styles.err}>{errors.password}</span>}
-            </div>
-          </div>
-
-          <div className={styles.sectionLabel}>Bank Details</div>
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label>Bank Name *</label>
-              <input type="text" placeholder="e.g. HDFC Bank" value={form.bankName} onChange={(e) => setForm({...form, bankName: e.target.value})} />
-              {errors.bankName && <span className={styles.err}>{errors.bankName}</span>}
-            </div>
-            <div className={styles.formGroup}>
-              <label>Interest Rate *</label>
-              <input type="text" placeholder="e.g. 8.50%" value={form.interestRate} onChange={(e) => setForm({...form, interestRate: e.target.value})} />
-              {errors.interestRate && <span className={styles.err}>{errors.interestRate}</span>}
-            </div>
-          </div>
-          <div className={styles.formGroup}>
-            <label>Tagline</label>
-            <input type="text" placeholder="e.g. We understand your world" value={form.tagline} onChange={(e) => setForm({...form, tagline: e.target.value})} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Description</label>
-            <textarea placeholder="Brief description about your bank's home loan offerings..." rows={3} value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-          </div>
-
-          <button type="submit" className={styles.submitBtn} disabled={loading}>
-            {loading ? "Submitting..." : "Submit Registration"}
-          </button>
-        </form>
-
-        <div className={styles.pendingNote}>
-          After registration, your account will be reviewed and approved by our team before you can login.
-        </div>
-
-        <p className={styles.loginLink}>
-          Already have an account? <Link href="/bank-partner/login">Login here</Link>
-        </p>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

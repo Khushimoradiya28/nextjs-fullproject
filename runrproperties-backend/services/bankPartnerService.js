@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 
 // Register bank partner
 const registerBankPartner = async (data) => {
-  const { name, email, password, bankName, interestRate, tagline, description } = data;
+  const { name, bankName, email, mobile, password } = data;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -19,15 +19,12 @@ const registerBankPartner = async (data) => {
     email,
     password,
     role: 'bank_partner',
-    mobile: data.mobile || '',
+    mobile: mobile || '',
   });
 
   const bankPartner = await BankPartner.create({
     userId: user._id,
-    bankName,
-    interestRate,
-    tagline: tagline || '',
-    description: description || '',
+    bankName: bankName || name,
     status: 'pending',
   });
 
@@ -53,6 +50,9 @@ const updateBankPartnerProfile = async (userId, data) => {
       bankName: data.bankName,
       tagline: data.tagline,
       interestRate: data.interestRate,
+      loanType: data.loanType,
+      processingFee: data.processingFee,
+      maxTenure: data.maxTenure,
       description: data.description,
       isActive: data.isActive,
     },

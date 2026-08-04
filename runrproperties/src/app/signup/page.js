@@ -17,6 +17,7 @@ export default function SignupPage() {
   const [form, setForm] = useState({ name: "", email: "", mobile: "", password: "", confirmPassword: "", role: "buyer" });
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({});
 
@@ -24,6 +25,7 @@ export default function SignupPage() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setApiError("");
+    setSuccessMsg("");
     if (touched[name]) validateField(name, value);
   };
 
@@ -67,23 +69,56 @@ export default function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError("");
+    setSuccessMsg("");
     if (!validateAll()) return;
 
     setLoading(true);
-    const result = await signup({
-      name: form.name,
-      email: form.email,
-      mobile: form.mobile,
-      password: form.password,
-      role: form.role,
-    });
-    setLoading(false);
 
-    if (result.success) {
-      router.push("/profile");
+    if (form.role === "bank_partner") {
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
+        const res = await fetch(`${API_BASE}/bank-partners/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: form.name, bankName: form.name, email: form.email, mobile: form.mobile, password: form.password }),
+        });
+        const data = await res.json();
+        if (data.success || res.ok) {
+          setSuccessMsg("🎉 Registration Successful!\n\nYour bank partner account has been submitted for review. Our team will verify your details and approve your account within 24-48 hours.\n\nOnce approved, you can login at Bank Partner Login and start receiving home loan leads from our platform.");
+        } else {
+          const msg = data.message || "Registration failed. Please try again.";
+          const msgLower = msg.toLowerCase();
+          if (msgLower.includes("name")) { setErrors(prev => ({...prev, name: msg})); }
+          else if (msgLower.includes("email")) { setErrors(prev => ({...prev, email: msg})); }
+          else if (msgLower.includes("mobile") || msgLower.includes("phone")) { setErrors(prev => ({...prev, mobile: msg})); }
+          else if (msgLower.includes("password")) { setErrors(prev => ({...prev, password: msg})); }
+          else { setApiError(msg); }
+        }
+      } catch (err) {
+        setApiError("Something went wrong. Please try again.");
+      }
     } else {
-      setApiError(result.message);
+      const result = await signup({
+        name: form.name,
+        email: form.email,
+        mobile: form.mobile,
+        password: form.password,
+        role: form.role,
+      });
+      if (result.success) {
+        router.push("/profile");
+      } else {
+        const msg = result.message || "Registration failed.";
+        const msgLower = msg.toLowerCase();
+        if (msgLower.includes("name")) { setErrors(prev => ({...prev, name: msg})); }
+        else if (msgLower.includes("email")) { setErrors(prev => ({...prev, email: msg})); }
+        else if (msgLower.includes("mobile") || msgLower.includes("phone")) { setErrors(prev => ({...prev, mobile: msg})); }
+        else if (msgLower.includes("password")) { setErrors(prev => ({...prev, password: msg})); }
+        else { setApiError(msg); }
+      }
     }
+
+    setLoading(false);
   };
 
   const fieldStyle = (name) => errors[name] ? `${styles.formInput} ${styles.inputError}` : styles.formInput;
@@ -103,10 +138,11 @@ export default function SignupPage() {
 
           <form className={styles.authForm} onSubmit={handleSubmit} noValidate>
             {apiError && <div className={styles.errorMsg}>{apiError}</div>}
+            {successMsg && <div style={{padding:"12px 16px",borderRadius:"8px",background:"#eff6ff",border:"1px solid #bfdbfe",color:"#1d4ed8",fontSize:"13px",lineHeight:"1.5",marginBottom:"16px"}}>{successMsg}</div>}
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="signup-name">Full Name <span style={{color:"#dc2626"}}>*</span></label>
-              <input id="signup-name" name="name" className={fieldStyle("name")} value={form.name} onChange={handleChange} onBlur={handleBlur} placeholder="Your full name" />
+              <label className={styles.formLabel} htmlFor="signup-name">{form.role === "bank_partner" ? "Bank Name" : "Full Name"} <span style={{color:"#dc2626"}}>*</span></label>
+              <input id="signup-name" name="name" className={fieldStyle("name")} value={form.name} onChange={handleChange} onBlur={handleBlur} placeholder={form.role === "bank_partner" ? "Your bank/company name" : "Your full name"} />
               {errors.name && <span className={styles.fieldError}>{errors.name}</span>}
             </div>
 
@@ -146,6 +182,11 @@ export default function SignupPage() {
                   <span className={styles.roleIcon}>🔑</span>
                   <span className={styles.roleText}>Owner</span>
                   <span className={styles.roleDesc}>List my properties</span>
+                </button>
+                <button type="button" className={`${styles.roleBtn} ${form.role === "bank_partner" ? styles.roleBtnActive : ""}`} onClick={() => router.push("/bank-partner/register")}>
+                  <span className={styles.roleIcon}>🏦</span>
+                  <span className={styles.roleText}>Bank Partner</span>
+                  <span className={styles.roleDesc}>Offer home loans</span>
                 </button>
               </div>
             </div>

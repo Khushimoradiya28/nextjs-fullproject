@@ -14,19 +14,37 @@ const bankPartnerSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
+    required: false,
     default: '',
   },
   tagline: {
     type: String,
+    required: false,
     default: '',
   },
   interestRate: {
     type: String,
-    required: [true, 'Interest rate is required'],
-    // e.g. "8.40%"
+    required: false,
+    default: '',
+  },
+  loanType: {
+    type: String,
+    required: false,
+    default: '',
+  },
+  processingFee: {
+    type: String,
+    required: false,
+    default: '',
+  },
+  maxTenure: {
+    type: String,
+    required: false,
+    default: '',
   },
   description: {
     type: String,
+    required: false,
     default: '',
   },
   isActive: {

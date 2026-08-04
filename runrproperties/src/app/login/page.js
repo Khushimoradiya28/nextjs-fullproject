@@ -13,7 +13,7 @@ import styles from "./auth.module.css";
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/profile";
+  const redirectUrl = searchParams.get("redirect");
   const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -60,9 +60,20 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result.success) {
-      router.push(redirectUrl);
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        const role = result.user?.role || result.role;
+        if (role === "bank_partner") {
+          router.push("/bank-partner/dashboard");
+        } else {
+          router.push("/profile");
+        }
+      }
     } else {
-      setApiError(result.message);
+      setApiError(result.message?.toLowerCase().includes("pending") 
+        ? "⏳ Your account is under review. Our team will verify and approve your bank partner account within 24-48 hours. You'll receive access once approved."
+        : result.message);
     }
   };
 

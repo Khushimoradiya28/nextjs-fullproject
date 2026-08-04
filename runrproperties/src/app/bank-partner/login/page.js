@@ -47,7 +47,7 @@ function LoginForm() {
     <>
       {registered && (
         <div className={styles.successAlert}>
-          Registration successful! Please wait for admin approval before logging in.
+          Registration successful! Your account is under review. Our team will verify and approve it within 24-48 hours. You'll be able to login once approved.
         </div>
       )}
 
@@ -86,7 +86,7 @@ export default function BankPartnerLogin() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <img src="/logo/runr-logo-new.png" alt="Runr" className={styles.logo} />
+        <img src="/logo/runr-logo-new.svg" alt="Runr" className={styles.logo} />
         <h1 className={styles.title}>Bank Partner Login</h1>
 
         <Suspense fallback={null}>

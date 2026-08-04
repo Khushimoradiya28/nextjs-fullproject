@@ -1,4 +1,5 @@
-.page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(165deg, #f0f7fd 0%, #f8fafb 40%, #fefefe 100%); padding: 40px 20px; }
+.page { display: flex; flex-direction: column; min-height: 100vh; background: linear-gradient(165deg, #f0f7fd 0%, #f8fafb 40%, #fefefe 100%); }
+.main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
 .card { width: 100%; max-width: 600px; background: #fff; border-radius: 20px; padding: 36px 32px; box-shadow: 0 4px 16px rgba(30,58,95,0.04), 0 20px 56px rgba(30,58,95,0.07); }
 .cardHeader { text-align: center; margin-bottom: 24px; }
 .logo { height: 36px; width: auto; margin-bottom: 16px; }
@@ -12,6 +13,11 @@
 .formGroup label { font-size: 0.74rem; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.3px; }
 .formGroup input, .formGroup textarea { padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; color: #1e293b; background: #f9fafb; outline: none; transition: border-color 0.2s; font-family: inherit; }
 .formGroup input:focus, .formGroup textarea:focus { border-color: #007bbd; background: #fff; }
+.inputError { border-color: #dc2626 !important; background: #fef2f2 !important; }
+.passWrap { position: relative; display: flex; align-items: center; }
+.passWrap input { width: 100%; padding-right: 40px; }
+.eyeBtn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; display: flex; align-items: center; padding: 4px; }
+.eyeBtn:hover { color: #475569; }
 .err { font-size: 0.72rem; color: #dc2626; }
 .submitBtn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #007bbd; color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
 .submitBtn:hover { background: #005f94; }
