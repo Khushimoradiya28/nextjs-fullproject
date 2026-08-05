@@ -21,44 +21,7 @@ function calculateEMI(principal, annualRate, years) {
   return (principal * monthlyRate * rateFactor) / (rateFactor - 1);
 }
 
-const fallbackBanks = [
-  {
-    name: "SBI",
-    rate: "8.40%",
-    tagline: "State Bank of India",
-    image: "/img/banks/sbi.jpg",
-  },
-  {
-    name: "HDFC",
-    rate: "8.50%",
-    tagline: "HDFC Bank Ltd",
-    image: "/img/banks/hdfc.jpg",
-  },
-  {
-    name: "ICICI",
-    rate: "8.60%",
-    tagline: "ICICI Bank",
-    image: "/img/banks/icici.webp",
-  },
-  {
-    name: "Axis Bank",
-    rate: "8.55%",
-    tagline: "Axis Bank Ltd",
-    image: "/img/banks/axis.webp",
-  },
-  {
-    name: "Bank of Baroda",
-    rate: "8.45%",
-    tagline: "BOB",
-    image: "/img/banks/bob.jpg",
-  },
-  {
-    name: "PNB",
-    rate: "8.50%",
-    tagline: "Punjab National Bank",
-    image: "/img/banks/pnb.jpg",
-  },
-];
+const fallbackBanks = [];
 
 const steps = [
   {
@@ -124,7 +87,7 @@ function BankCard({ bank, onCheck, selected }) {
         <span style={{fontSize:"13px",fontWeight:"500",color:"#333",textAlign:"center",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"100%"}}>{bank.tagline || bank.name}</span>
       </div>
       <div style={{height:"28px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-        <span style={{fontSize:"14px",color:"#1a6fd4",fontWeight:"500"}}>{bank.rate ? `From ${bank.rate}% p.a.` : "Rate on request"}</span>
+        <span style={{fontSize:"14px",color:"#1a6fd4",fontWeight:"500"}}>{selected && bank.rate ? `From ${bank.rate}% p.a.` : "Rate on request"}</span>
       </div>
       <div style={{marginTop:"16px",width:"100%"}}>
         <button onClick={() => onCheck(bank)} style={{border:"1.5px solid #1a6fd4",borderRadius:"8px",padding:"9px 0",fontSize:"13px",color: selected ? "#fff" : "#1a6fd4",background: selected ? "#1a6fd4" : "#fff",cursor:"pointer",fontWeight:"500",width:"100%"}}>
@@ -207,6 +170,10 @@ export default function HomeLoansPage() {
   };
 
   const marqueeRow1 = [
+    ...displayBanks,
+    ...displayBanks,
+    ...displayBanks,
+    ...displayBanks,
     ...displayBanks,
     ...displayBanks,
   ];

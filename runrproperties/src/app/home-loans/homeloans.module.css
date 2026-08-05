@@ -183,7 +183,7 @@
 
 /* Steps */
 .stepsSection {
-  margin-bottom: 56px;
+  margin-bottom: 100px;
 }
 .sectionTitle {
   margin: 0 0 8px;
@@ -430,13 +430,18 @@
 }
 .marqueeTrack {
   display: flex;
-  gap: 20px;
+  flex-wrap: nowrap;
+  gap: 24px;
   width: max-content;
-  animation: marqueeScroll 25s linear infinite;
+  animation: marqueeScroll 27s linear infinite;
+  will-change: transform;
+}
+.marqueeTrack:hover {
+  animation-play-state: paused;
 }
 @keyframes marqueeScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 12px)); }
 }
 
 /* FAQ */
