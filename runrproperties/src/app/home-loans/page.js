@@ -209,8 +209,6 @@ export default function HomeLoansPage() {
   const marqueeRow1 = [
     ...displayBanks,
     ...displayBanks,
-    ...displayBanks,
-    ...displayBanks,
   ];
 
   return (

@@ -259,7 +259,6 @@
 }
 .banksCarouselWrap {
   position: relative;
-  padding: 0 60px;
 }
 .banksArrow {
   position: absolute;
@@ -427,36 +426,17 @@
 /* Marquee for banks */
 .marqueeWrap {
   overflow: hidden;
-  position: relative;
-  padding: 10px 0;
+  width: 100%;
 }
 .marqueeTrack {
   display: flex;
-  gap: 28px;
-  animation: marqueeLeft 30s linear infinite;
+  gap: 20px;
   width: max-content;
+  animation: marqueeScroll 25s linear infinite;
 }
-.marqueeTrackReverse {
-  display: flex;
-  gap: 28px;
-  animation: marqueeRight 30s linear infinite;
-  width: max-content;
-}
-@keyframes marqueeLeft {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-@keyframes marqueeRight {
-  0% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0);
-  }
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* FAQ */
