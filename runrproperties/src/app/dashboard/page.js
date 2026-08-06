@@ -116,21 +116,30 @@ export default function DashboardPage() {
       <Header />
       <main className={profileStyles.main}>
         <aside className={profileStyles.sidebar}>
-          <div className={profileStyles.sidebarAvatar}>{user.name?.charAt(0).toUpperCase()}</div>
+          <div className={profileStyles.avatarSection}>
+            <div className={profileStyles.avatarWrap}>
+              {user.profilePhoto ? (
+                <img src={user.profilePhoto} alt={user.name} className={profileStyles.avatarImg} />
+              ) : (
+                <div className={profileStyles.avatarPlaceholder} style={{ background: user.avatarColor || "#2980b9" }}>
+                  <span className={profileStyles.avatarInitial}>{user.name?.charAt(0).toUpperCase()}</span>
+                </div>
+              )}
+            </div>
+          </div>
           <h3 className={profileStyles.sidebarName}>{user.name}</h3>
           <span className={profileStyles.sidebarRole}>{isOwner ? "Property Owner" : "Buyer"}</span>
           <nav className={profileStyles.sidebarNav}>
             <Link href="/dashboard" className={`${profileStyles.sidebarLink} ${profileStyles.sidebarLinkActive}`}><span className={profileStyles.sidebarIcon}>📊</span> Dashboard</Link>
             <Link href="/profile" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>👤</span> Profile</Link>
             <Link href="/wishlist" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>❤️</span> Wishlist</Link>
-            {isOwner ? (
+            <Link href="/dashboard/my-enquiries" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>📋</span> My Enquiries</Link>
+            {isOwner && (
               <>
                 <Link href="/dashboard/my-properties" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>🏠</span> My Properties</Link>
                 <Link href="/dashboard/add-property" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>➕</span> Add Property</Link>
                 <Link href="/dashboard/enquiries" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>📩</span> Enquiries</Link>
               </>
-            ) : (
-              <Link href="/dashboard/my-enquiries" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>📋</span> My Enquiries</Link>
             )}
             <button className={`${profileStyles.sidebarLink} ${profileStyles.logoutLink}`} onClick={handleLogout}><span className={profileStyles.sidebarIcon}>🚪</span> Logout</button>
           </nav>

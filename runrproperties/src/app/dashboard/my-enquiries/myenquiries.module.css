@@ -10,7 +10,7 @@
 .enquiryList { display: flex; flex-direction: column; gap: 16px; }
 .enquiryCard { display: flex; gap: 18px; background: #fff; border-radius: 18px; border: 1px solid rgba(30,58,95,0.08); padding: 0; overflow: hidden; box-shadow: 0 6px 20px rgba(30,58,95,0.04); transition: box-shadow 0.2s ease; }
 .enquiryCard:hover { box-shadow: 0 12px 32px rgba(30,58,95,0.08); }
-.cardImage { width: 180px; min-height: 140px; flex-shrink: 0; background: #f3f6fb; overflow: hidden; }
+.cardImage { width: 180px; min-height: 140px; max-height: 160px; flex-shrink: 0; background: #f3f6fb; overflow: hidden; }
 .cardImage img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cardBody { flex: 1; padding: 18px 0 18px 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .cardTop { display: flex; flex-direction: column; gap: 4px; }
