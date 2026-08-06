@@ -23,7 +23,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!loading && !isAuthenticated) router.push("/login");
-  }, [loading, isAuthenticated, router]);
+    if (!loading && user?.role === "bank_partner") router.push("/bank-partner/dashboard");
+  }, [loading, isAuthenticated, user, router]);
 
   useEffect(() => {
     if (user) setEditForm({ name: user.name, mobile: user.mobile || "" });

@@ -47,6 +47,13 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => {
     logoutUser();
     setUser(null);
+    if (typeof window !== "undefined") {
+      if (window.location.pathname.includes("/bank-partner")) {
+        window.location.href = "/bank-partner/login";
+      } else {
+        window.location.href = "/";
+      }
+    }
   }, []);
 
   const update = useCallback(async (data) => {

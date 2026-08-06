@@ -38,6 +38,9 @@ export default function WishlistPage() {
     if (!loading && !user) {
       router.push("/login?redirect=/wishlist");
     }
+    if (!loading && user?.role === "bank_partner") {
+      router.push("/bank-partner/dashboard");
+    }
   }, [user, loading, router]);
 
   const totalPages = Math.ceil(wishlist.length / ITEMS_PER_PAGE);

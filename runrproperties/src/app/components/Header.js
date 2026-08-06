@@ -77,22 +77,30 @@ export default function Header() {
         </nav>
 
         <div className={styles.actions}>
-          <Link href="/wishlist" className={styles.iconButton} aria-label="Wishlist" title="Wishlist">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M12 21s-6.5-4.3-8.2-7.2A5.2 5.2 0 0 1 7.5 5.8c1.5 0 2.6.7 3.5 1.8.9-1.1 2-1.8 3.5-1.8a5.2 5.2 0 0 1 5.3 7.2C18.5 16.7 12 21 12 21z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {wishlistCount > 0 && <span className={styles.wishlistBadge}>{wishlistCount}</span>}
-          </Link>
+          {user?.role !== "bank_partner" && (
+            <>
+              <Link href="/wishlist" className={styles.iconButton} aria-label="Wishlist" title="Wishlist">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M12 21s-6.5-4.3-8.2-7.2A5.2 5.2 0 0 1 7.5 5.8c1.5 0 2.6.7 3.5 1.8.9-1.1 2-1.8 3.5-1.8a5.2 5.2 0 0 1 5.3 7.2C18.5 16.7 12 21 12 21z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {wishlistCount > 0 && <span className={styles.wishlistBadge}>{wishlistCount}</span>}
+              </Link>
 
-          <Link href="/profile" className={styles.iconButton} aria-label="Profile" title="Profile">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-              <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M5.5 19a6.5 6.5 0 0 1 13 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-          </Link>
+              <Link href="/profile" className={styles.iconButton} aria-label="Profile" title="Profile">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.6" />
+                  <path d="M5.5 19a6.5 6.5 0 0 1 13 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+              </Link>
+            </>
+          )}
 
-          {isAuthenticated ? (
-            <Link href={user?.role === "bank_partner" ? "/bank-partner/dashboard" : "/profile"} className={styles.ctaButton}>
+          {isAuthenticated && user?.role === "bank_partner" ? (
+            <Link href="/bank-partner/dashboard" className={styles.ctaButton}>
+              <span>Dashboard</span>
+            </Link>
+          ) : isAuthenticated ? (
+            <Link href="/profile" className={styles.ctaButton}>
               <span>{user?.name}</span>
             </Link>
           ) : (
