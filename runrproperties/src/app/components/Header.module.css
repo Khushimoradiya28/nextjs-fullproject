@@ -29,6 +29,14 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
+/* Prevent sticky header from jumping/disappearing when body overflow: hidden is active (like when modals are open) */
+:global(body[style*="overflow: hidden"]) .headerWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 /* Container matched with page content grid */
 .container {
   width: 100%;

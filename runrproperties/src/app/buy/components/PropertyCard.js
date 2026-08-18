@@ -92,82 +92,75 @@ export default function PropertyCard({ property, viewMode }) {
               </div>
             )}
 
-            {isListView && (
-              <div className={styles.listMeta}>
-                {property.bhk > 0 && (
-                  <span className={styles.metaItem}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                      />
-                    </svg>
-                    {property.bhk} BHK
-                  </span>
-                )}
-                {property.bathrooms > 0 && (
-                  <span className={styles.metaItem}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M4 12h16M4 12V7a2 2 0 012-2h3M4 12v5a2 2 0 002 2h12a2 2 0 002-2v-5"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    {property.bathrooms} Bath
-                  </span>
-                )}
-                {property.area > 0 && (
-                  <span className={styles.metaItem}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <rect
-                        x="3"
-                        y="3"
-                        width="18"
-                        height="18"
-                        rx="2"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                      />
-                      <path
-                        d="M3 9h18M9 3v18"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                      />
-                    </svg>
-                    {property.area.toLocaleString("en-IN")} Sq.Ft.
-                  </span>
-                )}
-                {property.furnishing && property.furnishing !== "" && (
-                  <span className={styles.metaItem}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <rect
-                        x="2"
-                        y="7"
-                        width="20"
-                        height="13"
-                        rx="2"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                      />
-                      <path
-                        d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                      />
-                    </svg>
-                    {property.furnishing}
-                  </span>
-                )}
-                {property.listingType && (
-                  <span className={styles.metaTag}>
-                    {property.listingType === "rent" ? "For Rent" : "For Sale"}
-                  </span>
-                )}
-              </div>
-            )}
+            <div className={styles.listMeta}>
+              {property.bhk > 0 && (
+                <span className={styles.metaItem}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                  {property.bhk} BHK
+                </span>
+              )}
+              {property.bathrooms > 0 && (
+                <span className={styles.metaItem}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 12h16M4 12V7a2 2 0 012-2h3M4 12v5a2 2 0 002 2h12a2 2 0 002-2v-5"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  {property.bathrooms} Bath
+                </span>
+              )}
+              {property.area > 0 && (
+                <span className={styles.metaItem}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <rect
+                      x="3"
+                      y="3"
+                      width="18"
+                      height="18"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                    <path
+                      d="M3 9h18M9 3v18"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                  {property.area.toLocaleString("en-IN")} Sq.Ft.
+                </span>
+              )}
+              {property.furnishing && property.furnishing !== "" && (
+                <span className={styles.metaItem}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <rect
+                      x="2"
+                      y="7"
+                      width="20"
+                      height="13"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                    <path
+                      d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                  {property.furnishing}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className={styles.cardFooter}>
