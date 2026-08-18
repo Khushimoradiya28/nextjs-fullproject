@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════
+   RENT PROPERTY CARD - BASE STYLES
+   ═══════════════════════════════════════════════════ */
+
 .card {
   background: #ffffff;
   border: 1px solid rgba(30, 58, 95, 0.08);
@@ -8,6 +12,7 @@
   box-shadow: 0 12px 36px rgba(30, 58, 95, 0.06);
   transition: transform 0.28s ease, box-shadow 0.28s ease;
   height: 100%;
+  position: relative;
 }
 
 .card:hover {
@@ -15,7 +20,317 @@
   box-shadow: 0 24px 56px rgba(30, 58, 95, 0.12);
 }
 
-/* List view variant */
+/* ═══════════════════════════════════════════════════
+   IMAGE AREA & BADGES
+   ═══════════════════════════════════════════════════ */
+
+.cardImageWrap {
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cardImage {
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  background-color: #f3f6fb;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.card:hover .cardImg {
+  transform: scale(1.03);
+}
+
+.featuredBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #f59e0b;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  z-index: 2;
+  letter-spacing: 0.3px;
+}
+
+/* Wishlist / Like Button */
+.likeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(153, 150, 150, 0.85);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.likeBtn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.likeBtn:hover {
+  transform: scale(1.1);
+}
+
+.likeBtn.liked {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD CONTENT AREA
+   ═══════════════════════════════════════════════════ */
+
+.cardContent {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.cardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #10203b;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardLocation {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #5a6f85;
+  font-size: 0.84rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardLocation svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #007bbd;
+}
+
+/* ── Meta Details Micro-Pills ── */
+
+.listMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #007bbd;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.metaItem svg {
+  color: #007bbd;
+  flex-shrink: 0;
+}
+
+.metaTag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #007bbd;
+  color: white;
+  letter-spacing: 0.3px;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD FOOTER & STICKY OWNER CHIP WITH HOVER CALL BTN
+   ═══════════════════════════════════════════════════ */
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(30, 58, 95, 0.06);
+  position: relative;
+}
+
+.priceBlock {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.rentValue {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e3a5f;
+}
+
+.rentLabel {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Sticky Owner Chip Base */
+.gridOwnerChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 4px 6px 4px 4px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.gridOwnerChip:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.gridOwnerAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ownerAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ownerInitialSmall {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.gridOwnerName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 2px;
+}
+
+/* Call Button - Hidden by default inside the chip */
+.gridCallBadge {
+  width: 0;
+  height: 26px;
+  border-radius: 50%;
+  background: #007bbd;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.6);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: -6px;
+}
+
+.gridCallBadge svg {
+  width: 12px;
+  height: 12px;
+  fill: #ffffff;
+}
+
+/* Show Call Button when CARD is hovered */
+.card:hover .gridCallBadge {
+  width: 26px;
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  margin-left: 0;
+  box-shadow: 0 2px 6px rgba(0, 123, 189, 0.3);
+}
+
+/* Standalone Contact Button (Fallback) */
+.contactIconBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #007bbd;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 123, 189, 0.25);
+  transition: background 0.2s ease;
+}
+
+.contactIconBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.contactIconBtn:hover {
+  background: #005f94;
+}
+
+/* ═══════════════════════════════════════════════════
+   LIST VIEW VARIANT STYLES
+   ═══════════════════════════════════════════════════ */
+
 .cardList {
   display: flex;
   flex-direction: row;
@@ -23,15 +338,15 @@
   height: 180px;
   border-radius: 16px;
   overflow: hidden;
-  background: white;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid #f1f5f9;
   transition: box-shadow 0.25s, transform 0.25s;
   position: relative;
 }
 
 .cardList:hover {
-  box-shadow: 0 8px 28px rgba(0,123,189,0.12);
+  box-shadow: 0 8px 28px rgba(0, 123, 189, 0.12);
   transform: translateY(-2px);
 }
 
@@ -116,520 +431,22 @@
   margin: 0;
 }
 
-.cardList .cardFooter {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 12px;
-  min-width: 180px;
-  padding-left: 24px;
-  border-left: 1px solid #e2e8f0;
-  margin-top: 0;
-  border-top: none;
-}
-
-.cardList .priceBlock {
-  text-align: right;
-}
-
-.cardList .rentValue {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1e293b;
-  display: block;
-}
-
-.cardList .rentLabel {
-  font-size: 12px;
-  color: #94a3b8;
-  display: block;
-  margin-top: 2px;
-}
-
-.cardList .contactIconBtn {
-  position: static;
-  opacity: 1 !important;
-  transform: none !important;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #007bbd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.cardList .contactIconBtn:hover {
-  background: #005f94;
-}
-
-/* Image area */
-.cardImageWrap {
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.cardImage {
-  height: 220px;
-  position: relative;
-  overflow: hidden;
-  background-color: #f3f6fb;
-}
-
-.cardImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.35s ease;
-}
-
-.card:hover .cardImg {
-  transform: scale(1.03);
-}
-
-/* Badges */
-.badgeRow {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  display: flex;
-  gap: 6px;
-  z-index: 3;
-}
-
-.badgeType {
-  padding: 5px 12px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #1e3a5f, #16304b);
-  color: #ffffff;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.badgeFurnish {
-  padding: 5px 12px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #007bbd;
-  font-size: 0.72rem;
-  font-weight: 700;
-  border: 1px solid rgba(0, 123, 189, 0.2);
-}
-
-/* Like button */
-.likeBtn {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: none;
-  background: #999696;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  z-index: 3;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  transition: transform 0.15s ease;
-}
-
-.likeBtn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.likeBtn:hover {
-  transform: scale(1.1);
-}
-
-.likeBtn.liked {
-  background: #ffffff;
-  transform: scale(1.05);
-}
-
-/* Content */
-.cardContent {
-  padding: 20px 22px 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
-
-.cardTop {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.cardTitle {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #10203b;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.cardLocation {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #5a6f85;
-  font-size: 0.84rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cardLocation svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  color: #007bbd;
-}
-
-/* Details row */
-.cardDetails {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.detailItem {
-  color: #475569;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: #f1f5f9;
-}
-
-/* Amenities */
-.amenities {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.amenityTag {
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: #f1f5f9;
-  color: #475569;
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-
-.amenityMore {
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: #ecfdf5;
-  color: #007bbd;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-/* Footer */
-.cardFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: auto;
-  padding-top: 14px;
-  border-top: 1px solid rgba(30, 58, 95, 0.06);
-}
-
-.priceBlock {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.rentValue {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #1e3a5f;
-}
-
-.rentLabel {
-  font-size: 0.78rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.enquiryBtn {
-  padding: 8px 18px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,123,189,0.2);
-  background: rgba(0,123,189,0.08);
-  color: #007bbd;
-  font-weight: 700;
-  font-size: 0.78rem;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  flex-shrink: 0;
-}
-
-.enquiryBtn:hover {
-  background: #007bbd;
-  color: #ffffff;
-  border-color: #007bbd;
-}
-
-/* ——————————————————————————————————
-   RESPONSIVE BREAKPOINTS
-   —————————————————————————————————— */
-
-@media (max-width: 880px) {
-  .cardList {
-    flex-direction: column;
-  }
-
-  .cardList .cardImageWrap {
-    flex: none;
-    max-width: 100%;
-  }
-
-  .cardList .cardImage {
-    height: 200px;
-    min-height: 200px;
-    border-radius: 0;
-  }
-
-  .cardList .cardContent {
-    padding: 18px 20px;
-  }
-}
-
-@media (max-width: 640px) {
-  .card {
-    border-radius: 16px;
-  }
-
-  .cardImage {
-    height: 190px;
-  }
-
-  .cardContent {
-    padding: 16px 18px 18px;
-    gap: 10px;
-  }
-
-  .cardTitle {
-    font-size: 1rem;
-  }
-
-  .rentValue {
-    font-size: 1.08rem;
-  }
-
-  .badgeRow {
-    top: 10px;
-    left: 10px;
-  }
-
-  .likeBtn {
-    top: 10px;
-    right: 10px;
-    width: 34px;
-    height: 34px;
-  }
-
-  .likeBtn svg {
-    width: 17px;
-    height: 17px;
-  }
-}
-
-@media (max-width: 400px) {
-  .cardImage {
-    height: 170px;
-  }
-
-  .cardContent {
-    padding: 14px 14px 16px;
-    gap: 8px;
-  }
-
-  .detailItem {
-    font-size: 0.78rem;
-  }
-}
-
-/* Contact Owner icon button - slides in from right on card hover */
-.contactIconBtn {
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: #007bbd;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.3);
-  opacity: 0;
-  transform: translateX(10px);
-  transition: opacity 250ms ease, transform 250ms ease;
-  z-index: 3;
-}
-
-.contactIconBtn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.card:hover .contactIconBtn {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.cardFooter {
-  position: relative;
-}
-
-/* Featured badge on image */
-.featuredBadge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: #f59e0b;
-  color: white;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-  z-index: 2;
-  letter-spacing: 0.3px;
-}
-
-/* List view meta details */
-.listMeta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.metaItem {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: #475569;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.metaItem svg {
-  color: #007bbd;
-  flex-shrink: 0;
-}
-
-.metaTag {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: #007bbd;
-  color: white;
-  letter-spacing: 0.3px;
-}
-
-/* Owner row in list view */
-.ownerRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.ownerAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.ownerAvatarImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.ownerInitial {
-  font-size: 13px;
-  font-weight: 700;
-  color: white;
-}
-
-.ownerInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.ownerName {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.ownerLabel {
-  font-size: 11px;
-  color: #94a3b8;
-  font-weight: 400;
-}
-
-/* List view price in content area */
-.listPrice {
+.cardList .listPrice {
   margin-top: 6px;
 }
 
-.listPriceValue {
+.cardList .listPriceValue {
   font-size: 18px;
   font-weight: 700;
   color: #1e293b;
 }
 
-.listPriceLabel {
+.cardList .listPriceLabel {
   font-size: 12px;
   color: #94a3b8;
   margin-left: 4px;
 }
 
-.cardList .cardFooter .priceBlock {
-  display: none;
-}
-
-/* List view right panel - owner + call */
 .cardList .cardFooter {
   display: flex;
   flex-direction: column;
@@ -640,7 +457,13 @@
   max-width: 160px;
   padding: 16px 14px;
   border-left: 1px solid #e2e8f0;
+  border-top: none;
+  margin-top: 0;
   gap: 10px;
+}
+
+.cardList .cardFooter .priceBlock {
+  display: none;
 }
 
 .ownerPanel {
@@ -660,13 +483,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
-
-.ownerAvatarImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .ownerInitial {
@@ -699,12 +516,12 @@
   color: #94a3b8;
 }
 
-.cardList .callBtn {
-  display: flex !important;
+.callBtn {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 90%;
+  width: 100%;
   padding: 7px 10px;
   border-radius: 8px;
   background: #007bbd;
@@ -713,16 +530,119 @@
   color: white;
   font-size: 11px;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,123,189,0.2);
+  box-shadow: 0 2px 8px rgba(0, 123, 189, 0.2);
   transition: background 0.2s, box-shadow 0.2s;
-  position: static !important;
-  opacity: 1 !important;
-  transform: none !important;
-  height: auto !important;
-  width: 90% !important;
 }
 
-.cardList .callBtn:hover {
+.callBtn:hover {
   background: #005f94;
-  box-shadow: 0 4px 12px rgba(0,123,189,0.3);
+  box-shadow: 0 4px 12px rgba(0, 123, 189, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE MEDIA QUERIES
+   ═══════════════════════════════════════════════════ */
+
+@media (max-width: 880px) {
+  .cardList {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .cardList .cardImageWrap {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .cardList .cardImage {
+    height: 200px;
+    min-height: 200px;
+  }
+
+  .cardList .cardContent {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 20px;
+  }
+
+  .cardList .cardFooter {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 12px;
+  }
+
+  .ownerPanel {
+    flex-direction: row;
+    width: auto;
+    text-align: left;
+  }
+
+  .ownerInfo {
+    align-items: flex-start;
+  }
+
+  .callBtn {
+    width: auto;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Mobile / Touch Devices par Call icon hamesha visible rahega */
+  .gridCallBadge {
+    width: 26px;
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    margin-left: 0;
+  }
+
+  .card {
+    border-radius: 16px;
+  }
+
+  .cardImage {
+    height: 190px;
+  }
+
+  .cardContent {
+    padding: 16px 18px 18px;
+    gap: 10px;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .rentValue {
+    font-size: 1.08rem;
+  }
+
+  .likeBtn {
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .likeBtn svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+@media (max-width: 400px) {
+  .cardImage {
+    height: 170px;
+  }
+
+  .cardContent {
+    padding: 14px 14px 16px;
+    gap: 8px;
+  }
 }

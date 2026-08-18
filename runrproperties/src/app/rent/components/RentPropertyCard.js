@@ -13,11 +13,6 @@ function formatRent(rent) {
   return `₹ ${rent.toLocaleString("en-IN")}`;
 }
 
-function capitalizeFirst(str) {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 export default function RentPropertyCard({ property, viewMode }) {
   const router = useRouter();
 
@@ -88,6 +83,8 @@ export default function RentPropertyCard({ property, viewMode }) {
             {property.location}
             {property.city ? `, ${property.city}` : ""}
           </p>
+
+          {/* List View Price */}
           {isListView && (
             <div className={styles.listPrice}>
               <span className={styles.listPriceValue}>
@@ -96,78 +93,77 @@ export default function RentPropertyCard({ property, viewMode }) {
               <span className={styles.listPriceLabel}>/month</span>
             </div>
           )}
-          {isListView && (
-            <div className={styles.listMeta}>
-              {property.bhk > 0 && (
-                <span className={styles.metaItem}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                  </svg>
-                  {property.bhk} BHK
-                </span>
-              )}
-              {property.bathrooms > 0 && (
-                <span className={styles.metaItem}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4 12h16M4 12V7a2 2 0 012-2h3M4 12v5a2 2 0 002 2h12a2 2 0 002-2v-5"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  {property.bathrooms} Bath
-                </span>
-              )}
-              {property.area > 0 && (
-                <span className={styles.metaItem}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <rect
-                      x="3"
-                      y="3"
-                      width="18"
-                      height="18"
-                      rx="2"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                    <path
-                      d="M3 9h18M9 3v18"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                  </svg>
-                  {property.area.toLocaleString("en-IN")} Sq.Ft.
-                </span>
-              )}
-              {property.furnishing && property.furnishing !== "" && (
-                <span className={styles.metaItem}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <rect
-                      x="2"
-                      y="7"
-                      width="20"
-                      height="13"
-                      rx="2"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                    <path
-                      d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                  </svg>
-                  {property.furnishing}
-                </span>
-              )}
-              <span className={styles.metaTag}>For Rent</span>
-            </div>
-          )}
+
+          {/* Meta Details Pills - Ab GRID & LIST dono views me dikhengi */}
+          <div className={styles.listMeta}>
+            {property.bhk > 0 && (
+              <span className={styles.metaItem}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+                {property.bhk} BHK
+              </span>
+            )}
+            {property.bathrooms > 0 && (
+              <span className={styles.metaItem}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M4 12h16M4 12V7a2 2 0 012-2h3M4 12v5a2 2 0 002 2h12a2 2 0 002-2v-5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                {property.bathrooms} Bath
+              </span>
+            )}
+            {property.area > 0 && (
+              <span className={styles.metaItem}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <rect
+                    x="3"
+                    y="3"
+                    width="18"
+                    height="18"
+                    rx="2"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <path
+                    d="M3 9h18M9 3v18"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+                {property.area.toLocaleString("en-IN")} Sq.Ft.
+              </span>
+            )}
+            {property.furnishing && property.furnishing !== "" && (
+              <span className={styles.metaItem}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <rect
+                    x="2"
+                    y="7"
+                    width="20"
+                    height="13"
+                    rx="2"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <path
+                    d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+                {property.furnishing}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className={styles.cardFooter}>
@@ -222,26 +218,73 @@ export default function RentPropertyCard({ property, viewMode }) {
                 </span>
                 <span className={styles.rentLabel}>/month</span>
               </div>
-              <button
-                className={styles.contactIconBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  requireAuth(() => setShowEnquiry(true));
-                }}
-                aria-label="Contact Owner"
-                title="Contact Owner"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+
+              {/* Grid View Floating Owner Chip */}
+              {property.owner ? (
+                <div
+                  className={styles.gridOwnerChip}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    requireAuth(() => setShowEnquiry(true));
+                  }}
+                  title="Contact Owner"
                 >
-                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-                </svg>
-              </button>
+                  <div
+                    className={styles.gridOwnerAvatar}
+                    style={{
+                      background: property.owner.profilePhoto
+                        ? "transparent"
+                        : property.owner.avatarColor || "#007bbd",
+                    }}
+                  >
+                    {property.owner.profilePhoto ? (
+                      <img
+                        src={property.owner.profilePhoto}
+                        alt={property.owner.name}
+                        className={styles.ownerAvatarImg}
+                      />
+                    ) : (
+                      <span className={styles.ownerInitialSmall}>
+                        {property.owner.name?.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <span className={styles.gridOwnerName}>
+                    {property.owner.name}
+                  </span>
+                  <div className={styles.gridCallBadge}>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" />
+                    </svg>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  className={styles.contactIconBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    requireAuth(() => setShowEnquiry(true));
+                  }}
+                  aria-label="Contact Owner"
+                  title="Contact Owner"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                  </svg>
+                </button>
+              )}
             </>
           )}
         </div>
