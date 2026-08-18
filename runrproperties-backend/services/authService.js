@@ -62,12 +62,7 @@ const loginUser = async ({ email, password }) => {
   // Bank partner approval status check
   if (user.role === 'bank_partner') {
     const bankProfile = await BankPartner.findOne({ userId: user._id });
-    if (!bankProfile || bankProfile.status === 'pending') {
-      const error = new Error('Your account is pending admin approval. Please wait.');
-      error.statusCode = 403;
-      throw error;
-    }
-    if (bankProfile.status === 'rejected') {
+    if (bankProfile && bankProfile.status === 'rejected') {
       const error = new Error('Your account has been rejected. Contact support.');
       error.statusCode = 403;
       throw error;

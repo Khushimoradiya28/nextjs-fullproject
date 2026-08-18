@@ -52,7 +52,7 @@ export default function BankPartnerRegister() {
         return "";
       case "mobile":
         if (!value.trim()) return "Mobile number is required";
-        if (!/^\d{10}$/.test(value)) return "Enter a valid 10-digit mobile number";
+        if (!/^[6-9]\d{9}$/.test(value)) return "Enter a valid 10-digit mobile number starting with 6-9";
         return "";
       case "password":
         if (!value) return "Password is required";
@@ -69,10 +69,14 @@ export default function BankPartnerRegister() {
   };
 
   const handleChange = (name, value) => {
-    setForm(prev => ({ ...prev, [name]: value }));
+    let sanitizedValue = value;
+    if (name === "mobile") {
+      sanitizedValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+    setForm(prev => ({ ...prev, [name]: sanitizedValue }));
     setError("");
     if (touched[name]) {
-      setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+      setErrors(prev => ({ ...prev, [name]: validateField(name, sanitizedValue) }));
     }
   };
 
@@ -161,7 +165,7 @@ export default function BankPartnerRegister() {
               </div>
               <div className={styles.formGroup}>
                 <label>Mobile *</label>
-                <input type="tel" placeholder="10-digit number" value={form.mobile} onChange={(e) => handleChange("mobile", e.target.value)} onBlur={() => handleBlur("mobile")} className={errors.mobile ? styles.inputError : ""} />
+                <input type="tel" placeholder="10-digit number" value={form.mobile} onChange={(e) => handleChange("mobile", e.target.value)} onBlur={() => handleBlur("mobile")} className={errors.mobile ? styles.inputError : ""} maxLength={10} />
                 {errors.mobile && <span className={styles.err}>{errors.mobile}</span>}
               </div>
             </div>
