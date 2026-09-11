@@ -259,8 +259,20 @@ export async function addProperty(propertyData) {
     formData.append("amenities", JSON.stringify(propertyData.amenities));
   }
 
-  if (propertyData.imageFile) {
-    formData.append("image", propertyData.imageFile);
+  if (propertyData.imageFiles && propertyData.imageFiles.length > 0) {
+    propertyData.imageFiles.forEach((file) => {
+      formData.append("images", file);
+    });
+  } else if (propertyData.imageFile) {
+    formData.append("images", propertyData.imageFile);
+  }
+
+  if (propertyData.existingImages && propertyData.existingImages.length > 0) {
+    const backendUrl = API_BASE.replace(/\/api\/?$/, "");
+    const relativeImages = propertyData.existingImages.map((img) =>
+      typeof img === "string" ? img.replace(backendUrl, "") : img
+    );
+    formData.append("images", JSON.stringify(relativeImages));
   } else if (propertyData.image && !propertyData.image.startsWith("blob:")) {
     const backendUrl = API_BASE.replace(/\/api\/?$/, "");
     const relativeImage = propertyData.image.replace(backendUrl, "");
@@ -341,8 +353,20 @@ export async function updateProperty(propertyId, updates) {
     formData.append("amenities", JSON.stringify(updates.amenities));
   }
 
-  if (updates.imageFile) {
-    formData.append("image", updates.imageFile);
+  if (updates.imageFiles && updates.imageFiles.length > 0) {
+    updates.imageFiles.forEach((file) => {
+      formData.append("images", file);
+    });
+  } else if (updates.imageFile) {
+    formData.append("images", updates.imageFile);
+  }
+
+  if (updates.existingImages) {
+    const backendUrl = API_BASE.replace(/\/api\/?$/, "");
+    const relativeImages = updates.existingImages.map((img) =>
+      typeof img === "string" ? img.replace(backendUrl, "") : img
+    );
+    formData.append("images", JSON.stringify(relativeImages));
   } else if (updates.image && !updates.image.startsWith("blob:")) {
     const backendUrl = API_BASE.replace(/\/api\/?$/, "");
     const relativeImage = updates.image.replace(backendUrl, "");
@@ -419,7 +443,9 @@ export async function searchProperties(filters = {}) {
 }
 
 export async function getPropertyById(propertyId) {
-  const data = await request(`${API_BASE}/properties/${propertyId}`);
+  const data = await request(`${API_BASE}/properties/${propertyId}`, {
+    headers: getHeaders(),
+  });
   if (data.success) {
     const raw = data.data || data.property;
     if (raw) return { success: true, property: mapProperty(raw) };

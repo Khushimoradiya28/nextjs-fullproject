@@ -75,25 +75,56 @@ const faqs = [
 
 function BankCard({ bank, onCheck, selected }) {
   return (
-    <div style={{background:"#ffffff",border:"1px solid #e8e8e3",borderRadius:"16px",padding:"20px",width:"220px",minWidth:"220px",display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
-      <div style={{width:"100%",height:"90px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-        {bank.image
-          ? <img src={bank.image} alt={bank.name} style={{maxWidth:"160px",maxHeight:"80px",width:"auto",height:"auto",objectFit:"contain"}} />
-          : <div style={{width:"64px",height:"64px",background:"#eff6ff",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"center",color:"#1a6fd4",fontWeight:"700",fontSize:"20px"}}>{(bank.name || bank.tagline || "").slice(0,2).toUpperCase()}</div>
-        }
+    <div className={`${styles.bankCardItem} ${selected ? styles.bankCardItemSelected : ""}`}>
+      {/* Big Logo on Top */}
+      <div className={styles.bankLogoWrap}>
+        {bank.image ? (
+          <img src={bank.image} alt={bank.name} className={styles.bankLogoImg} />
+        ) : (
+          <div className={styles.bankAvatarText}>
+            {(bank.name || "BK").slice(0, 2).toUpperCase()}
+          </div>
+        )}
       </div>
-      <div style={{width:"100%",height:"1px",background:"#f0f0ea",margin:"0"}} />
-      <div style={{height:"44px",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 12px"}}>
-        <span style={{fontSize:"13px",fontWeight:"500",color:"#333",textAlign:"center",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"100%"}}>{bank.tagline || bank.name}</span>
+
+      {/* Name below Logo */}
+      <div className={styles.bankInfoBlock}>
+        <h3 className={styles.bankCardTitle}>{bank.name}</h3>
+        <span className={styles.bankRatePill}>
+          {bank.rate ? `${bank.rate}% p.a.` : "Rate on request"}
+        </span>
       </div>
-      <div style={{height:"28px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-        <span style={{fontSize:"14px",color:"#1a6fd4",fontWeight:"500"}}>{selected && bank.rate ? `From ${bank.rate}% p.a.` : "Rate on request"}</span>
+
+      {/* Details List */}
+      <div className={styles.bankCompactList}>
+        <div className={styles.compactRow}>
+          <span>Loan Type</span>
+          <strong>{bank.loanType || "Home Loan"}</strong>
+        </div>
+        <div className={styles.compactRow}>
+          <span>Fee</span>
+          <strong>
+            {bank.processingFee
+              ? (bank.processingFee.startsWith("₹") || bank.processingFee.endsWith("%")
+                  ? bank.processingFee
+                  : `₹ ${bank.processingFee}`)
+              : "Nil / Min"}
+          </strong>
+        </div>
+        <div className={styles.compactRow}>
+          <span>Tenure</span>
+          <strong>{bank.maxTenure ? `${bank.maxTenure} Yrs` : "30 Yrs"}</strong>
+        </div>
       </div>
-      <div style={{marginTop:"16px",width:"100%"}}>
-        <button onClick={() => onCheck(bank)} style={{border:"1.5px solid #1a6fd4",borderRadius:"8px",padding:"9px 0",fontSize:"13px",color: selected ? "#fff" : "#1a6fd4",background: selected ? "#1a6fd4" : "#fff",cursor:"pointer",fontWeight:"500",width:"100%"}}>
-          {selected ? "✓ Applied" : "Check Offer"}
-        </button>
-      </div>
+
+      {/* Action Button */}
+      <button
+        type="button"
+        onClick={() => onCheck(bank)}
+        className={`${styles.bankCardBtn} ${selected ? styles.bankCardBtnSelected : ""}`}
+      >
+        {selected ? "✓ Applied" : "Apply Online"}
+      </button>
     </div>
   );
 }
@@ -133,15 +164,17 @@ export default function HomeLoansPage() {
   const displayBanks =
     dynamicBanks.length > 0
       ? dynamicBanks.map((b) => {
-          // Get rate from offers array (latest offer) or fall back to profile-level field
           const latestOffer = b.offers && b.offers.length > 0 ? b.offers[b.offers.length - 1] : null;
           const rate = latestOffer?.interestRate || b.interestRate;
           return {
             _id: b._id,
             name: b.bankName,
             rate: rate,
-            tagline: b.tagline || b.bankName,
-            image: b.logo || "/img/banks/sbi.jpg",
+            tagline: b.tagline || "",
+            loanType: latestOffer?.loanType || b.loanType || "Home Loan",
+            processingFee: latestOffer?.processingFee || b.processingFee || "",
+            maxTenure: latestOffer?.maxTenure || b.maxTenure || "",
+            image: b.logo || "",
           };
         })
       : fallbackBanks;
@@ -169,28 +202,26 @@ export default function HomeLoansPage() {
     setEnquiryBank(null);
   };
 
-  const marqueeRow1 = [
-    ...displayBanks,
-    ...displayBanks,
-    ...displayBanks,
-    ...displayBanks,
-    ...displayBanks,
-    ...displayBanks,
-  ];
-
   return (
     <div className={styles.page}>
       <Header />
 
+      {/* Standard Minimal Breadcrumb */}
+      <div className={styles.breadcrumbBar}>
+        <a href="/" className={styles.breadcrumbLink}>Home</a>
+        <span className={styles.breadcrumbSep}>/</span>
+        <span className={styles.breadcrumbCurrent}>Home Loans</span>
+      </div>
+
       <main className={styles.main}>
         <section className={styles.hero}>
-          <span className={styles.heroLabel}>Home Loans</span>
+          <span className={styles.heroBadge}>Home Financing</span>
           <h1 className={styles.heroTitle}>
             Get Your Dream Home <span className={styles.highlight}>Funded</span>
           </h1>
           <p className={styles.heroText}>
             Compare rates from top banks, calculate EMI, and apply online.
-            Lowest interest rates starting at 8.40% p.a.
+            Lowest interest rates starting at 7.80% p.a.
           </p>
         </section>
 
@@ -205,14 +236,16 @@ export default function HomeLoansPage() {
           <div className={styles.calcGrid}>
             <div className={styles.calcInputs}>
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Loan Amount</label>
-                <div className={styles.sliderWrap}>
-                  <span className={styles.inputValue}>
+                <div className={styles.inputHeader}>
+                  <label className={styles.inputLabel}>Loan Amount</label>
+                  <span className={styles.inputValueBadge}>
                     ₹ {loanAmount.toLocaleString("en-IN")}
                   </span>
+                </div>
+                <div className={styles.sliderWrap}>
                   <input
                     type="range"
-                    min="0"
+                    min="100000"
                     max="50000000"
                     step="100000"
                     value={loanAmount}
@@ -220,38 +253,40 @@ export default function HomeLoansPage() {
                     className={styles.rangeSlider}
                   />
                   <div className={styles.rangeLabels}>
-                    <span>₹ 0</span>
+                    <span>₹ 1 Lakh</span>
                     <span>₹ 5 Cr</span>
                   </div>
                 </div>
               </div>
 
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>
-                  Interest Rate (% p.a.)
-                </label>
+                <div className={styles.inputHeader}>
+                  <label className={styles.inputLabel}>Interest Rate (% p.a.)</label>
+                  <span className={styles.inputValueBadge}>{interestRate}%</span>
+                </div>
                 <div className={styles.sliderWrap}>
-                  <span className={styles.inputValue}>{interestRate}%</span>
                   <input
                     type="range"
-                    min="1"
+                    min="5"
                     max="15"
-                    step="0.1"
+                    step="0.05"
                     value={interestRate}
                     onChange={(e) => setInterestRate(Number(e.target.value))}
                     className={styles.rangeSlider}
                   />
                   <div className={styles.rangeLabels}>
-                    <span>1%</span>
+                    <span>5%</span>
                     <span>15%</span>
                   </div>
                 </div>
               </div>
 
               <div className={styles.inputGroup}>
-                <label className={styles.inputLabel}>Loan Tenure (Years)</label>
+                <div className={styles.inputHeader}>
+                  <label className={styles.inputLabel}>Loan Tenure</label>
+                  <span className={styles.inputValueBadge}>{tenure} Years</span>
+                </div>
                 <div className={styles.sliderWrap}>
-                  <span className={styles.inputValue}>{tenure} Years</span>
                   <input
                     type="range"
                     min="1"
@@ -262,8 +297,8 @@ export default function HomeLoansPage() {
                     className={styles.rangeSlider}
                   />
                   <div className={styles.rangeLabels}>
-                    <span>1 Yr</span>
-                    <span>30 Yrs</span>
+                    <span>1 Year</span>
+                    <span>30 Years</span>
                   </div>
                 </div>
               </div>
@@ -277,13 +312,13 @@ export default function HomeLoansPage() {
                 </p>
                 {selectedBank && (
                   <span className={styles.bankTag}>
-                    via {selectedBank.name}
+                    Selected: {selectedBank.name} ({interestRate}%)
                   </span>
                 )}
               </div>
               <div className={styles.breakdownGrid}>
                 <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Principal</span>
+                  <span className={styles.breakdownLabel}>Principal Amount</span>
                   <span className={styles.breakdownValue}>
                     ₹ {loanAmount.toLocaleString("en-IN")}
                   </span>
@@ -295,7 +330,7 @@ export default function HomeLoansPage() {
                   </span>
                 </div>
                 <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Total Payment</span>
+                  <span className={styles.breakdownLabel}>Total Amount Payable</span>
                   <span className={styles.breakdownValue}>
                     ₹ {Math.round(totalPayment).toLocaleString("en-IN")}
                   </span>
@@ -305,8 +340,39 @@ export default function HomeLoansPage() {
           </div>
         </section>
 
+        {/* Banking Partners Section (Marquee Slider) */}
+        {displayBanks.length > 0 && (
+          <section className={styles.banksSection}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Our Banking Partners</h2>
+              <p className={styles.sectionSubtitle}>
+                Compare pre-approved offers, interest rates, and apply directly
+              </p>
+            </div>
+
+            <div className={styles.marqueeWrap}>
+              <div className={styles.marqueeTrack}>
+                {/* Quadruple repeat to ensure seamless infinite looping on any screen width */}
+                {[...displayBanks, ...displayBanks, ...displayBanks, ...displayBanks].map((bank, idx) => (
+                  <BankCard
+                    key={`${bank._id || bank.name}-${idx}`}
+                    bank={bank}
+                    onCheck={handleCheckOffer}
+                    selected={selectedBank?.name === bank.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         <section className={styles.stepsSection}>
-          <h2 className={styles.sectionTitle}>How It Works</h2>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>How It Works</h2>
+            <p className={styles.sectionSubtitle}>
+              Four simple steps to secure your dream home loan
+            </p>
+          </div>
           <div className={styles.stepsGrid}>
             {steps.map((step) => (
               <div key={step.number} className={styles.stepCard}>
@@ -318,36 +384,13 @@ export default function HomeLoansPage() {
           </div>
         </section>
 
-        <section className={styles.banksSection}>
-          <h2 className={styles.banksSectionTitle}>Our Banking Partners</h2>
-          <p className={styles.banksSectionSubtitle}>
-            Compare rates and choose the best offer for you
-          </p>
-
-          <div className={styles.banksCarouselWrap}>
-            <div className={styles.marqueeWrap}>
-              <div className={styles.marqueeTrack}>
-                {marqueeRow1.map((bank, i) => (
-                  <BankCard
-                    key={`r1-${i}`}
-                    bank={bank}
-                    onCheck={handleCheckOffer}
-                    selected={selectedBank?.name === bank.name}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.banksDots}>
-            {displayBanks.slice(0, 5).map((_, i) => (
-              <span key={i} className={`${styles.banksDot} ${i === 0 ? styles.banksDotActive : ""}`} />
-            ))}
-          </div>
-        </section>
-
         <section className={styles.faqSection}>
-          <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
+            <p className={styles.sectionSubtitle}>
+              Got questions about home loans? We have answers to help you make informed decisions
+            </p>
+          </div>
           <div className={styles.faqList}>
             {faqs.map((faq, i) => (
               <div

@@ -1,5 +1,28 @@
 .page { display: flex; flex: 1; flex-direction: column; background: linear-gradient(180deg, #fcfaf8 0%, #f7f3ee 100%); min-height: 100vh; }
-.main { flex: 1; width: calc(100vw - 300px); max-width: calc(100vw - 300px); margin: 0 auto; padding: 0 0 64px; }
+.main {
+  flex: 1;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 160px 64px;
+}
+
+@media (max-width: 1400px) {
+  .main {
+    padding: 0 80px 50px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main {
+    padding: 0 40px 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 0 16px 30px;
+  }
+}
 
 .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #94a3b8; margin-bottom: 16px; padding: 6px 0; flex-wrap: wrap; }
 .breadcrumbLink { color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s; }

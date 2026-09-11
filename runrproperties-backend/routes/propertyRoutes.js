@@ -53,11 +53,11 @@ router.get('/my', protect, authorize('owner'), getMyProperties);
 
 // --- Base path routes ---
 router.get('/', getAllProperties);
-router.post('/', protect, authorize('owner'), upload.single('image'), createProperty);
+router.post('/', protect, authorize('owner'), upload.array('images', 10), createProperty);
 
 // --- Parameterized routes (must be last) ---
 router.get('/:id', optionalAuth, getPropertyById);
-router.put('/:id', protect, authorize('owner'), upload.single('image'), updateProperty);
+router.put('/:id', protect, authorize('owner'), upload.array('images', 10), updateProperty);
 router.delete('/:id', protect, authorize('owner'), deleteProperty);
 
 module.exports = router;

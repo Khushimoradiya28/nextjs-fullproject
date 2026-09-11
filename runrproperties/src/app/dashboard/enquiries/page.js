@@ -9,9 +9,11 @@ import { showWishlistToast } from "../../components/WishlistToast";
 import ConfirmModal from "../../components/ConfirmModal";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import DashboardSidebar from "../../components/DashboardSidebar";
+import profileStyles from "../../profile/profile.module.css";
 import styles from "./enquiries.module.css";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 5;
 
 function formatDate(val) {
   if (!val) return "—";
@@ -58,7 +60,7 @@ export default function EnquiriesPage() {
     if (res.success) {
       setEnquiries(res.enquiries || []);
     } else {
-      setError(res.message || "Failed to load enquiries. Please try again.");
+      setError(res.message || "Failed to load enquiries.");
     }
     setFetching(false);
   };
@@ -112,37 +114,49 @@ export default function EnquiriesPage() {
   if (loading) return null;
 
   return (
-    <div className={styles.page}>
+    <div className={profileStyles.page}>
       <Header />
-      <main className={styles.main}>
-        <div className={styles.backLink}><Link href="/dashboard">← Back to Dashboard</Link></div>
-        <div className={styles.pageHeader}>
-          <h1 className={styles.pageTitle}>Received Enquiries</h1>
-          <p className={styles.pageSubtitle}>{enquiries.length} enquiries from buyers</p>
+      <div className={profileStyles.pageContainer}>
+        {/* Breadcrumb Header */}
+        <div className={profileStyles.breadcrumbBar}>
+          <Link href="/" className={profileStyles.breadcrumbLink}>Home</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <Link href="/dashboard" className={profileStyles.breadcrumbLink}>Dashboard</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <span className={profileStyles.breadcrumbCurrent}>Received Enquiries</span>
         </div>
 
-        {/* Loading State */}
-        {fetching && (
-          <div className={styles.skeletonWrap}>
-            {[1, 2, 3].map(i => <div key={i} className={styles.skeletonCard} />)}
-          </div>
-        )}
+        <main className={profileStyles.main}>
+          <DashboardSidebar />
 
-        {/* Error State */}
-        {!fetching && error && (
-          <div className={styles.errorState}>
-            <div className={styles.errorIcon}>
-              <svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          <div className={profileStyles.content}>
+            <div className={styles.pageHeader}>
+              <h1 className={styles.pageTitle}>Received Enquiries</h1>
+              <p className={styles.pageSubtitle}>{enquiries.length} enquiries from buyers</p>
             </div>
-            <h3>Something went wrong</h3>
-            <p>{error}</p>
-            <button className={styles.retryBtn} onClick={fetchEnquiries}>Retry</button>
-          </div>
-        )}
 
-        {/* Content */}
-        {!fetching && !error && (
-          <>
+            {/* Loading State */}
+            {fetching && (
+              <div className={styles.skeletonWrap}>
+                {[1, 2, 3].map(i => <div key={i} className={styles.skeletonCard} />)}
+              </div>
+            )}
+
+            {/* Error State */}
+            {!fetching && error && (
+              <div className={styles.errorState}>
+                <div className={styles.errorIcon}>
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                </div>
+                <h3>Something went wrong</h3>
+                <p>{error}</p>
+                <button className={styles.retryBtn} onClick={fetchEnquiries}>Retry</button>
+              </div>
+            )}
+
+            {/* Content */}
+            {!fetching && !error && (
+              <>
             {paginatedEnquiries.length > 0 ? (
               <>
                 <div className={styles.enquiryList}>
@@ -212,7 +226,9 @@ export default function EnquiriesPage() {
             )}
           </>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
       <Footer />
       {deleteId && <ConfirmModal title="Delete Enquiry" message="Are you sure you want to delete this enquiry?" confirmText="Delete" onConfirm={handleDelete} onCancel={() => setDeleteId(null)} loading={deleting} />}
     </div>

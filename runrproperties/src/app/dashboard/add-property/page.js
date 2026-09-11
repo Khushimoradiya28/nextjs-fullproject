@@ -9,6 +9,8 @@ import { showWishlistToast } from "../../components/WishlistToast";
 import PropertyForm from "../components/PropertyForm";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import DashboardSidebar from "../../components/DashboardSidebar";
+import profileStyles from "../../profile/profile.module.css";
 import styles from "./addproperty.module.css";
 
 export default function AddPropertyPage() {
@@ -45,22 +47,36 @@ export default function AddPropertyPage() {
   if (loading || !user) return null;
 
   return (
-    <div className={styles.page}>
+    <div className={profileStyles.page}>
       <Header />
-      <main className={styles.main}>
-        <div className={styles.pageHeader}>
-          <div className={styles.breadcrumb}>
-            <Link href="/" className={styles.breadcrumbLink}>Home</Link>
-            <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-            <Link href="/profile" className={styles.breadcrumbLink}>Profile</Link>
-            <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-            <span className={styles.breadcrumbCurrent}>Add Property</span>
-          </div>
-          <h1 className={styles.pageTitle}>Add New Property</h1>
+      <div className={profileStyles.pageContainer}>
+        {/* Breadcrumb Header */}
+        <div className={profileStyles.breadcrumbBar}>
+          <Link href="/" className={profileStyles.breadcrumbLink}>Home</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <Link href="/dashboard" className={profileStyles.breadcrumbLink}>Dashboard</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <span className={profileStyles.breadcrumbCurrent}>Add Property</span>
         </div>
-        {error && <div className={styles.errorMsg}>{error}</div>}
-        <PropertyForm onSubmit={handleSubmit} submitLabel="List Property" loading={submitting} />
-      </main>
+
+        <main className={profileStyles.main}>
+          <DashboardSidebar />
+
+          <div className={profileStyles.content}>
+            <div className={styles.pageHeader}>
+              <div className={styles.pageTitleWrapper}>
+                <div>
+                  <h1 className={styles.pageTitle}>Add New Property</h1>
+                  <p className={styles.pageSubtitle}>Fill in the details below to publish your residential or commercial listing</p>
+                </div>
+                <span className={styles.titleBadge}>Owner Portal</span>
+              </div>
+            </div>
+            {error && <div className={styles.errorMsg}><span>✕</span> {error}</div>}
+            <PropertyForm onSubmit={handleSubmit} submitLabel="List Property" loading={submitting} />
+          </div>
+        </main>
+      </div>
       <Footer />
     </div>
   );

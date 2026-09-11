@@ -78,15 +78,15 @@ function LoginForm() {
       )}
 
       {error && !(registered && error.toLowerCase().includes('pending')) && (
-        <div className={`text-sm px-3 py-2 rounded-md ${
-          error.toLowerCase().includes('pending')
-            ? 'bg-orange-50 text-orange-700 border border-orange-200'
-            : error.toLowerCase().includes('rejected')
-            ? 'bg-red-50 text-red-700 border border-red-200'
-            : 'bg-red-50 text-red-700 border border-red-200'
-        }`}>
-          {error.toLowerCase().includes('pending') && '\u23F3 '}
-          {error.toLowerCase().includes('rejected') && '\u274C '}
+        <div
+          className={
+            error.toLowerCase().includes('pending')
+              ? styles.pendingAlert
+              : styles.errorAlert
+          }
+        >
+          {error.toLowerCase().includes('pending') && '⏳ '}
+          {error.toLowerCase().includes('rejected') && '❌ '}
           {error}
         </div>
       )}

@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const path = require('path');
 
 /**
  * Singleton transporter - created once with strict timeouts, reused for all requests
@@ -36,6 +37,9 @@ const getTransporter = () => {
 const sendResetPasswordEmail = async ({ email, name, resetUrl }) => {
   const t = getTransporter();
 
+  // Local path to official logo asset
+  const logoPath = path.resolve(__dirname, '../../runrproperties/public/logo/runr-logo.png');
+
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -44,25 +48,24 @@ const sendResetPasswordEmail = async ({ email, name, resetUrl }) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reset Your Password - Runr Properties</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f7f3ee;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f7f3ee;padding:40px 16px;">
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(30,58,95,0.08);">
+        <!-- Main Container Card -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 12px 36px rgba(15,23,42,0.08);border:1px solid #e2e8f0;">
           
-          <!-- Logo Header -->
+          <!-- Official Site Logo Header -->
           <tr>
-            <td style="background:#ffffff;padding:32px 40px 24px;text-align:center;border-bottom:1px solid rgba(30,58,95,0.06);">
+            <td style="background:linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);padding:36px 40px 24px;text-align:center;border-bottom:1px solid #edf2f7;">
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
                 <tr>
-                  <td style="vertical-align:middle;padding-right:12px;">
-                    <div style="width:42px;height:42px;background:linear-gradient(135deg,#1e3a5f,#2b5278);border-radius:12px;display:inline-block;text-align:center;line-height:42px;">
-                      <span style="color:#3fa66b;font-size:18px;font-weight:800;">&#9679;</span>
-                    </div>
-                  </td>
-                  <td style="vertical-align:middle;">
-                    <p style="margin:0;color:#1e3a5f;font-size:20px;font-weight:800;letter-spacing:2px;line-height:1;">RUNR</p>
-                    <p style="margin:2px 0 0;color:#1e3a5f;font-size:8px;font-weight:700;letter-spacing:4px;">PROPERTIES</p>
+                  <td align="center" style="vertical-align:middle;">
+                    <img
+                      src="cid:runrLogo"
+                      alt="Runr Properties"
+                      style="display:block;max-width:210px;height:auto;border:0;outline:none;"
+                    />
                   </td>
                 </tr>
               </table>
@@ -73,46 +76,57 @@ const sendResetPasswordEmail = async ({ email, name, resetUrl }) => {
           <tr>
             <td style="padding:36px 36px 28px;">
               
-              <!-- Greeting -->
-              <h2 style="margin:0 0 8px;color:#10203b;font-size:20px;font-weight:700;">Hi ${name || 'there'},</h2>
-              <p style="margin:0 0 24px;color:#5a6f85;font-size:15px;line-height:1.7;">
-                We received a request to reset the password for your RunR Properties account. Click the button below to set a new password.
+              <!-- Greeting & Header -->
+              <h2 style="margin:0 0 10px;color:#0f172a;font-size:20px;font-weight:700;letter-spacing:-0.3px;">Hi ${name || 'there'},</h2>
+              <p style="margin:0 0 24px;color:#475569;font-size:15px;line-height:1.65;">
+                We received a request to reset the password for your <strong>Runr Properties</strong> account. Click the secure button below to set a new password.
               </p>
 
-              <!-- Reset Button -->
+              <!-- Reset Action Button -->
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 28px;">
                 <tr>
                   <td align="center">
-                    <a href="${resetUrl}" target="_blank" style="display:inline-block;padding:14px 44px;background:linear-gradient(135deg,#1e3a5f,#16304b);color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px;box-shadow:0 6px 20px rgba(30,58,95,0.2);">
+                    <a href="${resetUrl}" target="_blank" style="display:inline-block;padding:15px 44px;background:linear-gradient(135deg, #007bbd 0%, #00659c 100%);color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px;box-shadow:0 6px 20px rgba(0,123,189,0.28);letter-spacing:0.3px;">
                       Reset Password
                     </a>
                   </td>
                 </tr>
               </table>
 
-              <!-- Plain URL -->
-              <p style="margin:0 0 6px;color:#94a3b8;font-size:12px;">
-                If the button doesn't work, copy and paste this link:
-              </p>
-              <p style="margin:0 0 28px;word-break:break-all;font-size:12px;">
-                <a href="${resetUrl}" style="color:#3fa66b;text-decoration:underline;">${resetUrl}</a>
-              </p>
-
-              <!-- Expiry Warning -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+              <!-- Expiry Alert Card -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 26px;">
                 <tr>
-                  <td style="background-color:#f0fdf4;border:1px solid rgba(63,166,107,0.15);border-radius:10px;padding:14px 18px;">
-                    <p style="margin:0;color:#166534;font-size:13px;line-height:1.5;">
-                      <strong>&#9200; This link expires in 10 minutes.</strong><br />
-                      After that, you'll need to request a new password reset.
-                    </p>
+                  <td style="background-color:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:14px 18px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="vertical-align:top;width:24px;padding-right:10px;font-size:16px;">
+                          &#9200;
+                        </td>
+                        <td style="vertical-align:middle;">
+                          <p style="margin:0;color:#0369a1;font-size:13px;line-height:1.5;font-weight:600;">
+                            This reset link will expire in 10 minutes.
+                          </p>
+                          <p style="margin:2px 0 0;color:#0284c7;font-size:12px;line-height:1.4;">
+                            After that, you'll need to submit a new reset request.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
 
-              <!-- Ignore Message -->
-              <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.6;">
-                If you didn't request this, you can safely ignore this email. Your password will remain unchanged and your account is secure.
+              <!-- Alternative Link Info -->
+              <p style="margin:0 0 6px;color:#64748b;font-size:12px;line-height:1.5;">
+                If the button above does not work, copy and paste this link into your browser:
+              </p>
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:24px;word-break:break-all;">
+                <a href="${resetUrl}" style="color:#007bbd;font-size:12px;text-decoration:underline;line-height:1.4;">${resetUrl}</a>
+              </div>
+
+              <!-- Security Notice -->
+              <p style="margin:0;color:#94a3b8;font-size:12.5px;line-height:1.6;border-top:1px dashed #e2e8f0;padding-top:18px;">
+                If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged and your account stays protected.
               </p>
 
             </td>
@@ -120,21 +134,30 @@ const sendResetPasswordEmail = async ({ email, name, resetUrl }) => {
 
           <!-- Footer -->
           <tr>
-            <td style="background-color:#f8fafc;padding:24px 36px;text-align:center;border-top:1px solid rgba(30,58,95,0.06);">
-              <p style="margin:0 0 4px;color:#1e3a5f;font-size:13px;font-weight:700;letter-spacing:1px;">RUNR PROPERTIES</p>
-              <p style="margin:0 0 8px;color:#5a6f85;font-size:12px;">Gujarat's trusted real estate platform</p>
-              <p style="margin:0;color:#94a3b8;font-size:11px;">&copy; ${new Date().getFullYear()} RunR Properties. All rights reserved.</p>
+            <td style="background-color:#f8fafc;padding:24px 36px;text-align:center;border-top:1px solid #e2e8f0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 8px;">
+                <tr>
+                  <td style="vertical-align:middle;padding-right:6px;">
+                    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#007bbd;"></span>
+                  </td>
+                  <td style="vertical-align:middle;">
+                    <p style="margin:0;color:#0f172a;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">RUNR PROPERTIES</p>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 6px;color:#64748b;font-size:12px;">Gujarat's trusted real estate & property platform</p>
+              <p style="margin:0;color:#94a3b8;font-size:11px;">&copy; ${new Date().getFullYear()} Runr Properties. All rights reserved.</p>
             </td>
           </tr>
 
         </table>
 
-        <!-- Sub-footer -->
+        <!-- Sub-footer Disclaimer -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
           <tr>
-            <td style="padding:20px 36px;text-align:center;">
+            <td style="padding:18px 36px;text-align:center;">
               <p style="margin:0;color:#94a3b8;font-size:11px;line-height:1.5;">
-                This is an automated email from RunR Properties. Please do not reply.
+                This is an automated security email from Runr Properties. Please do not reply directly to this message.
               </p>
             </td>
           </tr>
@@ -146,10 +169,17 @@ const sendResetPasswordEmail = async ({ email, name, resetUrl }) => {
 </html>`;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || `"RunR Properties" <${process.env.SMTP_USER}>`,
+    from: process.env.EMAIL_FROM || `"Runr Properties" <${process.env.SMTP_USER}>`,
     to: email,
-    subject: 'Reset Your Password - RunR Properties',
+    subject: 'Reset Your Password - Runr Properties',
     html,
+    attachments: [
+      {
+        filename: 'runr-logo.png',
+        path: logoPath,
+        cid: 'runrLogo', // referenced in img tag
+      },
+    ],
   };
 
   await t.sendMail(mailOptions);

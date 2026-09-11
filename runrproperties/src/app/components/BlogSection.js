@@ -25,37 +25,39 @@ const blogPosts = [
 export default function BlogSection() {
   return (
     <section className={styles.blogSection}>
-      <div className={styles.blogHeader}>
-        <div>
-          <span className={styles.label}>✦ Insights</span>
-          <h2 className={styles.sectionTitle}>Latest from Blog</h2>
-          <div className={styles.titleUnderline} />
+      <div className={styles.blogInner}>
+        <div className={styles.blogHeader}>
+          <div>
+            <span className={styles.label}>✦ Insights</span>
+            <h2 className={styles.sectionTitle}>Latest from Blog</h2>
+            <div className={styles.titleUnderline} />
+          </div>
+          <a href="/blog" className={styles.viewAll}>
+            View All Blogs →
+          </a>
         </div>
-        <a href="/blog" className={styles.viewAll}>
-          View All Blogs →
-        </a>
-      </div>
 
-      <div className={styles.blogGrid}>
-        {blogPosts.map((post) => (
-          <article key={post.title} className={styles.blogCard}>
-            <div className={styles.cardVisual} aria-hidden="true">
-              <Image
-                className={styles.cardImage}
-                src={post.image}
-                alt={post.title}
-                width={400}
-                height={240}
-                sizes="(max-width: 720px) 100vw, 33vw"
-              />
-            </div>
-            <div className={styles.cardContent}>
-              <span className={styles.cardDate}>{post.date}</span>
-              <h3 className={styles.cardTitle}>{post.title}</h3>
-              <p className={styles.cardText}>{post.description}</p>
-            </div>
-          </article>
-        ))}
+        <div className={styles.blogGrid}>
+          {blogPosts.map((post) => (
+            <article key={post.title} className={styles.blogCard}>
+              <div className={styles.cardVisual} aria-hidden="true">
+                <Image
+                  className={styles.cardImage}
+                  src={post.image}
+                  alt={post.title}
+                  width={400}
+                  height={240}
+                  sizes="(max-width: 720px) 100vw, 33vw"
+                />
+              </div>
+              <div className={styles.cardContent}>
+                <span className={styles.cardDate}>{post.date}</span>
+                <h3 className={styles.cardTitle}>{post.title}</h3>
+                <p className={styles.cardText}>{post.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
 
       <div className={styles.callbackPanel}>

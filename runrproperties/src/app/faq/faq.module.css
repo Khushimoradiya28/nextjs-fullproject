@@ -1,5 +1,28 @@
 .page { display: flex; flex: 1; flex-direction: column; background: linear-gradient(180deg, #fcfaf8 0%, #f7f3ee 100%); min-height: 100vh; }
-.main { flex: 1; width: calc(100vw - 300px); max-width: 820px; margin: 0 auto; padding: 0 0 64px; }
+.main {
+  flex: 1;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 160px 64px;
+}
+
+@media (max-width: 1400px) {
+  .main {
+    padding: 0 80px 50px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main {
+    padding: 0 40px 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 0 16px 30px;
+  }
+}
 .hero { padding: 48px 0 36px; text-align: center; }
 .heroLabel { text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; color: #007bbd; font-weight: 700; }
 .heroTitle { margin: 12px 0 16px; }

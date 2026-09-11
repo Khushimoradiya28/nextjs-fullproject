@@ -1,0 +1,244 @@
+.sidebar {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  padding: 26px 20px;
+  position: sticky;
+  top: 96px;
+  width: 100%;
+}
+
+/* Avatar area */
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.avatarWrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+}
+
+.avatarImg {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.2);
+}
+
+.avatarPlaceholder {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.2);
+}
+
+.avatarInitial {
+  font-size: 34px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.avatarUploadBtn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #007bbd;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.avatarUploadBtn svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.avatarUploadBtn:hover {
+  background: #00659c;
+  transform: scale(1.08);
+}
+
+.avatarFileInput {
+  display: none;
+}
+
+.uploadSpinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.avatarHint {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0;
+}
+
+.sidebarUserMeta {
+  text-align: center;
+  margin-top: 4px;
+}
+
+.sidebarName {
+  margin: 0 0 4px;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sidebarEmail {
+  margin: 0 0 10px;
+  font-size: 0.76rem;
+  color: #64748b;
+  word-break: break-all;
+}
+
+.sidebarRoleBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.sidebarDivider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 16px 0;
+}
+
+.sidebarSectionLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  padding: 10px 14px 4px;
+}
+
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebarLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebarSvg,
+.sidebarLink svg {
+  width: 18px !important;
+  height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  color: #64748b;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.sidebarLink:hover {
+  background: #f0f9ff;
+  color: #007bbd;
+}
+
+.sidebarLink:hover .sidebarSvg,
+.sidebarLink:hover svg {
+  color: #007bbd;
+}
+
+.sidebarLinkActive {
+  background: linear-gradient(135deg, rgba(238, 246, 255, 0.95) 0%, rgba(224, 242, 254, 0.8) 100%) !important;
+  color: #007bbd !important;
+  border-color: rgba(186, 230, 253, 0.8) !important;
+  box-shadow: 0 2px 8px rgba(0, 123, 189, 0.08);
+}
+
+.sidebarLinkActive .sidebarSvg,
+.sidebarLinkActive svg {
+  color: #007bbd !important;
+}
+
+.sidebarBadge {
+  margin-left: auto;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.logoutLink {
+  color: #dc2626 !important;
+  border-radius: 12px;
+  margin-top: 2px;
+}
+
+.logoutLink .sidebarSvg,
+.logoutLink svg {
+  color: #dc2626 !important;
+  stroke: #dc2626 !important;
+}
+
+.logoutLink:hover {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+.logoutLink:hover .sidebarSvg,
+.logoutLink:hover svg {
+  color: #b91c1c !important;
+  stroke: #b91c1c !important;
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    position: static;
+    margin-bottom: 24px;
+  }
+}

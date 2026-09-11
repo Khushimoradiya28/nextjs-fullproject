@@ -101,6 +101,11 @@ const propertySchema = new mongoose.Schema(
       enum: ['active', 'inactive', 'sold'],
       default: 'active',
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
     views: {
       type: Number,
       default: 0,

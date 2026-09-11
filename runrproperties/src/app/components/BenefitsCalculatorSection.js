@@ -59,100 +59,102 @@ export default function BenefitsCalculatorSection() {
   }, [calculatedEMI]);
 
   return (
-    <section className={styles.sectionWrapper}>
-      <div className={styles.innerGrid}>
-        <div className={styles.benefitsPanel}>
-          <div className={styles.sectionTitleBox}>
-            <span className={styles.sectionTag}>✦ Why Us</span>
-            <h2>Why Choose Runr Properties?</h2>
-            <span className={styles.titleUnderline} aria-hidden="true" />
+    <div className={styles.sectionOuter}>
+      <section className={styles.sectionWrapper}>
+        <div className={styles.innerGrid}>
+          <div className={styles.benefitsPanel}>
+            <div className={styles.sectionTitleBox}>
+              <span className={styles.sectionTag}>✦ Why Us</span>
+              <h2>Why Choose Runr Properties?</h2>
+              <span className={styles.titleUnderline} aria-hidden="true" />
+            </div>
+
+            <div className={styles.benefitGrid}>
+              {benefits.map((item) => (
+                <article key={item.title} className={styles.benefitCard}>
+                  <div className={styles.benefitIcon}>
+                    <Image src={item.image} alt="" aria-hidden="true" width={64} height={64} />
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </article>
+              ))}
+            </div>
           </div>
 
-          <div className={styles.benefitGrid}>
-            {benefits.map((item) => (
-              <article key={item.title} className={styles.benefitCard}>
-                <div className={styles.benefitIcon}>
-                  <Image src={item.image} alt="" aria-hidden="true" width={64} height={64} />
+          <div className={styles.calculatorPanel}>
+            <div className={styles.calcHeader}>
+              <h3>Home Loan – EMI Calculator</h3>
+              <span className={styles.titleUnderline} aria-hidden="true" />
+            </div>
+
+            <div className={styles.calcBody}>
+              <form className={styles.calcForm} onSubmit={(event) => event.preventDefault()}>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="loan-amount">
+                    Loan Amount
+                  </label>
+                  <input
+                    id="loan-amount"
+                    className={styles.fieldInput}
+                    type="text"
+                    value={`₹ ${loanAmount.toLocaleString("en-IN")}`}
+                    onChange={(event) => setLoanAmount(parseNumber(event.target.value))}
+                  />
                 </div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </div>
 
-        <div className={styles.calculatorPanel}>
-          <div className={styles.calcHeader}>
-            <h3>Home Loan – EMI Calculator</h3>
-            <span className={styles.titleUnderline} aria-hidden="true" />
-          </div>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="interest-rate">
+                    Interest Rate (%)
+                  </label>
+                  <input
+                    id="interest-rate"
+                    className={styles.fieldInput}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={interestRate}
+                    onChange={(event) => setInterestRate(Number(event.target.value))}
+                  />
+                </div>
 
-          <div className={styles.calcBody}>
-            <form className={styles.calcForm} onSubmit={(event) => event.preventDefault()}>
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel} htmlFor="loan-amount">
-                  Loan Amount
-                </label>
-                <input
-                  id="loan-amount"
-                  className={styles.fieldInput}
-                  type="text"
-                  value={`₹ ${loanAmount.toLocaleString("en-IN")}`}
-                  onChange={(event) => setLoanAmount(parseNumber(event.target.value))}
-                />
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="tenure-years">
+                    Tenure (Years)
+                  </label>
+                  <input
+                    id="tenure-years"
+                    className={styles.fieldInput}
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={tenureYears}
+                    onChange={(event) => setTenureYears(Number(event.target.value))}
+                  />
+                </div>
+
+                <div className={styles.estimateCard}>
+                  <span className={styles.estimateLabel}>Estimated EMI</span>
+                  <p className={styles.estimateValue}>{formattedEMI}</p>
+                </div>
+              </form>
+
+              <div className={styles.calcDecorIcon} aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="6" y="4" width="36" height="40" rx="4" fill="#E8EDF5" stroke="#94A3B8" strokeWidth="1.5" />
+                  <rect x="10" y="8" width="28" height="10" rx="2" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="1" />
+                  <rect x="10" y="22" width="7" height="6" rx="1.5" fill="#D1D9E6" />
+                  <rect x="20" y="22" width="7" height="6" rx="1.5" fill="#D1D9E6" />
+                  <rect x="30" y="22" width="7" height="6" rx="1.5" fill="#D1D9E6" />
+                  <rect x="10" y="31" width="7" height="6" rx="1.5" fill="#D1D9E6" />
+                  <rect x="20" y="31" width="7" height="6" rx="1.5" fill="#D1D9E6" />
+                  <rect x="30" y="31" width="7" height="6" rx="1.5" fill="#3FA66B" />
+                </svg>
               </div>
-
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel} htmlFor="interest-rate">
-                  Interest Rate (%)
-                </label>
-                <input
-                  id="interest-rate"
-                  className={styles.fieldInput}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={interestRate}
-                  onChange={(event) => setInterestRate(Number(event.target.value))}
-                />
-              </div>
-
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel} htmlFor="tenure-years">
-                  Tenure (Years)
-                </label>
-                <input
-                  id="tenure-years"
-                  className={styles.fieldInput}
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={tenureYears}
-                  onChange={(event) => setTenureYears(Number(event.target.value))}
-                />
-              </div>
-
-              <div className={styles.estimateCard}>
-                <span className={styles.estimateLabel}>Estimated EMI</span>
-                <p className={styles.estimateValue}>{formattedEMI}</p>
-              </div>
-            </form>
-
-            <div className={styles.calcDecorIcon} aria-hidden="true">
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="4" width="36" height="40" rx="4" fill="#E8EDF5" stroke="#94A3B8" strokeWidth="1.5" />
-                <rect x="10" y="8" width="28" height="10" rx="2" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="1" />
-                <rect x="10" y="22" width="7" height="6" rx="1.5" fill="#D1D9E6" />
-                <rect x="20" y="22" width="7" height="6" rx="1.5" fill="#D1D9E6" />
-                <rect x="30" y="22" width="7" height="6" rx="1.5" fill="#D1D9E6" />
-                <rect x="10" y="31" width="7" height="6" rx="1.5" fill="#D1D9E6" />
-                <rect x="20" y="31" width="7" height="6" rx="1.5" fill="#D1D9E6" />
-                <rect x="30" y="31" width="7" height="6" rx="1.5" fill="#3FA66B" />
-              </svg>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

@@ -9,7 +9,7 @@ const createProperty = async (ownerId, data) => {
 };
 
 /**
- * Get all properties (public, only active)
+ * Get all properties (public, only active and not deleted)
  */
 const getAllProperties = async (query = {}) => {
   const {
@@ -29,12 +29,7 @@ const getAllProperties = async (query = {}) => {
     sortBy = "newest",
   } = query;
 
-  const filter = { status: "active" };
-
-  // if (city) filter.city = new RegExp(city, 'i');
-  // if (propertyType) filter.propertyType = propertyType;
-  // if (bedrooms) filter.bedrooms = Number(bedrooms);
-  // if (furnishing) filter.furnishing = furnishing;
+  const filter = { status: "active", isDeleted: { $ne: true } };
 
   const parseMulti = (val) => {
     if (!val) return null;
@@ -138,6 +133,7 @@ const searchProperties = async (query = {}) => {
   const regex = new RegExp(q, "i");
   const filter = {
     status: "active",
+    isDeleted: { $ne: true },
     $or: [
       { title: regex },
       { city: regex },
@@ -176,7 +172,7 @@ const searchProperties = async (query = {}) => {
 const getFeaturedProperties = async (query = {}) => {
   const { limit = 8 } = query;
 
-  const properties = await Property.find({ featured: true, status: "active" })
+  const properties = await Property.find({ featured: true, status: "active", isDeleted: { $ne: true } })
     .populate("owner", "name email mobile avatarColor profilePhoto")
     .sort({ createdAt: -1 })
     .limit(Number(limit));
@@ -187,11 +183,11 @@ const getFeaturedProperties = async (query = {}) => {
 /**
  * Get single property by ID
  * - Increments view count
- * - Blocks inactive/sold for non-owners
+ * - Blocks inactive/sold/deleted for non-owners
  * - Returns similar properties
  */
 const getPropertyById = async (id, requestingUserId = null) => {
-  const property = await Property.findById(id).populate(
+  const property = await Property.findOne({ _id: id, isDeleted: { $ne: true } }).populate(
     "owner",
     "name email mobile avatarColor profilePhoto",
   );
@@ -223,6 +219,7 @@ const getPropertyById = async (id, requestingUserId = null) => {
     propertyType: property.propertyType,
     listingType: property.listingType,
     status: "active",
+    isDeleted: { $ne: true },
   })
     .populate("owner", "name email mobile avatarColor profilePhoto")
     .sort({ createdAt: -1 })
@@ -232,12 +229,12 @@ const getPropertyById = async (id, requestingUserId = null) => {
 };
 
 /**
- * Get all properties by owner
+ * Get all properties by owner (excludes soft-deleted)
  */
 const getMyProperties = async (ownerId, query = {}) => {
   const { page = 1, limit = 12, status } = query;
 
-  const filter = { owner: ownerId };
+  const filter = { owner: ownerId, isDeleted: { $ne: true } };
   if (status) filter.status = status;
 
   const skip = (Number(page) - 1) * Number(limit);
@@ -265,7 +262,7 @@ const getMyProperties = async (ownerId, query = {}) => {
  * Update property (only by owner)
  */
 const updateProperty = async (propertyId, ownerId, data) => {
-  const property = await Property.findById(propertyId);
+  const property = await Property.findOne({ _id: propertyId, isDeleted: { $ne: true } });
   if (!property) {
     const error = new Error("Property not found");
     error.statusCode = 404;
@@ -289,10 +286,10 @@ const updateProperty = async (propertyId, ownerId, data) => {
 };
 
 /**
- * Delete property (only by owner)
+ * Soft Delete property (only by owner)
  */
 const deleteProperty = async (propertyId, ownerId) => {
-  const property = await Property.findById(propertyId);
+  const property = await Property.findOne({ _id: propertyId, isDeleted: { $ne: true } });
   if (!property) {
     const error = new Error("Property not found");
     error.statusCode = 404;
@@ -306,7 +303,11 @@ const deleteProperty = async (propertyId, ownerId) => {
     throw error;
   }
 
-  await Property.findByIdAndDelete(propertyId);
+  // Soft delete: flag isDeleted to true & status to inactive
+  property.isDeleted = true;
+  property.status = "inactive";
+  await property.save();
+
   return { message: "Property deleted successfully" };
 };
 

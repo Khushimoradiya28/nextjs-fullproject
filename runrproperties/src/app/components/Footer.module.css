@@ -10,16 +10,30 @@
 }
 
 .contentWrapper {
-  /* max-width: 1280px; */
-  /* margin: 0 auto; */
-  /* padding: 0 1.5rem; */
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 1440px; /* Header ke max-width se strictly matched */
   margin: 0 auto;
-  padding: 0 40px !important; /* Header ke same left-right spacing ke barabar */
+  padding: 0 160px !important;
   box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .contentWrapper {
+    padding: 0 80px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .contentWrapper {
+    padding: 0 40px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .contentWrapper {
+    padding: 0 16px !important;
+  }
 }
 
 /* ================= ANIMATED BACKGROUND ELEMENTS ================= */

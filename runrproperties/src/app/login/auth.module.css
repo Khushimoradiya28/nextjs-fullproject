@@ -2,7 +2,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  background: linear-gradient(165deg, #f0f7fd 0%, #f8fafb 40%, #fefefe 100%);
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
 }
 
@@ -11,20 +11,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 20px;
+  padding: 64px 24px 84px;
 }
 
 /* Card */
 .authCard {
   width: 100%;
-  max-width: 500px;
+  max-width: 440px;
   background: #ffffff;
   border-radius: 20px;
-  border: 1px solid rgba(30, 58, 95, 0.06);
+  border: 1px solid #e2e8f0;
   box-shadow:
-    0 4px 16px rgba(30, 58, 95, 0.04),
-    0 20px 56px rgba(30, 58, 95, 0.07);
-  padding: 32px 36px;
+    0 4px 12px rgba(15, 23, 42, 0.03),
+    0 16px 40px rgba(15, 23, 42, 0.06);
+  padding: 32px 32px;
 }
 
 /* Logo */
@@ -41,20 +41,20 @@
 /* Header */
 .authHeader {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .authTitle {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   font-size: 1.4rem;
   font-weight: 800;
-  color: #10203b;
+  color: #0f172a;
   letter-spacing: -0.02em;
 }
 
 .authSubtitle {
   margin: 0;
-  color: #5a6f85;
+  color: #64748b;
   font-size: 0.88rem;
   line-height: 1.5;
 }
@@ -63,40 +63,39 @@
 .authForm {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .formLabel {
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  color: #3f556d;
+  color: #334155;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .formInput {
   width: 100%;
-  padding: 11px 14px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(30, 58, 95, 0.1);
-  background: #f9fafb;
-  color: #1e3a5f;
-  font-size: 0.88rem;
+  padding: 11px 15px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.9rem;
   font-weight: 500;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .formInput:focus {
   outline: none;
   border-color: #007bbd;
-  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.08);
-  background: #ffffff;
+  box-shadow: 0 0 0 3.5px rgba(0, 123, 189, 0.12);
 }
 
 .formInput::placeholder {
@@ -111,22 +110,22 @@
 
 /* Messages */
 .errorMsg {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: rgba(220, 38, 38, 0.05);
-  border: 1px solid rgba(220, 38, 38, 0.12);
+  padding: 11px 15px;
+  border-radius: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   color: #dc2626;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 500;
 }
 
 .infoMsg {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: rgba(0, 123, 189, 0.05);
-  border: 1px solid rgba(0, 123, 189, 0.12);
+  padding: 11px 15px;
+  border-radius: 12px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
   color: #007bbd;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 500;
 }
 
@@ -140,7 +139,7 @@
   font-weight: 600;
   cursor: pointer;
   padding: 0;
-  margin-top: -4px;
+  margin-top: -2px;
 }
 
 .forgotLink:hover {
@@ -150,15 +149,15 @@
 /* Submit Button */
 .submitBtn {
   width: 100%;
-  padding: 13px 24px;
+  padding: 12px 24px;
   border-radius: 12px;
   border: none;
-  background: #007bbd;
+  background: linear-gradient(135deg, #007bbd 0%, #00659c 100%);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.92rem;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 123, 189, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.25);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   margin-top: 4px;
 }
@@ -169,13 +168,12 @@
 }
 
 .submitBtn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: #005f94;
-  box-shadow: 0 12px 32px rgba(0, 123, 189, 0.28);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 123, 189, 0.35);
 }
 
 .submitBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
@@ -183,10 +181,10 @@
 .switchText {
   text-align: center;
   margin-top: 20px;
-  color: #5a6f85;
-  font-size: 0.85rem;
+  color: #64748b;
+  font-size: 0.86rem;
   padding-top: 16px;
-  border-top: 1px solid rgba(30, 58, 95, 0.06);
+  border-top: 1px solid #f1f5f9;
 }
 
 .switchLink {
@@ -205,21 +203,21 @@
   margin-top: 14px;
   background: none;
   border: none;
-  color: #5a6f85;
+  color: #64748b;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .backLink:hover {
-  color: #1e3a5f;
+  color: #0f172a;
 }
 
 /* Role select */
 .roleSelect {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 15px;
+  gap: 12px;
 }
 
 .roleBtn {
@@ -227,33 +225,33 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 12px 10px;
+  padding: 12px 8px;
   border-radius: 12px;
-  border: 2px solid rgba(30, 58, 95, 0.08);
-  background: #f9fafb;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .roleBtn:hover {
   border-color: rgba(0, 123, 189, 0.4);
-  background: rgba(0, 123, 189, 0.04);
+  background: #f0f9ff;
 }
 
 .roleBtnActive {
   border-color: #007bbd;
-  background: rgba(0, 123, 189, 0.06);
+  background: #f0f9ff;
   box-shadow: 0 4px 12px rgba(0, 123, 189, 0.1);
 }
 
 .roleIcon {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .roleText {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #10203b;
+  color: #0f172a;
 }
 
 .roleDesc {
@@ -263,8 +261,12 @@
 
 /* Responsive */
 @media (max-width: 640px) {
+  .main {
+    padding: 36px 16px 60px;
+  }
+
   .authCard {
-    padding: 28px 20px;
+    padding: 24px 20px;
     border-radius: 16px;
     max-width: 100%;
   }
@@ -278,21 +280,7 @@
   }
 
   .authTitle {
-    font-size: 1.3rem;
-  }
-
-  .cardLogo img {
-    height: 30px;
-  }
-}
-
-@media (max-width: 400px) {
-  .main {
-    padding: 16px 10px;
-  }
-
-  .authCard {
-    padding: 24px 16px;
+    font-size: 1.25rem;
   }
 }
 
@@ -300,12 +288,12 @@
 .fieldError {
   display: block;
   color: #dc2626;
-  font-size: 0.72rem;
-  margin-top: 2px;
+  font-size: 0.74rem;
+  margin-top: 3px;
   font-weight: 500;
 }
 
 .inputError {
   border-color: #dc2626 !important;
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
 }

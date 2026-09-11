@@ -1,8 +1,26 @@
 .featuredSection {
-  width: calc(100vw - 300px);
-  max-width: calc(100vw - 300px);
+  width: 100%;
   margin: 30px auto 30px;
-  /* padding: 40px 0 0; */
+  padding: 0 160px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .featuredSection {
+    padding: 0 80px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .featuredSection {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .featuredSection {
+    padding: 0 16px;
+  }
 }
 
 .featuredHeader {

@@ -1,12 +1,35 @@
 .sectionWrapper {
-  width: calc(100vw - 300px);
-  max-width: calc(100vw - 300px);
+  width: 100%;
   margin: 0 auto 64px;
   padding: 28px 32px;
   background: #ffffff;
   border-radius: 16px;
   border: 1px solid rgba(30, 58, 95, 0.14);
   box-shadow: 0 12px 40px rgba(30, 58, 95, 0.06);
+}
+
+.sectionOuter {
+  width: 100%;
+  padding: 0 160px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .sectionOuter {
+    padding: 0 80px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sectionOuter {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sectionOuter {
+    padding: 0 16px;
+  }
 }
 
 .innerGrid {

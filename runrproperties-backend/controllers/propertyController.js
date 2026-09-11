@@ -33,15 +33,27 @@ const createProperty = async (req, res, next) => {
       }
     }
 
-    if (req.file) {
-      req.body.images = ['/uploads/properties/' + req.file.filename];
-    } else if (req.body.images && typeof req.body.images === 'string') {
-      try {
-        req.body.images = JSON.parse(req.body.images);
-      } catch (e) {
-        req.body.images = [req.body.images];
+    let uploadedImages = [];
+    if (req.files && req.files.length > 0) {
+      uploadedImages = req.files.map(f => '/uploads/properties/' + f.filename);
+    } else if (req.file) {
+      uploadedImages = ['/uploads/properties/' + req.file.filename];
+    }
+
+    let existingImages = [];
+    if (req.body.images) {
+      if (typeof req.body.images === 'string') {
+        try {
+          existingImages = JSON.parse(req.body.images);
+        } catch (e) {
+          existingImages = [req.body.images];
+        }
+      } else if (Array.isArray(req.body.images)) {
+        existingImages = req.body.images;
       }
     }
+
+    req.body.images = [...existingImages, ...uploadedImages];
 
     const property = await propertyService.createProperty(req.user._id, req.body);
 
@@ -168,14 +180,28 @@ const updateProperty = async (req, res, next) => {
       }
     }
 
-    if (req.file) {
-      req.body.images = ['/uploads/properties/' + req.file.filename];
-    } else if (req.body.images && typeof req.body.images === 'string') {
-      try {
-        req.body.images = JSON.parse(req.body.images);
-      } catch (e) {
-        req.body.images = [req.body.images];
+    let uploadedImages = [];
+    if (req.files && req.files.length > 0) {
+      uploadedImages = req.files.map(f => '/uploads/properties/' + f.filename);
+    } else if (req.file) {
+      uploadedImages = ['/uploads/properties/' + req.file.filename];
+    }
+
+    let existingImages = [];
+    if (req.body.images) {
+      if (typeof req.body.images === 'string') {
+        try {
+          existingImages = JSON.parse(req.body.images);
+        } catch (e) {
+          existingImages = [req.body.images];
+        }
+      } else if (Array.isArray(req.body.images)) {
+        existingImages = req.body.images;
       }
+    }
+
+    if (uploadedImages.length > 0 || existingImages.length > 0 || req.body.images !== undefined) {
+      req.body.images = [...existingImages, ...uploadedImages];
     }
 
     const property = await propertyService.updateProperty(req.params.id, req.user._id, req.body);

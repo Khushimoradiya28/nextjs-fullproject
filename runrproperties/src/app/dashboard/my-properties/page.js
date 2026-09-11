@@ -14,9 +14,24 @@ import { showWishlistToast } from "../../components/WishlistToast";
 import ConfirmModal from "../../components/ConfirmModal";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import DashboardSidebar from "../../components/DashboardSidebar";
+import profileStyles from "../../profile/profile.module.css";
 import styles from "./myproperties.module.css";
+import {
+  HiOutlineHome,
+  HiOutlineTag,
+  HiOutlineKey,
+  HiOutlineCheckCircle,
+  HiOutlinePlus,
+  HiOutlineLocationMarker,
+  HiOutlineEye,
+  HiOutlinePencilAlt,
+  HiOutlineTrash,
+  HiOutlineRefresh,
+  HiOutlineCheck,
+} from "react-icons/hi";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 4;
 
 function formatPrice(price) {
   if (!price) return "N/A";
@@ -129,6 +144,13 @@ export default function MyPropertiesPage() {
     setCurrentPage(1);
   }, [search, statusFilter, listingFilter, typeFilter, cityFilter]);
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 120, behavior: "smooth" });
+    }
+  };
+
   const handleDelete = async () => {
     setDeleting(true);
     const res = await deleteProperty(deleteId);
@@ -182,28 +204,36 @@ export default function MyPropertiesPage() {
   if (loading) return null;
 
   return (
-    <div className={styles.page}>
+    <div className={profileStyles.page}>
       <Header />
-      <main className={styles.main}>
-        <div className={styles.breadcrumb}>
-          <Link href="/dashboard" className={styles.breadcrumbLink}>
-            ← Back to Dashboard
-          </Link>
+      <div className={profileStyles.pageContainer}>
+        {/* Breadcrumb Header */}
+        <div className={profileStyles.breadcrumbBar}>
+          <Link href="/" className={profileStyles.breadcrumbLink}>Home</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <Link href="/dashboard" className={profileStyles.breadcrumbLink}>Dashboard</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <span className={profileStyles.breadcrumbCurrent}>My Properties</span>
         </div>
 
-        <div className={styles.pageHeader}>
-          <div>
-            <h1 className={styles.pageTitle}>My Properties</h1>
-            <p className={styles.pageSubtitle}>
-              {properties.length === 0
-                ? "No properties listed yet"
-                : `Manage your ${properties.length} listed ${properties.length === 1 ? "property" : "properties"}`}
-            </p>
-          </div>
-          <Link href="/dashboard/add-property" className={styles.addBtn}>
-            + Add New
-          </Link>
-        </div>
+        <main className={profileStyles.main}>
+          <DashboardSidebar />
+
+          <div className={profileStyles.content}>
+            <div className={styles.pageHeader}>
+              <div className={styles.headerText}>
+                <h1 className={styles.pageTitle}>My Properties</h1>
+                <p className={styles.pageSubtitle}>
+                  {properties.length === 0
+                    ? "No properties listed yet"
+                    : `Manage your ${properties.length} listed ${properties.length === 1 ? "property" : "properties"}`}
+                </p>
+              </div>
+              <Link href="/dashboard/add-property" className={styles.addBtn}>
+                <HiOutlinePlus />
+                <span>Add Property</span>
+              </Link>
+            </div>
 
         {/* Loading State */}
         {fetching && (
@@ -241,26 +271,46 @@ export default function MyPropertiesPage() {
           <>
             <div className={styles.statsRow}>
               <div className={styles.statCard}>
-                <span className={styles.statValue}>{properties.length}</span>
-                <span className={styles.statLabel}>Total</span>
+                <div className={`${styles.statIconBadge} ${styles.statIconTotal}`}>
+                  <HiOutlineHome />
+                </div>
+                <div className={styles.statMeta}>
+                  <span className={styles.statValue}>{properties.length}</span>
+                  <span className={styles.statLabel}>Total</span>
+                </div>
               </div>
               <div className={styles.statCard}>
-                <span className={styles.statValue}>
-                  {properties.filter((p) => p.listingType === "buy").length}
-                </span>
-                <span className={styles.statLabel}>For Sale</span>
+                <div className={`${styles.statIconBadge} ${styles.statIconSale}`}>
+                  <HiOutlineTag />
+                </div>
+                <div className={styles.statMeta}>
+                  <span className={styles.statValue}>
+                    {properties.filter((p) => p.listingType === "buy").length}
+                  </span>
+                  <span className={styles.statLabel}>For Sale</span>
+                </div>
               </div>
               <div className={styles.statCard}>
-                <span className={styles.statValue}>
-                  {properties.filter((p) => p.listingType === "rent").length}
-                </span>
-                <span className={styles.statLabel}>For Rent</span>
+                <div className={`${styles.statIconBadge} ${styles.statIconRent}`}>
+                  <HiOutlineKey />
+                </div>
+                <div className={styles.statMeta}>
+                  <span className={styles.statValue}>
+                    {properties.filter((p) => p.listingType === "rent").length}
+                  </span>
+                  <span className={styles.statLabel}>For Rent</span>
+                </div>
               </div>
               <div className={styles.statCard}>
-                <span className={styles.statValue}>
-                  {properties.filter((p) => p.status === "sold").length}
-                </span>
-                <span className={styles.statLabel}>Sold</span>
+                <div className={`${styles.statIconBadge} ${styles.statIconSold}`}>
+                  <HiOutlineCheckCircle />
+                </div>
+                <div className={styles.statMeta}>
+                  <span className={styles.statValue}>
+                    {properties.filter((p) => p.status === "sold").length}
+                  </span>
+                  <span className={styles.statLabel}>Sold</span>
+                </div>
               </div>
             </div>
 
@@ -381,6 +431,7 @@ export default function MyPropertiesPage() {
                 <div className={styles.propList}>
                   {paginatedProperties.map((prop) => (
                     <div key={prop.id} className={styles.propCard}>
+                      {/* Left: Thumbnail & Badges */}
                       <div className={styles.propImage}>
                         <img
                           src={
@@ -391,69 +442,128 @@ export default function MyPropertiesPage() {
                           alt={prop.title}
                           loading="lazy"
                         />
-                        <span className={styles.propBadge}>
-                          {prop.listingType === "rent" ? "Rent" : "Sale"}
+                        <span
+                          className={`${styles.propBadge} ${
+                            prop.listingType === "rent"
+                              ? styles.propBadgeRent
+                              : styles.propBadgeSale
+                          }`}
+                        >
+                          {prop.listingType === "rent" ? "For Rent" : "For Sale"}
+                        </span>
+                        <span
+                          className={`${styles.statusPill} ${
+                            prop.status === "sold"
+                              ? styles.statusPillSold
+                              : prop.status === "inactive"
+                              ? styles.statusPillInactive
+                              : styles.statusPillActive
+                          }`}
+                        >
+                          ● {prop.status === "sold" ? "Sold" : prop.status === "inactive" ? "Inactive" : "Active"}
                         </span>
                       </div>
+
+                      {/* Center: Property Details */}
                       <div className={styles.propInfo}>
-                        <h3 className={styles.propTitle}>{prop.title}</h3>
+                        <span className={styles.propCategoryTag}>
+                          {prop.category || "Residential"} • {prop.type || "Apartment"}
+                        </span>
+                        <Link href={`/property/${prop.id}`}>
+                          <h3 className={styles.propTitle}>{prop.title}</h3>
+                        </Link>
                         <p className={styles.propLocation}>
-                          {prop.location}
-                          {prop.city ? `, ${prop.city}` : ""}
+                          <HiOutlineLocationMarker />
+                          <span>
+                            {prop.location}
+                            {prop.city ? `, ${prop.city}` : ""}
+                          </span>
                         </p>
                         <div className={styles.propMeta}>
-                          {prop.bhk > 0 && <span>{prop.bhk} BHK</span>}
-                          {prop.area > 0 && <span>{prop.area} Sq.Ft.</span>}
+                          {prop.bhk > 0 && <span className={styles.metaChip}>{prop.bhk} BHK</span>}
+                          {prop.area > 0 && <span className={styles.metaChip}>{prop.area} Sq.Ft.</span>}
+                          {prop.furnishing && <span className={styles.metaChip}>{prop.furnishing}</span>}
                           <span className={styles.propPrice}>
                             {formatPrice(prop.price)}
+                            {prop.listingType === "rent" ? " / mo" : ""}
                           </span>
                         </div>
                       </div>
-                      <div className={styles.propActions}>
+
+                      {/* Right: 2x2 Action Button Grid */}
+                      <div className={styles.propActionsGrid}>
                         <Link
                           href={`/property/${prop.id}`}
-                          className={styles.viewBtn}
+                          className={`${styles.actionBtnItem} ${styles.actionView}`}
+                          title="View Listing"
                         >
-                          View
+                          <HiOutlineEye />
+                          <span>View</span>
                         </Link>
-                        {prop.status === "sold" ? (
-                          <span className={styles.soldBadge}>SOLD</span>
-                        ) : prop.status === "inactive" ? (
-                          <>
-                            <span className={styles.inactiveBadge}>
-                              INACTIVE
-                            </span>
-                            <button
-                              className={styles.editBtn}
-                              onClick={() => {
-                                setSoldId(prop.id);
-                              }}
-                            >
-                              Mark Active
-                            </button>
-                          </>
+
+                        {prop.status === "sold" || prop.status === "inactive" ? (
+                          <button
+                            type="button"
+                            className={`${styles.actionBtnItem} ${styles.actionEditDisabled}`}
+                            onClick={() =>
+                              showWishlistToast(
+                                "Please Reactivate this property to enable editing.",
+                                "removed"
+                              )
+                            }
+                            title="Reactivate property first to edit"
+                          >
+                            <HiOutlinePencilAlt />
+                            <span>Edit</span>
+                          </button>
                         ) : (
-                          <>
-                            <Link
-                              href={`/dashboard/edit-property/${prop.id}`}
-                              className={styles.editBtn}
-                            >
-                              Edit
-                            </Link>
-                            <button
-                              className={styles.deleteBtn}
-                              onClick={() => setDeleteId(prop.id)}
-                            >
-                              Delete
-                            </button>
-                            <button
-                              className={styles.soldBtn}
-                              onClick={() => setSoldId(prop.id)}
-                            >
-                              Mark Sold
-                            </button>
-                          </>
+                          <Link
+                            href={`/dashboard/edit-property/${prop.id}`}
+                            className={`${styles.actionBtnItem} ${styles.actionEdit}`}
+                            title="Edit Listing"
+                          >
+                            <HiOutlinePencilAlt />
+                            <span>Edit</span>
+                          </Link>
                         )}
+
+                        {prop.status === "sold" ? (
+                          <button
+                            className={`${styles.actionBtnItem} ${styles.actionSoldBadge}`}
+                            onClick={() => setSoldId(prop.id)}
+                            title="Reactivate Listing"
+                          >
+                            <HiOutlineRefresh />
+                            <span>Reactivate</span>
+                          </button>
+                        ) : prop.status === "inactive" ? (
+                          <button
+                            className={`${styles.actionBtnItem} ${styles.actionSold}`}
+                            onClick={() => setSoldId(prop.id)}
+                            title="Mark Active"
+                          >
+                            <HiOutlineCheck />
+                            <span>Activate</span>
+                          </button>
+                        ) : (
+                          <button
+                            className={`${styles.actionBtnItem} ${styles.actionSold}`}
+                            onClick={() => setSoldId(prop.id)}
+                            title="Mark as Sold"
+                          >
+                            <HiOutlineCheckCircle />
+                            <span>Sold</span>
+                          </button>
+                        )}
+
+                        <button
+                          className={`${styles.actionBtnItem} ${styles.actionDelete}`}
+                          onClick={() => setDeleteId(prop.id)}
+                          title="Delete Listing"
+                        >
+                          <HiOutlineTrash />
+                          <span>Delete</span>
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -465,7 +575,7 @@ export default function MyPropertiesPage() {
                     <button
                       className={styles.pageBtn}
                       disabled={currentPage === 1}
-                      onClick={() => setCurrentPage((p) => p - 1)}
+                      onClick={() => handlePageChange(currentPage - 1)}
                     >
                       ← Previous
                     </button>
@@ -474,7 +584,7 @@ export default function MyPropertiesPage() {
                         <button
                           key={num}
                           className={`${styles.pageNum} ${num === currentPage ? styles.pageNumActive : ""}`}
-                          onClick={() => setCurrentPage(num)}
+                          onClick={() => handlePageChange(num)}
                         >
                           {num}
                         </button>
@@ -483,7 +593,7 @@ export default function MyPropertiesPage() {
                     <button
                       className={styles.pageBtn}
                       disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage((p) => p + 1)}
+                      onClick={() => handlePageChange(currentPage + 1)}
                     >
                       Next →
                     </button>
@@ -518,7 +628,9 @@ export default function MyPropertiesPage() {
             )}
           </>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
       <Footer />
 
       {deleteId && (

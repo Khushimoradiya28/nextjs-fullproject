@@ -29,6 +29,8 @@ export default function PropertyDetailPage() {
   const [similarProperties, setSimilarProperties] = useState([]);
   const [stickyVisible, setStickyVisible] = useState(false);
 
+  const [isPaused, setIsPaused] = useState(false);
+
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -43,6 +45,20 @@ export default function PropertyDetailPage() {
     }
     if (id) load();
   }, [id]);
+
+  const images = property?.images?.length > 0 ? property.images : [property?.image || "/img/featured-properties/1.jpg"];
+
+  // Continuous Infinite Auto-Slider Loop (Switches every 3 seconds endlessly)
+  useEffect(() => {
+    if (!images || images.length <= 1 || lightboxOpen) return;
+    const interval = setInterval(() => {
+      setActiveImg((prev) => {
+        const next = prev + 1;
+        return next >= images.length ? 0 : next;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [images, lightboxOpen]);
 
   useEffect(() => { const h = () => setStickyVisible(window.scrollY > 500); window.addEventListener("scroll", h); return () => window.removeEventListener("scroll", h); }, []);
   useEffect(() => { if (!lightboxOpen) return; const h = (e) => { if (e.key === "Escape") setLightboxOpen(false); }; window.addEventListener("keydown", h); return () => window.removeEventListener("keydown", h); }, [lightboxOpen]);
@@ -87,7 +103,6 @@ export default function PropertyDetailPage() {
   );
 
   const liked = isInWishlist(property.id);
-  const images = property.images?.length > 0 ? property.images : [property.image || "/img/featured-properties/1.jpg"];
   const owner = property.owner || {};
   const statusClass = property.status === "active" ? styles.statusActive : property.status === "sold" ? styles.statusSold : styles.statusInactive;
 
@@ -98,24 +113,54 @@ export default function PropertyDetailPage() {
         {/* Breadcrumb */}
         <div className={styles.breadcrumb}>
           <Link href="/" className={styles.breadcrumbLink}>Home</Link>
-          <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-          <Link href={property.listingType === "rent" ? "/rent" : "/buy"} className={styles.breadcrumbLink}>{property.listingType === "rent" ? "Rent" : "Buy"}</Link>
-          <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
+          <span className={styles.breadcrumbSep}>/</span>
+          <Link href={property.listingType === "rent" ? "/rent" : "/buy"} className={styles.breadcrumbLink}>
+            {property.listingType === "rent" ? "Rent" : "Buy"}
+          </Link>
+          <span className={styles.breadcrumbSep}>/</span>
           <span className={styles.breadcrumbCurrent}>{property.title}</span>
         </div>
 
-        {/* Gallery */}
-        <div className={styles.gallery}>
+        {/* Gallery Auto Slider */}
+        <div
+          className={styles.gallery}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           <div className={styles.galleryMain} onClick={() => setLightboxOpen(true)}>
-            <img src={images[activeImg]} alt={property.title} />
+            <img
+              key={activeImg}
+              src={images[activeImg]}
+              alt={property.title}
+              className={styles.gallerySlideImg}
+            />
             <span className={styles.galleryCounter}>{activeImg + 1} / {images.length}</span>
+
+            {/* Slider Dots Indicator */}
+            {images.length > 1 && (
+              <div className={styles.sliderDots}>
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`${styles.sliderDot} ${i === activeImg ? styles.sliderDotActive : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImg(i);
+                    }}
+                    aria-label={`Go to slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+
             <div className={styles.galleryActions}>
               <button className={`${styles.galleryActionBtn} ${liked ? styles.liked : ""}`} onClick={(e) => { e.stopPropagation(); toggleWishlist(property); }} aria-label="Wishlist">
-                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill={liked ? "#e0245e" : "transparent"} stroke={liked ? "#e0245e" : "#fff"} strokeWidth="1.6" /></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill={liked ? "#ffffff" : "transparent"} stroke={liked ? "#ffffff" : "#ffffff"} strokeWidth="2" /></svg>
               </button>
               <div className={styles.shareWrap}>
                 <button className={styles.galleryActionBtn} onClick={(e) => { e.stopPropagation(); setShowShare(!showShare); }} aria-label="Share">
-                  <svg viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="#1e3a5f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </button>
                 {showShare && <div className={styles.shareDropdown} onClick={e => e.stopPropagation()}>
                   <button className={styles.shareItem} onClick={() => handleShare("copy")}>Copy Link</button>
@@ -125,10 +170,6 @@ export default function PropertyDetailPage() {
               </div>
             </div>
           </div>
-          {images.length > 1 && <>
-            <button className={`${styles.galleryNav} ${styles.galleryPrev}`} onClick={() => setActiveImg(p => (p - 1 + images.length) % images.length)}><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-            <button className={`${styles.galleryNav} ${styles.galleryNext}`} onClick={() => setActiveImg(p => (p + 1) % images.length)}><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-          </>}
         </div>
         {images.length > 1 && <div className={styles.thumbStrip}>{images.map((img, i) => <div key={i} className={`${styles.thumb} ${i === activeImg ? styles.active : ""}`} onClick={() => setActiveImg(i)}><img src={img} alt={`View ${i + 1}`} /></div>)}</div>}
 

@@ -5,8 +5,22 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import { getMyProperties, getReceivedEnquiries, getMyEnquiries, getWishlist } from "../services/api";
+import {
+  HiOutlineHome,
+  HiOutlineCheckCircle,
+  HiOutlineArchive,
+  HiOutlineMail,
+  HiOutlineHeart,
+  HiOutlineClipboardList,
+  HiOutlinePlusCircle,
+  HiOutlineExternalLink,
+  HiOutlineLocationMarker,
+  HiOutlinePencilAlt,
+  HiOutlineEye,
+} from "react-icons/hi";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import DashboardSidebar from "../components/DashboardSidebar";
 import profileStyles from "../profile/profile.module.css";
 import styles from "./dashboard.module.css";
 
@@ -96,16 +110,18 @@ export default function DashboardPage() {
     return (
       <div className={profileStyles.page}>
         <Header />
-        <main className={profileStyles.main}>
-          <aside className={profileStyles.sidebar}>
-            <div className={styles.skelAvatar} />
-            <div className={styles.skelLine} />
-            <div className={styles.skelLineShort} />
-          </aside>
-          <div className={profileStyles.content}>
-            <div className={styles.skeleton}><div className={styles.skelRow}><div className={styles.skelCard} /><div className={styles.skelCard} /><div className={styles.skelCard} /></div><div className={styles.skelBlock} /></div>
-          </div>
-        </main>
+        <div className={profileStyles.pageContainer}>
+          <main className={profileStyles.main}>
+            <aside className={profileStyles.sidebar}>
+              <div className={styles.skelAvatar} />
+              <div className={styles.skelLine} />
+              <div className={styles.skelLineShort} />
+            </aside>
+            <div className={profileStyles.content}>
+              <div className={styles.skeleton}><div className={styles.skelRow}><div className={styles.skelCard} /><div className={styles.skelCard} /><div className={styles.skelCard} /></div><div className={styles.skelBlock} /></div>
+            </div>
+          </main>
+        </div>
         <Footer />
       </div>
     );
@@ -114,54 +130,35 @@ export default function DashboardPage() {
   return (
     <div className={profileStyles.page}>
       <Header />
-      <main className={profileStyles.main}>
-        <aside className={profileStyles.sidebar}>
-          <div className={profileStyles.avatarSection}>
-            <div className={profileStyles.avatarWrap}>
-              {user.profilePhoto ? (
-                <img src={user.profilePhoto} alt={user.name} className={profileStyles.avatarImg} />
-              ) : (
-                <div className={profileStyles.avatarPlaceholder} style={{ background: user.avatarColor || "#2980b9" }}>
-                  <span className={profileStyles.avatarInitial}>{user.name?.charAt(0).toUpperCase()}</span>
-                </div>
-              )}
-            </div>
-          </div>
-          <h3 className={profileStyles.sidebarName}>{user.name}</h3>
-          <span className={profileStyles.sidebarRole}>{isOwner ? "Property Owner" : "Buyer"}</span>
-          <nav className={profileStyles.sidebarNav}>
-            <Link href="/dashboard" className={`${profileStyles.sidebarLink} ${profileStyles.sidebarLinkActive}`}><span className={profileStyles.sidebarIcon}>📊</span> Dashboard</Link>
-            <Link href="/profile" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>👤</span> Profile</Link>
-            <Link href="/wishlist" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>❤️</span> Wishlist</Link>
-            <Link href="/dashboard/my-enquiries" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>📋</span> My Enquiries</Link>
-            {isOwner && (
-              <>
-                <Link href="/dashboard/my-properties" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>🏠</span> My Properties</Link>
-                <Link href="/dashboard/add-property" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>➕</span> Add Property</Link>
-                <Link href="/dashboard/enquiries" className={profileStyles.sidebarLink}><span className={profileStyles.sidebarIcon}>📩</span> Enquiries</Link>
-              </>
-            )}
-            <button className={`${profileStyles.sidebarLink} ${profileStyles.logoutLink}`} onClick={handleLogout}><span className={profileStyles.sidebarIcon}>🚪</span> Logout</button>
-          </nav>
-        </aside>
-
-        <div className={profileStyles.content}>
-          {fetching ? (
-            <div className={styles.skeleton}><div className={styles.skelRow}><div className={styles.skelCard} /><div className={styles.skelCard} /><div className={styles.skelCard} /></div><div className={styles.skelBlock} /><div className={styles.skelBlock} /></div>
-          ) : error ? (
-            <div className={styles.errorState}>
-              <div className={styles.errorIcon}><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></div>
-              <h3>Something went wrong</h3>
-              <p>{error}</p>
-              <button className={styles.retryBtn} onClick={fetchData}>Retry</button>
-            </div>
-          ) : isOwner ? (
-            <OwnerDashboard stats={stats} />
-          ) : (
-            <BuyerDashboard stats={stats} />
-          )}
+      <div className={profileStyles.pageContainer}>
+        {/* Breadcrumb Header */}
+        <div className={profileStyles.breadcrumbBar}>
+          <Link href="/" className={profileStyles.breadcrumbLink}>Home</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <span className={profileStyles.breadcrumbCurrent}>Dashboard</span>
         </div>
-      </main>
+
+        <main className={profileStyles.main}>
+          <DashboardSidebar />
+
+          <div className={profileStyles.content}>
+            {fetching ? (
+              <div className={styles.skeleton}><div className={styles.skelRow}><div className={styles.skelCard} /><div className={styles.skelCard} /><div className={styles.skelCard} /><div className={styles.skelCard} /></div><div className={styles.skelBlock} /><div className={styles.skelBlock} /></div>
+            ) : error ? (
+              <div className={styles.errorState}>
+                <div className={styles.errorIcon}><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></div>
+                <h3>Something went wrong</h3>
+                <p>{error}</p>
+                <button className={styles.retryBtn} onClick={fetchData}>Retry</button>
+              </div>
+            ) : isOwner ? (
+              <OwnerDashboard stats={stats} />
+            ) : (
+              <BuyerDashboard stats={stats} />
+            )}
+          </div>
+        </main>
+      </div>
       <Footer />
     </div>
   );
@@ -175,62 +172,167 @@ function OwnerDashboard({ stats }) {
   return (
     <>
       <div className={styles.statsGrid}>
-        <Link href="/dashboard/my-properties" className={styles.statCard}><span className={styles.statIcon}>🏠</span><div><span className={styles.statValue}>{properties.length}</span><span className={styles.statLabel}>Total Properties</span></div></Link>
-        <Link href="/dashboard/my-properties" className={styles.statCard}><span className={styles.statIcon}>✅</span><div><span className={styles.statValue}>{active.length}</span><span className={styles.statLabel}>Active</span></div></Link>
-        <Link href="/dashboard/my-properties" className={styles.statCard}><span className={styles.statIcon}>📦</span><div><span className={styles.statValue}>{inactive.length}</span><span className={styles.statLabel}>Sold/Inactive</span></div></Link>
-        <Link href="/dashboard/enquiries" className={styles.statCard}><span className={styles.statIcon}>📩</span><div><span className={styles.statValue}>{enquiries.length}</span><span className={styles.statLabel}>Enquiries</span></div></Link>
+        <Link href="/dashboard/my-properties" className={styles.statCard}>
+          <div className={styles.statIconBadge}>
+            <HiOutlineHome />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{properties.length}</span>
+            <span className={styles.statLabel}>Total Properties</span>
+          </div>
+        </Link>
+        <Link href="/dashboard/my-properties" className={styles.statCard}>
+          <div className={styles.statIconBadge} style={{ background: "#ecfdf5", borderColor: "#a7f3d0", color: "#059669" }}>
+            <HiOutlineCheckCircle />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{active.length}</span>
+            <span className={styles.statLabel}>Active</span>
+          </div>
+        </Link>
+        <Link href="/dashboard/my-properties" className={styles.statCard}>
+          <div className={styles.statIconBadge} style={{ background: "#fef3c7", borderColor: "#fde68a", color: "#d97706" }}>
+            <HiOutlineArchive />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{inactive.length}</span>
+            <span className={styles.statLabel}>Sold/Inactive</span>
+          </div>
+        </Link>
+        <Link href="/dashboard/enquiries" className={styles.statCard}>
+          <div className={styles.statIconBadge} style={{ background: "#fdf2f8", borderColor: "#fbcfe8", color: "#db2777" }}>
+            <HiOutlineMail />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{enquiries.length}</span>
+            <span className={styles.statLabel}>Enquiries</span>
+          </div>
+        </Link>
       </div>
 
       <div className={styles.actionsRow}>
-        <Link href="/dashboard/add-property" className={styles.actionBtn}>+ Add Property</Link>
-        <Link href="/dashboard/my-properties" className={styles.actionBtnOutline}>My Properties</Link>
-        <Link href="/dashboard/enquiries" className={styles.actionBtnOutline}>Enquiries</Link>
+        <Link href="/dashboard/add-property" className={styles.actionBtn}>
+          <HiOutlinePlusCircle style={{ fontSize: "1.1rem" }} /> Add Property
+        </Link>
+        <Link href="/dashboard/my-properties" className={styles.actionBtnOutline}>
+          <HiOutlineHome /> My Properties
+        </Link>
+        <Link href="/dashboard/enquiries" className={styles.actionBtnOutline}>
+          <HiOutlineMail /> Enquiries
+        </Link>
       </div>
 
       <div className={styles.recentSection}>
-        <div className={styles.recentHeader}><h3>Recent Properties</h3><Link href="/dashboard/my-properties" className={styles.viewAll}>View All →</Link></div>
+        <div className={styles.recentHeader}>
+          <h3>Recent Properties</h3>
+          <Link href="/dashboard/my-properties" className={styles.viewAll}>
+            View All <HiOutlineExternalLink />
+          </Link>
+        </div>
         {properties.length > 0 ? (
           <div className={styles.recentList}>
-            {properties.slice(0, 5).map((p) => (
-              <div key={p._id || p.id} className={styles.recentCard}>
-                <div className={styles.recentImg}><img src={getImage(p)} alt={p.title} /></div>
-                <div className={styles.recentBody}>
-                  <h4 className={styles.recentTitle}>{p.title}</h4>
-                  <p className={styles.recentMeta}>{p.locality || p.location}{p.city ? `, ${p.city}` : ""}</p>
-                  <div className={styles.recentRow}>
-                    <span className={styles.recentPrice}>{formatPrice(p.price)}</span>
-                    <span className={`${styles.statusBadge} ${styles[`status${p.status || "active"}`]}`}>{p.status || "active"}</span>
+            {properties.slice(0, 5).map((p) => {
+              const propId = p._id || p.id;
+              const propDetailLink = `/property/${propId}`;
+              return (
+                <div key={propId} className={styles.recentCard}>
+                  <Link href={propDetailLink} className={styles.recentImg}>
+                    <img src={getImage(p)} alt={p.title} />
+                  </Link>
+                  <div className={styles.recentBody}>
+                    <div className={styles.recentTopMeta}>
+                      <span className={`${styles.statusBadge} ${styles[`status${p.status || "active"}`]}`}>
+                        {p.status || "active"}
+                      </span>
+                      {p.category && <span className={styles.categoryTag}>{p.category}</span>}
+                      {p.purpose && <span className={styles.categoryTag}>For {p.purpose}</span>}
+                    </div>
+
+                    <Link href={propDetailLink} style={{ textDecoration: "none" }}>
+                      <h4 className={styles.recentTitle}>{p.title}</h4>
+                    </Link>
+                    
+                    <p className={styles.recentMeta}>
+                      <HiOutlineLocationMarker />
+                      {p.locality || p.location}{p.city ? `, ${p.city}` : ""}
+                    </p>
+
+                    <div className={styles.recentSpecs}>
+                      {p.bedrooms ? <span className={styles.specChip}>{p.bedrooms} BHK</span> : null}
+                      {p.bathrooms ? <span className={styles.specChip}>{p.bathrooms} Bath</span> : null}
+                      {p.area ? <span className={styles.specChip}>{p.area} sq.ft</span> : null}
+                    </div>
+
+                    <div className={styles.recentRow}>
+                      <span className={styles.recentPrice}>{formatPrice(p.price)}</span>
+                      {p.createdAt && <span className={styles.dateText}>Added {formatDate(p.createdAt)}</span>}
+                    </div>
+                  </div>
+
+                  <div className={styles.recentActions}>
+                    <Link href={`/dashboard/edit-property/${propId}`} className={styles.miniBtnPrimary}>
+                      <HiOutlinePencilAlt /> Edit
+                    </Link>
+                    <Link href={propDetailLink} className={styles.miniBtn}>
+                      <HiOutlineEye /> View
+                    </Link>
                   </div>
                 </div>
-                <div className={styles.recentActions}><Link href={`/dashboard/edit-property/${p._id || p.id}`} className={styles.miniBtn}>Edit</Link></div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        ) : <p className={styles.emptyText}>No properties yet.</p>}
+        ) : (
+          <p className={styles.emptyText}>No properties added yet.</p>
+        )}
       </div>
 
       <div className={styles.recentSection}>
-        <div className={styles.recentHeader}><h3>Recent Enquiries</h3><Link href="/dashboard/enquiries" className={styles.viewAll}>View All →</Link></div>
+        <div className={styles.recentHeader}>
+          <h3>Recent Enquiries</h3>
+          <Link href="/dashboard/enquiries" className={styles.viewAll}>
+            View All <HiOutlineExternalLink />
+          </Link>
+        </div>
         {enquiries.length > 0 ? (
           <div className={styles.recentList}>
             {enquiries.slice(0, 5).map((e) => {
               const prop = e.property || {};
               return (
                 <div key={e._id} className={styles.recentCard}>
-                  <div className={styles.recentImg}><img src={getImage(prop)} alt={prop.title || ""} /></div>
+                  <div className={styles.recentImg}>
+                    <img src={getImage(prop)} alt={prop.title || ""} />
+                  </div>
                   <div className={styles.recentBody}>
-                    <h4 className={styles.recentTitle}>{prop.title || "Property"}</h4>
-                    <p className={styles.recentMeta}><strong>{e.name}</strong> — {e.message?.substring(0, 50)}{e.message?.length > 50 ? "..." : ""}</p>
-                    <div className={styles.recentRow}>
-                      <span className={`${styles.statusBadge} ${styles[`status${e.status || "Pending"}`]}`}>{e.status || "Pending"}</span>
+                    <div className={styles.recentTopMeta}>
+                      <span className={`${styles.statusBadge} ${styles[`status${e.status || "Pending"}`]}`}>
+                        {e.status || "Pending"}
+                      </span>
                       <span className={styles.dateText}>{formatDate(e.createdAt)}</span>
                     </div>
+
+                    <h4 className={styles.recentTitle}>{prop.title || "Property Enquiry"}</h4>
+                    
+                    <p className={styles.recentMeta}>
+                      <strong>{e.name}</strong> &bull; {e.email || e.phone || ""}
+                    </p>
+
+                    <p className={styles.recentMeta} style={{ color: "#334155" }}>
+                      "{e.message?.substring(0, 90)}{e.message?.length > 90 ? "..." : ""}"
+                    </p>
+                  </div>
+
+                  <div className={styles.recentActions}>
+                    <Link href="/dashboard/enquiries" className={styles.miniBtn}>
+                      View Enquiry
+                    </Link>
                   </div>
                 </div>
               );
             })}
           </div>
-        ) : <p className={styles.emptyText}>No enquiries yet.</p>}
+        ) : (
+          <p className={styles.emptyText}>No enquiries received yet.</p>
+        )}
       </div>
     </>
   );
@@ -242,8 +344,24 @@ function BuyerDashboard({ stats }) {
   return (
     <>
       <div className={styles.statsGrid}>
-        <Link href="/wishlist" className={styles.statCard}><span className={styles.statIcon}>❤️</span><div><span className={styles.statValue}>{wishlist.length}</span><span className={styles.statLabel}>Saved Properties</span></div></Link>
-        <Link href="/dashboard/my-enquiries" className={styles.statCard}><span className={styles.statIcon}>📋</span><div><span className={styles.statValue}>{enquiries.length}</span><span className={styles.statLabel}>Enquiries Sent</span></div></Link>
+        <Link href="/wishlist" className={styles.statCard}>
+          <div className={styles.statIconBadge} style={{ background: "#fef2f2", borderColor: "#fecaca", color: "#ef4444" }}>
+            <HiOutlineHeart />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{wishlist.length}</span>
+            <span className={styles.statLabel}>Saved Properties</span>
+          </div>
+        </Link>
+        <Link href="/dashboard/my-enquiries" className={styles.statCard}>
+          <div className={styles.statIconBadge}>
+            <HiOutlineClipboardList />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{enquiries.length}</span>
+            <span className={styles.statLabel}>Enquiries Sent</span>
+          </div>
+        </Link>
       </div>
 
       <div className={styles.actionsRow}>
@@ -253,45 +371,92 @@ function BuyerDashboard({ stats }) {
       </div>
 
       <div className={styles.recentSection}>
-        <div className={styles.recentHeader}><h3>Recent Saved</h3><Link href="/wishlist" className={styles.viewAll}>View All →</Link></div>
+        <div className={styles.recentHeader}>
+          <h3>Recent Saved</h3>
+          <Link href="/wishlist" className={styles.viewAll}>
+            View All <HiOutlineExternalLink />
+          </Link>
+        </div>
         {wishlist.length > 0 ? (
           <div className={styles.recentList}>
-            {wishlist.slice(0, 5).map((p) => (
-              <div key={p.id} className={styles.recentCard}>
-                <div className={styles.recentImg}><img src={p.image || "/img/buy-properties/1.jpg"} alt={p.title} /></div>
-                <div className={styles.recentBody}>
-                  <h4 className={styles.recentTitle}>{p.title}</h4>
-                  <p className={styles.recentMeta}>{p.location}{p.city ? `, ${p.city}` : ""}</p>
-                  <span className={styles.recentPrice}>{formatPrice(p.price)}</span>
+            {wishlist.slice(0, 5).map((p) => {
+              const propId = p.id || p._id;
+              const propDetailLink = `/property/${propId}`;
+              return (
+                <div key={propId} className={styles.recentCard}>
+                  <Link href={propDetailLink} className={styles.recentImg}>
+                    <img src={p.image || "/img/buy-properties/1.jpg"} alt={p.title} />
+                  </Link>
+                  <div className={styles.recentBody}>
+                    <div className={styles.recentTopMeta}>
+                      {p.category && <span className={styles.categoryTag}>{p.category}</span>}
+                      {p.purpose && <span className={styles.categoryTag}>For {p.purpose}</span>}
+                    </div>
+                    <Link href={propDetailLink} style={{ textDecoration: "none" }}>
+                      <h4 className={styles.recentTitle}>{p.title}</h4>
+                    </Link>
+                    <p className={styles.recentMeta}>
+                      <HiOutlineLocationMarker />
+                      {p.location}{p.city ? `, ${p.city}` : ""}
+                    </p>
+                    <div className={styles.recentRow}>
+                      <span className={styles.recentPrice}>{formatPrice(p.price)}</span>
+                    </div>
+                  </div>
+                  <div className={styles.recentActions}>
+                    <Link href={propDetailLink} className={styles.miniBtnPrimary}>
+                      <HiOutlineEye /> View Property
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        ) : <p className={styles.emptyText}>No saved properties.</p>}
+        ) : (
+          <p className={styles.emptyText}>No saved properties.</p>
+        )}
       </div>
 
       <div className={styles.recentSection}>
-        <div className={styles.recentHeader}><h3>Recent Enquiries</h3><Link href="/dashboard/my-enquiries" className={styles.viewAll}>View All →</Link></div>
+        <div className={styles.recentHeader}>
+          <h3>Recent Enquiries</h3>
+          <Link href="/dashboard/my-enquiries" className={styles.viewAll}>
+            View All <HiOutlineExternalLink />
+          </Link>
+        </div>
         {enquiries.length > 0 ? (
           <div className={styles.recentList}>
             {enquiries.slice(0, 5).map((e) => {
               const prop = e.property || {};
               return (
                 <div key={e._id} className={styles.recentCard}>
-                  <div className={styles.recentImg}><img src={getImage(prop)} alt={prop.title || ""} /></div>
+                  <div className={styles.recentImg}>
+                    <img src={getImage(prop)} alt={prop.title || ""} />
+                  </div>
                   <div className={styles.recentBody}>
-                    <h4 className={styles.recentTitle}>{prop.title || "Property"}</h4>
-                    <p className={styles.recentMeta}>{e.message?.substring(0, 50)}{e.message?.length > 50 ? "..." : ""}</p>
-                    <div className={styles.recentRow}>
-                      <span className={`${styles.statusBadge} ${styles[`status${e.status || "Pending"}`]}`}>{e.status || "Pending"}</span>
+                    <div className={styles.recentTopMeta}>
+                      <span className={`${styles.statusBadge} ${styles[`status${e.status || "Pending"}`]}`}>
+                        {e.status || "Pending"}
+                      </span>
                       <span className={styles.dateText}>{formatDate(e.createdAt)}</span>
                     </div>
+                    <h4 className={styles.recentTitle}>{prop.title || "Property Enquiry"}</h4>
+                    <p className={styles.recentMeta}>
+                      "{e.message?.substring(0, 80)}{e.message?.length > 80 ? "..." : ""}"
+                    </p>
+                  </div>
+                  <div className={styles.recentActions}>
+                    <Link href="/dashboard/my-enquiries" className={styles.miniBtn}>
+                      View Status
+                    </Link>
                   </div>
                 </div>
               );
             })}
           </div>
-        ) : <p className={styles.emptyText}>No enquiries sent.</p>}
+        ) : (
+          <p className={styles.emptyText}>No enquiries sent.</p>
+        )}
       </div>
     </>
   );

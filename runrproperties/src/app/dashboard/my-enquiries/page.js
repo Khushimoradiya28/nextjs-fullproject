@@ -9,9 +9,11 @@ import { showWishlistToast } from "../../components/WishlistToast";
 import ConfirmModal from "../../components/ConfirmModal";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import DashboardSidebar from "../../components/DashboardSidebar";
+import profileStyles from "../../profile/profile.module.css";
 import styles from "./myenquiries.module.css";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 5;
 
 function formatDate(val) {
   if (!val) return "—";
@@ -99,14 +101,26 @@ export default function MyEnquiriesPage() {
   if (loading) return null;
 
   return (
-    <div className={styles.page}>
+    <div className={profileStyles.page}>
       <Header />
-      <main className={styles.main}>
-        <div className={styles.backLink}><Link href="/dashboard">← Back to Dashboard</Link></div>
-        <div className={styles.pageHeader}>
-          <h1 className={styles.pageTitle}>My Enquiries</h1>
-          <p className={styles.pageSubtitle}>{enquiries.length} enquiries sent</p>
+      <div className={profileStyles.pageContainer}>
+        {/* Breadcrumb Header */}
+        <div className={profileStyles.breadcrumbBar}>
+          <Link href="/" className={profileStyles.breadcrumbLink}>Home</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <Link href="/dashboard" className={profileStyles.breadcrumbLink}>Dashboard</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <span className={profileStyles.breadcrumbCurrent}>My Enquiries</span>
         </div>
+
+        <main className={profileStyles.main}>
+          <DashboardSidebar />
+
+          <div className={profileStyles.content}>
+            <div className={styles.pageHeader}>
+              <h1 className={styles.pageTitle}>My Enquiries</h1>
+              <p className={styles.pageSubtitle}>{enquiries.length} enquiries sent</p>
+            </div>
 
         {/* Loading State */}
         {fetching && (
@@ -185,7 +199,9 @@ export default function MyEnquiriesPage() {
             )}
           </>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
       <Footer />
       {deleteId && <ConfirmModal title="Delete Enquiry" message="Are you sure you want to delete this enquiry?" confirmText="Delete" onConfirm={handleDelete} onCancel={() => setDeleteId(null)} loading={deleting} />}
     </div>

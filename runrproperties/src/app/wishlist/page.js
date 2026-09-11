@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ConfirmDialog from "../components/ConfirmDialog";
+import DashboardSidebar from "../components/DashboardSidebar";
+import profileStyles from "../profile/profile.module.css";
 import Link from "next/link";
 import styles from "./wishlist.module.css";
 
@@ -49,37 +51,43 @@ export default function WishlistPage() {
   if (!user) return null;
 
   return (
-    <div className={styles.wishlistPage}>
+    <div className={profileStyles.page}>
       <Header />
 
-      <main className={styles.mainContent}>
-        {/* Page Header */}
-        <div className={styles.pageHeader}>
-          <div className={styles.breadcrumb}>
-            <Link href="/" className={styles.breadcrumbLink}>
-              Home
-            </Link>
-            <span className={styles.breadcrumbSep}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-            <span className={styles.breadcrumbCurrent}>My Wishlist</span>
-          </div>
-          <div className={styles.pageHeaderInner}>
-            <div>
-              <h1 className={styles.pageTitle}>My Wishlist</h1>
-              <p className={styles.pageSubtitle}>
-                {!loaded
-                  ? "Loading..."
-                  : wishlist.length > 0
-                    ? `You have ${wishlist.length} saved ${wishlist.length === 1 ? "property" : "properties"}`
-                    : "Your wishlist is empty"}
-              </p>
-            </div>
-            {wishlist.length > 0 && (
-              <button className={styles.clearAllBtn} onClick={() => setConfirmAll(true)}>
-                Clear All
-              </button>
-            )}
-          </div>
+      <div className={profileStyles.pageContainer}>
+        {/* Breadcrumb Header */}
+        <div className={profileStyles.breadcrumbBar}>
+          <Link href="/" className={profileStyles.breadcrumbLink}>Home</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <Link href="/dashboard" className={profileStyles.breadcrumbLink}>Dashboard</Link>
+          <span className={profileStyles.breadcrumbSep}>/</span>
+          <span className={profileStyles.breadcrumbCurrent}>My Wishlist</span>
         </div>
+
+        <main className={profileStyles.main}>
+          <DashboardSidebar />
+
+          <div className={profileStyles.content}>
+            {/* Page Header */}
+            <div className={styles.pageHeader}>
+              <div className={styles.pageHeaderInner}>
+                <div>
+                  <h1 className={styles.pageTitle}>My Wishlist</h1>
+                  <p className={styles.pageSubtitle}>
+                    {!loaded
+                      ? "Loading..."
+                      : wishlist.length > 0
+                        ? `You have ${wishlist.length} saved ${wishlist.length === 1 ? "property" : "properties"}`
+                        : "Your wishlist is empty"}
+                  </p>
+                </div>
+                {wishlist.length > 0 && (
+                  <button className={styles.clearAllBtn} onClick={() => setConfirmAll(true)}>
+                    Clear All
+                  </button>
+                )}
+              </div>
+            </div>
 
         {/* Wishlist Items */}
         {!loaded ? (
@@ -227,7 +235,9 @@ export default function WishlistPage() {
             </Link>
           </div>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
 
       <Footer />
 

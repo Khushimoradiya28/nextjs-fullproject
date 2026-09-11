@@ -1,18 +1,20 @@
 :root {
   --header-bg: rgba(255, 255, 255, 0.95);
-  --text-main: #1e293b;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
   --accent: #007bbd;
-  --accent-hover: #005f94;
-  --border-color: rgba(226, 232, 240, 0.8);
+  --accent-hover: #00659c;
+  --accent-light: #e0f2fe;
+  --border-color: rgba(226, 232, 240, 0.85);
 }
 
-/* Base Wrapper - Height Fixed across scroll states */
+/* Base Wrapper */
 .headerWrapper {
   position: sticky;
   top: 0;
   z-index: 1000;
   width: 100%;
-  height: 80px; /* Fixed Header Height */
+  height: 76px;
   padding: 0;
   display: flex;
   align-items: center;
@@ -20,16 +22,18 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Scroll state retains exact same height and padding */
+/* Scrolled state */
 .headerWrapper.scrolled {
+  height: 72px;
   background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 25px rgba(15, 23, 42, 0.06);
+  border-bottom-color: rgba(226, 232, 240, 0.95);
 }
 
-/* Prevent sticky header from jumping/disappearing when body overflow: hidden is active (like when modals are open) */
+/* Prevent sticky header issue during modal open */
 :global(body[style*="overflow: hidden"]) .headerWrapper {
   position: fixed;
   top: 0;
@@ -37,149 +41,445 @@
   width: 100%;
 }
 
-/* Container matched with page content grid */
+/* Container */
 .container {
   width: 100%;
-  max-width: 1440px; /* Matched with main page grid */
   margin: 0 auto;
-  padding: 0 40px; /* Equal spacing on left and right sides */
+  padding: 0 160px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
 }
 
-/* Brand / Logo */
+/* Brand / Logo (Rock-solid, no scale flicker/vibration) */
 .brand {
   display: flex;
   align-items: center;
   text-decoration: none;
-  transition: transform 0.25s ease;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 .brand:hover {
-  transform: scale(1.02);
+  opacity: 0.82;
 }
 
 .logoMark {
-  height: 44px;
+  height: 40px;
   width: auto;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  pointer-events: none;
 }
 
-/* Floating Navigation Pill */
+/* Central Floating Navigation Pill with Subtle Light Gradient */
 .navPill {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(241, 245, 249, 0.8);
-  padding: 6px 10px;
-  border-radius: 40px;
-  border: 1px solid rgba(226, 232, 240, 1);
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(238, 246, 255, 0.92) 0%, rgba(248, 250, 252, 0.88) 50%, rgba(224, 242, 254, 0.82) 100%);
+  padding: 5px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(186, 230, 253, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 18px rgba(0, 123, 189, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+  transition: all 0.3s ease;
+}
+
+.navPill:hover {
+  border-color: rgba(125, 211, 252, 0.85);
+  box-shadow: 0 6px 22px rgba(0, 123, 189, 0.09), inset 0 1px 2px rgba(255, 255, 255, 0.95);
 }
 
 .navLink {
   position: relative;
   padding: 8px 18px;
-  color: var(--text-main);
+  color: #334155;
   font-size: 0.92rem;
   font-weight: 600;
   text-decoration: none;
-  border-radius: 30px;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
 }
 
 .navLink:hover {
   color: var(--accent);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .navLinkActive {
-  color: var(--accent);
-  background: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  color: var(--accent) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+  font-weight: 700;
+  border: 1px solid rgba(186, 230, 253, 0.9) !important;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.14) !important;
 }
 
-.activeDot {
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-}
-
-/* Actions Section */
+/* Action Controls (Right End) */
 .actions {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
+/* Icon Button (Wishlist) */
 .iconButton {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #f8fafc;
-  color: var(--text-main);
-  border: 1px solid #e2e8f0;
-  transition: all 0.25s ease;
+  background: linear-gradient(135deg, #f8fafc 0%, #f0f7ff 100%);
+  color: #334155;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
+  cursor: pointer;
 }
 
 .iconButton svg {
   width: 20px;
   height: 20px;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .iconButton:hover {
   background: #ffffff;
-  color: var(--accent);
-  border-color: var(--accent);
+  color: #ef4444;
+  border-color: #fecaca;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 123, 189, 0.15);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.15);
 }
 
+.iconButtonActive {
+  background: #ffffff !important;
+  color: #ef4444 !important;
+  border-color: #fca5a5 !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2) !important;
+}
+
+.iconButton:hover svg {
+  transform: scale(1.1);
+}
+
+/* Wishlist Badge */
 .wishlistBadge {
   position: absolute;
-  top: -2px;
-  right: -2px;
+  top: -3px;
+  right: -3px;
   min-width: 18px;
   height: 18px;
-  padding: 0 4px;
-  border-radius: 10px;
+  padding: 0 5px;
+  border-radius: 999px;
   background: #ef4444;
   color: #ffffff;
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid #ffffff;
   box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
 }
 
-.ctaButton {
-  padding: 10px 22px;
-  border-radius: 30px;
-  background: var(--accent);
+/* Authenticated User Menu */
+.userMenuWrapper {
+  position: relative;
+}
+
+.userPillButton {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 14px 4px 5px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f0f7ff 100%);
+  border: 1.5px solid rgba(226, 232, 240, 0.95);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.userPillButton:hover {
+  background: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.14);
+  transform: translateY(-1px);
+}
+
+.userPillActive,
+.userPillRouteActive {
+  background: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 18px rgba(0, 123, 189, 0.18);
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007bbd 0%, #005a8e 100%);
   color: #ffffff;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 123, 189, 0.35);
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chevronIcon {
+  width: 16px;
+  height: 16px;
+  color: #64748b;
+  transition: transform 0.22s ease;
+  flex-shrink: 0;
+}
+
+.chevronRotated {
+  transform: rotate(180deg);
+}
+
+/* User Dropdown Menu Card */
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 280px;
+  max-width: 330px;
+  width: max-content;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 18px;
+  padding: 10px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.14), 0 4px 14px rgba(0, 0, 0, 0.05);
+  z-index: 1050;
+  animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(240, 249, 255, 0.85) 0%, rgba(248, 250, 252, 0.75) 100%);
+  border: 1px solid rgba(224, 242, 254, 0.85);
+  border-radius: 14px;
+}
+
+.dropdownAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007bbd 0%, #005a8e 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(0, 123, 189, 0.3);
+  margin-top: 2px;
+}
+
+.dropdownUserInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 3px;
+}
+
+.dropdownUserName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownUserEmail {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.35;
+  word-break: break-all;
+  white-space: normal;
+  display: block;
+}
+
+.dropdownRoleBadge {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2.5px 8px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 8px 4px;
+}
+
+.dropdownLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 500;
   text-decoration: none;
-  box-shadow: 0 6px 18px rgba(0, 123, 189, 0.25);
-  transition: all 0.25s ease;
+  transition: all 0.15s ease;
 }
 
-.ctaButton:hover {
-  background: var(--accent-hover);
+.dropdownItem svg {
+  width: 17px;
+  height: 17px;
+  color: #64748b;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.dropdownItem:hover {
+  background: #f1f5f9;
+  color: var(--accent);
+}
+
+.dropdownItem:hover svg {
+  color: var(--accent);
+}
+
+.dropdownItemActive {
+  background: #f0f9ff !important;
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+.dropdownItemActive svg {
+  color: var(--accent) !important;
+}
+
+.dropdownBadge {
+  margin-left: auto;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.logoutButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.logoutButton svg {
+  width: 17px;
+  height: 17px;
+  color: #dc2626;
+  flex-shrink: 0;
+}
+
+.logoutButton:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Login CTA Button */
+.loginButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #007bbd 0%, #006da8 100%);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.28);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loginButton:hover {
+  background: linear-gradient(135deg, #0087cf 0%, #0068a0 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 123, 189, 0.35);
+  box-shadow: 0 8px 20px rgba(0, 123, 189, 0.38);
+  color: #ffffff;
 }
 
-/* Mobile Hamburger & Drawer Styles */
+.loginButtonActive {
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.35);
+}
+
+.loginIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Mobile Hamburger */
 .hamburger {
   display: none;
   width: 42px;
@@ -190,6 +490,13 @@
   color: var(--text-main);
   cursor: pointer;
   place-items: center;
+  transition: all 0.2s ease;
+}
+
+.hamburger:hover {
+  background: #ffffff;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .hamburger svg {
@@ -197,12 +504,13 @@
   height: 22px;
 }
 
+/* Mobile Drawer Overlay */
 .mobileOverlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
   z-index: 1998;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -214,6 +522,7 @@
   pointer-events: auto;
 }
 
+/* Mobile Drawer */
 .mobileDrawer {
   display: none;
   position: fixed;
@@ -228,10 +537,11 @@
   z-index: 1999;
   padding: 24px;
   flex-direction: column;
-  gap: 24px;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  gap: 18px;
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.15);
   transform: translateX(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
 }
 
 .mobileDrawer.drawerOpen {
@@ -247,8 +557,8 @@
 }
 
 .closeButton {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid #e2e8f0;
   background: #f8fafc;
@@ -256,28 +566,92 @@
   cursor: pointer;
   display: grid;
   place-items: center;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
 }
 
 .closeButton svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
+/* Mobile User Card */
+.mobileUserCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.mobileAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007bbd 0%, #005a8e 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.mobileUserInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mobileUserName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobileUserRole {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Mobile Nav Items */
 .mobileNav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+}
+
+.mobileNavSectionTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  padding: 6px 12px 2px 12px;
 }
 
 .mobileNavLink {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 11px 14px;
   border-radius: 12px;
-  color: var(--text-main);
+  color: #334155;
   font-weight: 600;
+  font-size: 0.93rem;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .mobileNavLink:hover,
@@ -292,35 +666,66 @@
   background: var(--accent);
   color: #ffffff;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 999px;
 }
 
 .mobileActions {
   margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
 }
 
-.mobileCtaButton {
+.mobileLoginButton {
   display: block;
   width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  background: var(--accent);
+  padding: 13px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #007bbd 0%, #006da8 100%);
   color: #ffffff;
   font-weight: 700;
+  font-size: 0.92rem;
   text-align: center;
   text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.25);
+}
+
+.mobileLogoutButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #fecaca;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobileLogoutButton:hover {
+  background: #fecaca;
+  color: #b91c1c;
 }
 
 /* Breakpoints */
-@media (max-width: 1024px) {
+@media (max-width: 1400px) {
   .container {
-    padding: 0 24px;
+    padding: 0 80px;
   }
 }
 
-@media (max-width: 880px) {
-  .navPill,
-  .ctaButton {
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .navPill {
     display: none;
   }
 
