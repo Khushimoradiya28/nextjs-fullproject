@@ -40,7 +40,7 @@ const seedRoles = async () => {
       const role = await Role.findOneAndUpdate(
         { name: roleDef.name },
         { $setOnInsert: roleDef },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       );
       seededMap[roleDef.name] = role._id;
     }

@@ -182,7 +182,7 @@ const updateProfile = async (userId, updateData) => {
   });
 
   const user = await User.findByIdAndUpdate(userId, filteredData, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true,
   });
 

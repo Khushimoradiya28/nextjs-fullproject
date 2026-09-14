@@ -187,7 +187,7 @@ router.patch('/properties/:id/status', protect, adminOnly, async (req, res, next
     const property = await Property.findByIdAndUpdate(
       req.params.id,
       { $set: { status } },
-      { new: true }
+      { returnDocument: 'after' }
     ).populate('owner', 'name email mobile');
 
     if (!property) {
@@ -512,7 +512,7 @@ router.patch('/contact-leads/:id/status', protect, adminOnly, async (req, res, n
     const lead = await ContactLead.findByIdAndUpdate(
       req.params.id,
       { $set: updateData },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!lead) {

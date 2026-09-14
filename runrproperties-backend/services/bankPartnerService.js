@@ -75,7 +75,7 @@ const updateBankPartnerProfile = async (userId, data) => {
   const profile = await BankPartner.findOneAndUpdate(
     { userId },
     updateFields,
-    { new: true }
+    { returnDocument: 'after' }
   );
   if (!profile) {
     const error = new Error('Bank partner profile not found');
@@ -90,7 +90,7 @@ const updateBankLogo = async (userId, logoPath) => {
   const profile = await BankPartner.findOneAndUpdate(
     { userId },
     { logo: logoPath },
-    { new: true }
+    { returnDocument: 'after' }
   );
   return profile;
 };
