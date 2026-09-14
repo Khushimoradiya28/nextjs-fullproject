@@ -12,6 +12,10 @@ dotenv.config();
 
 // Connect to MongoDB
 connectDB().then(() => {
+  // Seed default roles and link existing users to Role IDs
+  const seedRoles = require('./utils/seedRoles');
+  seedRoles();
+
   // Backfill avatarColor for all existing users missing it (runs once on startup)
   const User = require('./models/User');
   const { getRandomAvatarColor } = require('./utils/avatarColors');
@@ -95,6 +99,8 @@ app.use('/api/properties', require('./routes/propertyRoutes'));
 app.use('/api/enquiries', require('./routes/enquiryRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/bank-partners', require('./routes/bankPartnerRoutes'));
+app.use('/api/contact', require('./routes/contactRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // 404 handler
 app.use((req, res) => {

@@ -101,10 +101,10 @@
    ═══════════════════════════════════════════════════ */
 
 .cardContent {
-  padding: 20px 22px 22px;
+  padding: 14px 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
   position: relative;
   overflow: hidden;
@@ -113,12 +113,12 @@
 .cardTop {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .cardTitle {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 0.96rem;
   font-weight: 700;
   color: #10203b;
   line-height: 1.3;
@@ -132,17 +132,17 @@
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   color: #5a6f85;
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .cardLocation svg {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   flex-shrink: 0;
   color: #007bbd;
 }
@@ -153,21 +153,22 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 4px;
+  margin-top: 6px;
 }
 
 .metaItem {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
+  gap: 3px;
+  font-size: 10.5px;
   color: #007bbd;
   background: #f0f9ff;
   border: 1px solid #bae6fd;
-  padding: 3px 8px;
-  border-radius: 12px;
+  padding: 2px 6px;
+  border-radius: 10px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .metaItem svg {
@@ -176,9 +177,9 @@
 }
 
 .metaTag {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 20px;
   background: #007bbd;
   color: white;
@@ -193,42 +194,52 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 10px;
   border-top: 1px solid rgba(30, 58, 95, 0.06);
   position: relative;
+  flex-wrap: nowrap;
 }
 
 .priceBlock {
-  display: flex;
+  display: inline-flex;
   align-items: baseline;
-  gap: 4px;
+  gap: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .rentValue {
-  font-size: 1.15rem;
+  font-size: 0.98rem;
   font-weight: 800;
   color: #1e3a5f;
+  white-space: nowrap;
+  letter-spacing: -0.02em;
 }
 
 .rentLabel {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: #64748b;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /* Sticky Owner Chip Base */
 .gridOwnerChip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
-  padding: 4px 6px 4px 4px;
+  padding: 2px 4px 2px 2px;
   border-radius: 30px;
   cursor: pointer;
   transition: all 0.25s ease;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 110px;
 }
 
 .gridOwnerChip:hover {
@@ -237,8 +248,8 @@
 }
 
 .gridOwnerAvatar {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   overflow: hidden;
   display: grid;
@@ -253,16 +264,16 @@
 }
 
 .ownerInitialSmall {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: #ffffff;
 }
 
 .gridOwnerName {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #334155;
-  max-width: 90px;
+  max-width: 65px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -272,7 +283,7 @@
 /* Call Button - Hidden by default inside the chip */
 .gridCallBadge {
   width: 0;
-  height: 26px;
+  height: 22px;
   border-radius: 50%;
   background: #007bbd;
   color: #ffffff;
@@ -283,18 +294,18 @@
   visibility: hidden;
   transform: scale(0.6);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-left: -6px;
+  margin-left: -4px;
 }
 
 .gridCallBadge svg {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   fill: #ffffff;
 }
 
 /* Show Call Button when CARD is hovered */
 .card:hover .gridCallBadge {
-  width: 26px;
+  width: 22px;
   opacity: 1;
   visibility: visible;
   transform: scale(1);

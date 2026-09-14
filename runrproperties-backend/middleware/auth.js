@@ -28,10 +28,17 @@ const protect = async (req, res, next) => {
 
     // Attach user to request
     const user = await User.findById(decoded.id);
-    if (!user) {
+    if (!user || user.isDeleted) {
       return res.status(401).json({
         success: false,
-        message: 'Not authorized, user not found',
+        message: 'Account not found or has been disabled',
+      });
+    }
+
+    if (user.isActive === false && user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been deactivated by administrator',
       });
     }
 

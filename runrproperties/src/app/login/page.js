@@ -64,7 +64,9 @@ function LoginForm() {
         router.push(redirectUrl);
       } else {
         const role = result.user?.role || result.role;
-        if (role === "bank_partner") {
+        if (role === "admin") {
+          router.push("/admin/dashboard");
+        } else if (role === "bank_partner") {
           router.push("/bank-partner/dashboard");
         } else {
           router.push("/profile");

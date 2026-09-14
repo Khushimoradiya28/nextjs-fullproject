@@ -31,8 +31,12 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['buyer', 'owner', 'bank_partner'],
+      enum: ['buyer', 'owner', 'bank_partner', 'admin'],
       default: 'buyer',
+    },
+    roleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Role',
     },
     avatarColor: {
       type: String,
@@ -51,6 +55,16 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpire: {
       type: Date,
       select: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
   },
   {

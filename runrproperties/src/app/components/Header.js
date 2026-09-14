@@ -220,7 +220,23 @@ export default function Header() {
                   <div className={styles.dropdownDivider} />
 
                   <div className={styles.dropdownLinks}>
-                    {user?.role === "bank_partner" ? (
+                    {user?.role === "admin" ? (
+                      <Link
+                        href="/admin/dashboard"
+                        className={`${styles.dropdownItem} ${
+                          pathname?.startsWith("/admin") ? styles.dropdownItemActive : ""
+                        }`}
+                        onClick={closeDropdown}
+                        role="menuitem"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <path d="M3 9h18" />
+                          <path d="M9 21V9" />
+                        </svg>
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    ) : user?.role === "bank_partner" ? (
                       <Link
                         href="/bank-partner/dashboard"
                         className={`${styles.dropdownItem} ${

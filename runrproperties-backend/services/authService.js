@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Role = require('../models/Role');
 const PasswordAudit = require('../models/PasswordAudit');
 const BankPartner = require('../models/BankPartner');
 const generateToken = require('../utils/generateToken');
@@ -18,8 +19,23 @@ const registerUser = async ({ name, email, password, mobile, role }) => {
     throw error;
   }
 
-  // Create user
-  const user = await User.create({ name, email, password, mobile, role });
+  // Validate and fetch Role from Role table
+  const requestedRoleName = role || 'buyer';
+  let roleDoc = await Role.findOne({ name: requestedRoleName, isActive: true });
+  if (!roleDoc) {
+    // Fallback if role doc is not yet seeded
+    roleDoc = await Role.findOne({ name: 'buyer', isActive: true });
+  }
+
+  // Create user with verified role and roleId link
+  const user = await User.create({
+    name,
+    email,
+    password,
+    mobile,
+    role: roleDoc ? roleDoc.name : requestedRoleName,
+    roleId: roleDoc ? roleDoc._id : undefined,
+  });
 
   // Generate token
   const token = generateToken(user._id);
@@ -59,11 +75,49 @@ const loginUser = async ({ email, password }) => {
     throw error;
   }
 
-  // Bank partner approval status check
+  // Check if user is soft-deleted
+  if (user.isDeleted) {
+    const error = new Error('This account has been deleted or disabled. Please contact support.');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  // Check if user is inactive / disabled by admin
+  if (user.isActive === false) {
+    const error = new Error('Your account has been deactivated by administrator. Access denied.');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  // Verify Role is active in Role table
+  const roleDoc = await Role.findOne({ name: user.role });
+  if (roleDoc && !roleDoc.isActive) {
+    const error = new Error('This user role is currently deactivated.');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  // Ensure user has roleId linked
+  if (!user.roleId && roleDoc) {
+    user.roleId = roleDoc._id;
+    await User.findByIdAndUpdate(user._id, { roleId: roleDoc._id });
+  }
+
+  // Bank partner approval status check (Must be approved by admin to login)
   if (user.role === 'bank_partner') {
     const bankProfile = await BankPartner.findOne({ userId: user._id });
-    if (bankProfile && bankProfile.status === 'rejected') {
+    if (!bankProfile || bankProfile.status === 'pending') {
+      const error = new Error('Your account is under review. Please wait for admin approval.');
+      error.statusCode = 403;
+      throw error;
+    }
+    if (bankProfile.status === 'rejected') {
       const error = new Error('Your account has been rejected. Contact support.');
+      error.statusCode = 403;
+      throw error;
+    }
+    if (bankProfile.status !== 'approved') {
+      const error = new Error('Your account is not active. Contact admin.');
       error.statusCode = 403;
       throw error;
     }

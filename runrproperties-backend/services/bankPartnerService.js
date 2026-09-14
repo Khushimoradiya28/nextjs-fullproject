@@ -1,6 +1,7 @@
 const BankPartner = require('../models/BankPartner');
 const BankLead = require('../models/BankLead');
 const User = require('../models/User');
+const Role = require('../models/Role');
 const bcrypt = require('bcryptjs');
 
 // 1. Register bank partner
@@ -14,11 +15,15 @@ const registerBankPartner = async (data) => {
     throw error;
   }
 
+  // Fetch bank_partner role from Role table
+  const roleDoc = await Role.findOne({ name: 'bank_partner', isActive: true });
+
   const user = await User.create({
     name,
     email,
     password,
     role: 'bank_partner',
+    roleId: roleDoc ? roleDoc._id : undefined,
     mobile: mobile || '',
   });
 
