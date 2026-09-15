@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getMediaUrl } from "../../../services/api";
+import { getMediaUrl } from "../../services/api";
 const inputStyle = {width:"100%",padding:"11px 14px",border:"1px solid #e0e0da",borderRadius:"8px",fontSize:"14px",color:"#111",background:"#fff",outline:"none",boxSizing:"border-box"};
 const labelStyle = {fontSize:"11px",fontWeight:"600",color:"#888",letterSpacing:"0.8px",textTransform:"uppercase",display:"block",marginBottom:"6px"};
 const focusIn = (e) => { e.target.style.borderColor = "#1a6fd4"; };

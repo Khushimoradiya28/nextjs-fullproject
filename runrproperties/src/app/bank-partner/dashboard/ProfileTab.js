@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getMediaUrl } from "../../../services/api";
+import { getMediaUrl } from "../../services/api";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "/api";
 
