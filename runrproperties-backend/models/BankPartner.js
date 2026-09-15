@@ -6,6 +6,7 @@ const offerSchema = new mongoose.Schema({
   loanType: { type: String, default: '' },
   maxTenure: { type: String, default: '' },
   features: { type: [String], default: [] },
+  isActive: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -69,10 +70,27 @@ const bankPartnerSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending',
+  },
+  plainPassword: {
+    type: String,
+    default: '',
+  },
+  approvedAt: {
+    type: Date,
+    default: null,
+  },
+  rejectedAt: {
+    type: Date,
+    default: null,
   },
 }, { timestamps: true });
 

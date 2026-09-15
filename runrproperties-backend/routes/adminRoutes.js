@@ -33,7 +33,7 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
       recentUsers,
       recentProperties,
     ] = await Promise.all([
-      User.countDocuments({ role: { $ne: 'admin' } }),
+      User.countDocuments({ role: { $ne: 'bank_partner' }, isDeleted: { $ne: true } }),
       Property.countDocuments({ isDeleted: { $ne: true } }),
       BankPartner.countDocuments(),
       BankPartner.countDocuments({ status: 'pending' }),
@@ -41,7 +41,7 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
       BankLead.countDocuments(),
       ContactLead.countDocuments(),
       ContactLead.countDocuments({ status: 'new' }),
-      User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 }).limit(5).select('name email role createdAt'),
+      User.find({ role: { $ne: 'bank_partner' }, isDeleted: { $ne: true } }).sort({ createdAt: -1 }).limit(5).select('name email role createdAt'),
       Property.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 }).limit(5).select('title propertyType city price status createdAt'),
     ]);
 
@@ -70,16 +70,19 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
 router.get('/bank-partners', protect, adminOnly, async (req, res, next) => {
   try {
     const { status, search } = req.query;
-    const filter = {};
+    const filter = { isDeleted: { $ne: true } };
     if (status && status !== 'all') {
       filter.status = status;
     }
     if (search) {
-      filter.bankName = { $regex: search, $options: 'i' };
+      filter.$or = [
+        { bankName: { $regex: search, $options: 'i' } },
+        { tagline: { $regex: search, $options: 'i' } },
+      ];
     }
 
     const banks = await BankPartner.find(filter)
-      .populate('userId', 'name email mobile createdAt')
+      .populate('userId', 'name email mobile createdAt isActive')
       .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, data: banks });
@@ -93,23 +96,160 @@ router.patch('/bank-partners/:id/status', protect, adminOnly, async (req, res, n
   try {
     const { status, isActive } = req.body;
     const update = {};
-    if (status) update.status = status;
+    if (status) {
+      update.status = status;
+      if (status === 'approved') update.approvedAt = new Date();
+      if (status === 'rejected') update.rejectedAt = new Date();
+    }
     if (isActive !== undefined) update.isActive = isActive;
 
     const bank = await BankPartner.findByIdAndUpdate(
       req.params.id,
       { $set: update },
       { new: true }
-    ).populate('userId', 'name email mobile');
+    ).populate('userId', 'name email mobile isActive');
 
-    if (!bank) {
+    if (!bank || bank.isDeleted) {
       return res.status(404).json({ success: false, message: 'Bank Partner not found' });
+    }
+
+    // Synchronize login access: if bank partner is disabled or rejected, disable user login access too
+    if (bank.userId) {
+      const isUserActive = isActive !== undefined ? isActive : (status === 'approved');
+      await User.findByIdAndUpdate(bank.userId._id || bank.userId, {
+        isActive: isUserActive,
+      });
+
+      // Hide or unhide properties associated with this user
+      if (!isUserActive) {
+        await Property.updateMany(
+          { owner: bank.userId._id || bank.userId, status: 'active', isDeleted: { $ne: true } },
+          { $set: { status: 'inactive' } }
+        );
+      } else {
+        await Property.updateMany(
+          { owner: bank.userId._id || bank.userId, status: 'inactive', isDeleted: { $ne: true } },
+          { $set: { status: 'active' } }
+        );
+      }
     }
 
     res.status(200).json({
       success: true,
       message: `Bank partner status updated to ${bank.status}`,
       data: bank,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Soft Delete Bank Partner (Bin action: marks isDeleted = true, revokes user login & hides profile)
+router.delete('/bank-partners/:id', protect, adminOnly, async (req, res, next) => {
+  try {
+    const bank = await BankPartner.findById(req.params.id);
+    if (!bank || bank.isDeleted) {
+      return res.status(404).json({ success: false, message: 'Bank Partner not found' });
+    }
+
+    // Soft delete bank partner
+    bank.isDeleted = true;
+    bank.isActive = false;
+    await bank.save();
+
+    // Soft delete / deactivate associated User account if exists
+    if (bank.userId) {
+      await User.findByIdAndUpdate(bank.userId, {
+        isActive: false,
+        isDeleted: true,
+      });
+
+      // Soft delete associated properties if any
+      await Property.updateMany(
+        { owner: bank.userId },
+        { $set: { isDeleted: true, status: 'inactive' } }
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Bank Partner has been soft deleted successfully',
+      data: { _id: bank._id },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Reset / Change Bank Partner Login Password
+router.patch('/bank-partners/:id/password', protect, adminOnly, async (req, res, next) => {
+  try {
+    const { newPassword, email, name } = req.body;
+    if (!newPassword || newPassword.trim().length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long' });
+    }
+
+    const bank = await BankPartner.findById(req.params.id);
+    if (!bank) {
+      return res.status(404).json({ success: false, message: 'Bank Partner not found' });
+    }
+
+    let user = null;
+    if (bank.userId) {
+      user = await User.findById(bank.userId);
+    }
+
+    // If user not found by userId, try finding by email
+    if (!user && email && email !== 'No email') {
+      user = await User.findOne({ email: email.trim().toLowerCase() });
+    }
+
+    const roleDoc = await Role.findOne({ name: 'bank_partner', isActive: true });
+
+    if (!user) {
+      // Create user if missing
+      const userEmail = (email && email !== 'No email') ? email.trim() : `bank_${bank._id}@example.com`;
+      user = await User.create({
+        name: name || bank.bankName,
+        email: userEmail.toLowerCase(),
+        password: newPassword.trim(),
+        role: 'bank_partner',
+        roleId: roleDoc ? roleDoc._id : undefined,
+        isActive: true,
+        isDeleted: false,
+      });
+      bank.userId = user._id;
+    } else {
+      // Update, restore & reactivate existing user
+      user.password = newPassword.trim();
+      user.isDeleted = false;
+      user.isActive = true;
+      if (roleDoc && !user.roleId) {
+        user.roleId = roleDoc._id;
+      }
+      user.role = 'bank_partner';
+      await user.save();
+
+      if (!bank.userId || bank.userId.toString() !== user._id.toString()) {
+        bank.userId = user._id;
+      }
+    }
+
+    bank.plainPassword = newPassword.trim();
+    bank.isDeleted = false;
+    await bank.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Password updated successfully for ${user.email}`,
+      plainPassword: bank.plainPassword,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        isActive: user.isActive,
+      },
     });
   } catch (err) {
     next(err);
@@ -213,7 +353,12 @@ router.get('/users', protect, adminOnly, async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const filter = { isDeleted: { $ne: true } };
-    if (role && role !== 'all') filter.role = role;
+    if (role && role !== 'all') {
+      filter.role = role;
+    } else {
+      // Exclude bank_partner from Users tab (bank partners are managed in Bank Partners tab)
+      filter.role = { $ne: 'bank_partner' };
+    }
     if (status && status !== 'all') {
       filter.isActive = status === 'active';
     }

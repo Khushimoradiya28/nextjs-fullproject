@@ -17,8 +17,8 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
     name: user?.name || "",
     email: user?.email || "",
     mobile: user?.mobile || "",
-    loanAmount: "",
-    message: "",
+    loanAmount: bank?.loanAmount || "",
+    message: bank?.message || "",
   });
 
   useEffect(() => {

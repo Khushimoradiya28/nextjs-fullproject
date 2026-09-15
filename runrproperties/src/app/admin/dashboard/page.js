@@ -39,6 +39,44 @@ export default function AdminDashboardPage() {
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
 
+  // Format Date in Asia/Kolkata (IST) Timezone
+  const formatISTDate = (dateVal) => {
+    if (!dateVal) return "—";
+    try {
+      return new Date(dateVal).toLocaleDateString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    } catch (e) {
+      return "—";
+    }
+  };
+
+  // Format Date + Time in Asia/Kolkata (IST) Timezone
+  const formatISTDateTime = (dateVal) => {
+    if (!dateVal) return { date: "—", time: "" };
+    try {
+      const d = new Date(dateVal);
+      const date = d.toLocaleDateString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      const time = d.toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+      return { date, time };
+    } catch (e) {
+      return { date: "—", time: "" };
+    }
+  };
+
   // Check admin authorization
   useEffect(() => {
     if (!authLoading) {
@@ -70,6 +108,12 @@ export default function AdminDashboardPage() {
   const [selectedUserDetail, setSelectedUserDetail] = useState(null);
   const [userModalLoading, setUserModalLoading] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null); // { id, name }
+  const [bankToDelete, setBankToDelete] = useState(null); // { id, bankName, userName }
+  const [pwdModalBank, setPwdModalBank] = useState(null); // { id, bankName, email, userName }
+  const [newPwdText, setNewPwdText] = useState("");
+  const [showPwdText, setShowPwdText] = useState(false);
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState("");
   const [searchUser, setSearchUser] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("all");
   const [userPagination, setUserPagination] = useState({
@@ -326,6 +370,84 @@ export default function AdminDashboardPage() {
       alert("Error updating status");
     }
     setActionLoading(null);
+  };
+
+  const handleDeleteBankPartner = async () => {
+    if (!bankToDelete) return;
+    const bankId = bankToDelete.id;
+    setActionLoading(bankId);
+    const authToken = token || localStorage.getItem("runr_token");
+    try {
+      const res = await fetch(`${API_BASE}/admin/bank-partners/${bankId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBanks((prev) => prev.filter((b) => b._id !== bankId));
+        setBankToDelete(null);
+        // Refresh overview stats
+        const resStats = await fetch(`${API_BASE}/admin/stats`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        const dataStats = await resStats.json();
+        if (dataStats.success) setStats(dataStats.data);
+      } else {
+        alert(data.message || "Failed to delete bank partner");
+      }
+    } catch (err) {
+      alert("Error deleting bank partner");
+    }
+    setActionLoading(null);
+  };
+
+  const handleSaveBankPassword = async () => {
+    setPwdError("");
+    if (!pwdModalBank || !newPwdText || newPwdText.trim().length < 6) {
+      setPwdError("Password must be at least 6 characters long");
+      return;
+    }
+    setPwdLoading(true);
+    const authToken = token || localStorage.getItem("runr_token");
+    try {
+      const res = await fetch(`${API_BASE}/admin/bank-partners/${pwdModalBank.id}/password`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          newPassword: newPwdText.trim(),
+          email: pwdModalBank.email,
+          name: pwdModalBank.userName,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBanks((prev) =>
+          prev.map((b) =>
+            b._id === pwdModalBank.id
+              ? {
+                  ...b,
+                  plainPassword: newPwdText.trim(),
+                  userId: data.user ? { ...b.userId, ...data.user } : b.userId,
+                }
+              : b
+          )
+        );
+        setPwdModalBank(null);
+        setNewPwdText("");
+        setPwdError("");
+      } else {
+        setPwdError(data.message || "Failed to update password");
+      }
+    } catch (err) {
+      setPwdError("Error updating password. Please try again.");
+    } finally {
+      setPwdLoading(false);
+    }
   };
 
   const handleUpdatePropertyStatus = async (propertyId, newStatus) => {
@@ -775,6 +897,7 @@ export default function AdminDashboardPage() {
                       <th>Bank Name</th>
                       <th>Contact Person</th>
                       <th>Email</th>
+                      <th>Applied Date</th>
                       <th>Status</th>
                       <th>Action</th>
                     </tr>
@@ -782,45 +905,52 @@ export default function AdminDashboardPage() {
                   <tbody>
                     {banks.filter((b) => b.status === "pending").length === 0 ? (
                       <tr>
-                        <td colSpan={5} style={{ textAlign: "center", color: "#64748b", padding: "24px" }}>
+                        <td colSpan={6} style={{ textAlign: "center", color: "#64748b", padding: "24px" }}>
                           No pending bank partner requests at the moment.
                         </td>
                       </tr>
                     ) : (
                       banks
                         .filter((b) => b.status === "pending")
-                        .map((b) => (
-                          <tr key={b._id}>
-                            <td>
-                              <strong>{b.bankName}</strong>
-                            </td>
-                            <td>{b.userId?.name || "—"}</td>
-                            <td>{b.userId?.email || "—"}</td>
-                            <td>
-                              <span className={styles.statusPending}>Pending Approval</span>
-                            </td>
-                            <td>
-                              <div style={{ display: "flex", gap: "8px" }}>
-                                <button
-                                  type="button"
-                                  className={styles.btnApprove}
-                                  disabled={actionLoading === b._id}
-                                  onClick={() => handleUpdateBankStatus(b._id, "approved")}
-                                >
-                                  ✓ Approve
-                                </button>
-                                <button
-                                  type="button"
-                                  className={styles.btnReject}
-                                  disabled={actionLoading === b._id}
-                                  onClick={() => handleUpdateBankStatus(b._id, "rejected")}
-                                >
-                                  ✗ Reject
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                        .map((b) => {
+                          const dt = formatISTDateTime(b.createdAt);
+                          return (
+                            <tr key={b._id}>
+                              <td>
+                                <strong>{b.bankName}</strong>
+                              </td>
+                              <td>{b.userId?.name || "—"}</td>
+                              <td>{b.userId?.email || "—"}</td>
+                              <td>
+                                <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{dt.date}</div>
+                                {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
+                              </td>
+                              <td>
+                                <span className={styles.statusPending}>Pending Approval</span>
+                              </td>
+                              <td>
+                                <div style={{ display: "flex", gap: "8px" }}>
+                                  <button
+                                    type="button"
+                                    className={styles.btnApprove}
+                                    disabled={actionLoading === b._id}
+                                    onClick={() => handleUpdateBankStatus(b._id, "approved")}
+                                  >
+                                    ✓ Approve
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={styles.btnReject}
+                                    disabled={actionLoading === b._id}
+                                    onClick={() => handleUpdateBankStatus(b._id, "rejected")}
+                                  >
+                                    ✗ Reject
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
                     )}
                   </tbody>
                 </table>
@@ -847,6 +977,11 @@ export default function AdminDashboardPage() {
                   </svg>
                   <input
                     type="text"
+                    name="adminBankPartnerSearchFilter"
+                    id="adminBankPartnerSearchFilter"
+                    autoComplete="off"
+                    data-lpignore="true"
+                    data-form-type="other"
                     placeholder="Search Bank Name..."
                     value={searchBank}
                     onChange={(e) => {
@@ -889,93 +1024,200 @@ export default function AdminDashboardPage() {
                 <thead>
                   <tr>
                     <th className={styles.thNumber}>#</th>
-                    <th>Bank Name</th>
-                    <th>Partner / User</th>
-                    <th>Rate / Loan Type</th>
-                    <th>Status</th>
-                    <th>Public Visibility</th>
-                    <th>Actions</th>
+                    <th className={styles.bankThName}>Bank Name</th>
+                    <th className={styles.bankThCred}>Login Account / Credentials</th>
+                    <th className={styles.bankThRate}>Rate / Loan Type</th>
+                    <th className={styles.bankThStatus}>Status</th>
+                    <th className={styles.bankThReqDate}>Requested Date</th>
+                    <th className={styles.bankThApproveDate}>Approved Date</th>
+                    <th className={styles.bankThAction}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {banks.length === 0 ? (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: "center", color: "#64748b", padding: "30px" }}>
+                      <td colSpan={8} style={{ textAlign: "center", color: "#64748b", padding: "30px" }}>
                         No bank partners found matching filter.
                       </td>
                     </tr>
                   ) : (
-                    banks.map((b, index) => (
-                      <tr key={b._id}>
-                        <td className={styles.tdNumber}>{index + 1}</td>
-                        <td>
-                          <strong>{b.bankName}</strong>
-                          {b.tagline && <div style={{ fontSize: "0.76rem", color: "#64748b" }}>{b.tagline}</div>}
-                        </td>
-                        <td>
-                          <div>{b.userId?.name || "—"}</div>
-                          <div style={{ fontSize: "0.76rem", color: "#64748b" }}>{b.userId?.email}</div>
-                        </td>
-                        <td>
-                          <div>{b.interestRate ? `${b.interestRate}% p.a.` : "—"}</div>
-                          <div style={{ fontSize: "0.76rem", color: "#64748b" }}>{b.loanType || "Home Loan"}</div>
-                        </td>
-                        <td>
-                          {b.status === "approved" && <span className={styles.statusApproved}>Approved</span>}
-                          {b.status === "pending" && <span className={styles.statusPending}>Pending</span>}
-                          {b.status === "rejected" && <span className={styles.statusRejected}>Rejected</span>}
-                        </td>
-                        <td>
-                          <span style={{ fontSize: "0.82rem", fontWeight: 700, color: b.isActive ? "#16a34a" : "#dc2626" }}>
-                            {b.isActive ? "● Active" : "○ Inactive"}
-                          </span>
-                        </td>
-                        <td>
-                          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                            {b.status === "pending" && (
-                              <>
+                    banks.map((b, index) => {
+                      const reqDt = formatISTDateTime(b.createdAt || b.userId?.createdAt);
+                      const approveDateVal = b.approvedAt || (b.status === "approved" ? b.updatedAt || b.createdAt : null);
+                      const appDt = b.status === "approved" && approveDateVal ? formatISTDateTime(approveDateVal) : null;
+                      const isOnline = b.isActive && b.userId?.isActive !== false;
+                      return (
+                        <tr key={b._id}>
+                          <td className={styles.tdNumber}>{index + 1}</td>
+                          <td>
+                            <div className={styles.bankNameWrap}>
+                              <div className={styles.bankNameIcon}>🏦</div>
+                              <div className={styles.bankNameInfo}>
+                                <strong style={{ fontSize: "0.92rem", color: "#0f172a" }}>{b.bankName}</strong>
+                                {b.tagline && <div style={{ fontSize: "0.76rem", color: "#64748b" }}>{b.tagline}</div>}
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className={styles.bankUserCredWrap}>
+                              <div className={styles.bankUserAvatar}>
+                                {(b.userId?.name || b.bankName || "B").slice(0, 1).toUpperCase()}
+                              </div>
+                              <div className={styles.credCellBox}>
+                                <div className={styles.credHeaderRow}>
+                                  <span className={styles.credUserName}>{b.userId?.name || "—"}</span>
+                                  <button
+                                    type="button"
+                                    className={styles.btnKeyPassword}
+                                    onClick={() => {
+                                      setPwdModalBank({
+                                        id: b._id,
+                                        bankName: b.bankName,
+                                        email: b.userId?.email || "No email",
+                                        userName: b.userId?.name || b.bankName,
+                                        currentPassword: b.plainPassword || "",
+                                      });
+                                      setNewPwdText(b.plainPassword || "");
+                                      setShowPwdText(false);
+                                      setPwdError("");
+                                    }}
+                                    title="Set or reset login password for this bank partner"
+                                  >
+                                    🔑 Set Password
+                                  </button>
+                                </div>
+                                <div className={styles.credContactRow}>
+                                  <span className={styles.credEmailItem}>
+                                    ✉ {b.userId?.email || "No email"}
+                                  </span>
+                                  {b.userId?.mobile && (
+                                    <>
+                                      <span className={styles.credDotDivider}>•</span>
+                                      <span className={styles.credPhoneItem}>
+                                        📞 {b.userId.mobile}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 700, color: "#0f172a" }}>{b.interestRate ? `${b.interestRate}% p.a.` : "—"}</div>
+                            <div style={{ fontSize: "0.76rem", color: "#64748b" }}>{b.loanType || "Home Loan"}</div>
+                          </td>
+                          <td>
+                            {b.status === "approved" ? (
+                              b.isActive ? (
+                                <span className={styles.statusApproved}>Approved</span>
+                              ) : (
+                                <span className={styles.statusInactive}>Disabled</span>
+                              )
+                            ) : b.status === "pending" ? (
+                              <span className={styles.statusPending}>Pending</span>
+                            ) : (
+                              <span className={styles.statusRejected}>Rejected</span>
+                            )}
+                          </td>
+                          <td>
+                            <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{reqDt.date}</div>
+                            {reqDt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{reqDt.time}</div>}
+                          </td>
+                          <td>
+                            {b.status === "approved" ? (
+                              appDt ? (
+                                <>
+                                  <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{appDt.date}</div>
+                                  {appDt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{appDt.time}</div>}
+                                </>
+                              ) : (
+                                <span style={{ fontSize: "0.78rem", color: "#64748b", fontWeight: 600 }}>Approved</span>
+                              )
+                            ) : b.status === "pending" ? (
+                              <span style={{ fontSize: "0.74rem", color: "#b45309", fontWeight: 600, background: "#fef3c7", padding: "2px 8px", borderRadius: "6px", border: "1px solid #fde68a" }}>
+                                Awaiting
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: "0.74rem", color: "#dc2626", fontWeight: 600, background: "#fee2e2", padding: "2px 8px", borderRadius: "6px", border: "1px solid #fca5a5" }}>
+                                Rejected
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end", alignItems: "center" }}>
+                              {b.status === "pending" && (
+                                <>
+                                  <button
+                                    type="button"
+                                    className={styles.btnApprove}
+                                    disabled={actionLoading === b._id}
+                                    onClick={() => handleUpdateBankStatus(b._id, "approved")}
+                                  >
+                                    Approve
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={styles.btnReject}
+                                    disabled={actionLoading === b._id}
+                                    onClick={() => handleUpdateBankStatus(b._id, "rejected")}
+                                  >
+                                    Reject
+                                  </button>
+                                </>
+                              )}
+                              {b.status === "approved" && (
+                                <button
+                                  type="button"
+                                  className={b.isActive ? styles.btnDisable : styles.btnEnable}
+                                  disabled={actionLoading === b._id}
+                                  onClick={() => handleUpdateBankStatus(b._id, undefined, b.isActive)}
+                                >
+                                  {b.isActive ? "Disable" : "Enable"}
+                                </button>
+                              )}
+                              {b.status === "rejected" && (
                                 <button
                                   type="button"
                                   className={styles.btnApprove}
                                   disabled={actionLoading === b._id}
                                   onClick={() => handleUpdateBankStatus(b._id, "approved")}
                                 >
-                                  Approve
+                                  Re-Approve
                                 </button>
-                                <button
-                                  type="button"
-                                  className={styles.btnReject}
-                                  disabled={actionLoading === b._id}
-                                  onClick={() => handleUpdateBankStatus(b._id, "rejected")}
+                              )}
+                              <button
+                                type="button"
+                                className={styles.btnSoftDeleteUser}
+                                title="Delete Bank Partner (Soft Delete)"
+                                disabled={actionLoading === b._id}
+                                onClick={() =>
+                                  setBankToDelete({
+                                    id: b._id,
+                                    bankName: b.bankName,
+                                    userName: b.userId?.name || "Partner",
+                                  })
+                                }
+                              >
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className={styles.deleteIconSvg}
                                 >
-                                  Reject
-                                </button>
-                              </>
-                            )}
-                            {b.status === "approved" && (
-                              <button
-                                type="button"
-                                className={styles.btnToggleActive}
-                                disabled={actionLoading === b._id}
-                                onClick={() => handleUpdateBankStatus(b._id, undefined, b.isActive)}
-                              >
-                                {b.isActive ? "Disable" : "Enable"}
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                  <line x1="10" y1="11" x2="10" y2="17" />
+                                  <line x1="14" y1="11" x2="14" y2="17" />
+                                </svg>
                               </button>
-                            )}
-                            {b.status === "rejected" && (
-                              <button
-                                type="button"
-                                className={styles.btnApprove}
-                                disabled={actionLoading === b._id}
-                                onClick={() => handleUpdateBankStatus(b._id, "approved")}
-                              >
-                                Re-Approve
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -1162,12 +1404,13 @@ export default function AdminDashboardPage() {
                     <th>Price</th>
                     <th>Listed / Updated</th>
                     <th>Status</th>
+                    <th style={{ textAlign: "right" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {properties.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: "center", color: "#64748b", padding: "30px" }}>
+                      <td colSpan={9} style={{ textAlign: "center", color: "#64748b", padding: "30px" }}>
                         No properties found matching your filter criteria.
                       </td>
                     </tr>
@@ -1178,7 +1421,15 @@ export default function AdminDashboardPage() {
                       <tr key={p._id}>
                         <td className={styles.tdNumber}>{serialNumber}</td>
                         <td>
-                          <strong className={styles.propTitleText}>{p.title}</strong>
+                          <a
+                            href={`/property/${p._id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.propTitleLink}
+                            title="Preview property in new tab"
+                          >
+                            <strong className={styles.propTitleText}>{p.title}</strong>
+                          </a>
                           {p.category && (
                             <span
                               className={
@@ -1232,14 +1483,21 @@ export default function AdminDashboardPage() {
                           )}
                         </td>
                         <td>
-                          <div style={{ fontSize: "0.78rem", color: "#334155", fontWeight: 600 }}>
-                            {p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}
-                          </div>
-                          {p.updatedAt && p.updatedAt !== p.createdAt && (
-                            <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                              Upd: {new Date(p.updatedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                            </div>
-                          )}
+                          {(() => {
+                            const dt = formatISTDateTime(p.createdAt);
+                            const updDt = p.updatedAt && p.updatedAt !== p.createdAt ? formatISTDate(p.updatedAt) : null;
+                            return (
+                              <>
+                                <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{dt.date}</div>
+                                {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
+                                {updDt && (
+                                  <div style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "2px" }}>
+                                    Upd: {updDt}
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
                         </td>
                         <td>
                           {/* Premium Custom Status Dropdown Menu */}
@@ -1326,6 +1584,21 @@ export default function AdminDashboardPage() {
                               </div>
                             )}
                           </div>
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          <a
+                            href={`/property/${p._id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.btnViewProperty}
+                            title="Preview property details in new tab"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <span>Preview</span>
+                          </a>
                         </td>
                       </tr>
                       );
@@ -1458,10 +1731,9 @@ export default function AdminDashboardPage() {
                   }}
                   className={styles.filterSelect}
                 >
-                  <option value="all">All Roles</option>
-                  <option value="buyer">Buyers</option>
+                  <option value="all">All Users</option>
+                  <option value="buyer">Buyers / Seekers</option>
                   <option value="owner">Property Owners</option>
-                  <option value="bank_partner">Bank Partners</option>
                   <option value="admin">Administrators</option>
                 </select>
               </div>
@@ -1583,9 +1855,15 @@ export default function AdminDashboardPage() {
                           )}
                         </td>
                         <td>
-                          <span style={{ fontSize: "0.8rem", color: "#475569", fontWeight: 600 }}>
-                            {new Date(u.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                          </span>
+                          {(() => {
+                            const dt = formatISTDateTime(u.createdAt);
+                            return (
+                              <>
+                                <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{dt.date}</div>
+                                {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
+                              </>
+                            );
+                          })()}
                         </td>
                         <td style={{ textAlign: "right" }}>
                           <div className={styles.userActionBtnsGroup} onClick={(e) => e.stopPropagation()}>
@@ -1747,7 +2025,17 @@ export default function AdminDashboardPage() {
                           {l.status === "pending" && <span className={styles.statusPending}>Pending</span>}
                           {l.status === "rejected" && <span className={styles.statusRejected}>Rejected</span>}
                         </td>
-                        <td>{new Date(l.createdAt).toLocaleDateString("en-IN")}</td>
+                        <td>
+                          {(() => {
+                            const dt = formatISTDateTime(l.createdAt);
+                            return (
+                              <>
+                                <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{dt.date}</div>
+                                {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
+                              </>
+                            );
+                          })()}
+                        </td>
                       </tr>
                     ))
                   )}
@@ -2052,19 +2340,15 @@ export default function AdminDashboardPage() {
                             </div>
                           </td>
                           <td>
-                            <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>
-                              {new Date(lead.createdAt).toLocaleDateString("en-IN", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              })}
-                            </div>
-                            <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>
-                              {new Date(lead.createdAt).toLocaleTimeString("en-IN", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </div>
+                            {(() => {
+                              const dt = formatISTDateTime(lead.createdAt);
+                              return (
+                                <>
+                                  <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{dt.date}</div>
+                                  {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
+                                </>
+                              );
+                            })()}
                           </td>
                           <td style={{ textAlign: "right" }}>
                             <div className={styles.userActionBtnsGroup} onClick={(e) => e.stopPropagation()}>
@@ -2270,13 +2554,10 @@ export default function AdminDashboardPage() {
                     <span className={styles.modalJoinedDate}>
                       <span className={styles.contactIcon}>🗓</span>
                       Joined:{" "}
-                      {selectedUserDetail.user?.createdAt
-                        ? new Date(selectedUserDetail.user.createdAt).toLocaleDateString("en-IN", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })
-                        : "—"}
+                      {(() => {
+                        const dt = formatISTDateTime(selectedUserDetail.user?.createdAt);
+                        return `${dt.date} ${dt.time ? `(${dt.time})` : ""}`;
+                      })()}
                     </span>
                   </div>
                 </div>
@@ -2476,7 +2757,15 @@ export default function AdminDashboardPage() {
                                     </span>
                                   </td>
                                   <td style={{ textAlign: "right", fontSize: "0.8rem", color: "#64748b" }}>
-                                    {new Date(enq.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                                    {(() => {
+                                      const dt = formatISTDateTime(enq.createdAt);
+                                      return (
+                                        <>
+                                          <div style={{ fontWeight: 600, color: "#334155" }}>{dt.date}</div>
+                                          {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
+                                        </>
+                                      );
+                                    })()}
                                   </td>
                                 </tr>
                               ))}
@@ -2596,7 +2885,7 @@ export default function AdminDashboardPage() {
                                       <div className={styles.propItemInfo}>
                                         <strong className={styles.modalPropTitle}>{p.title}</strong>
                                         <span className={styles.modalPropDate}>
-                                          Added {new Date(p.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                                          Added {formatISTDate(p.createdAt)}
                                         </span>
                                       </div>
                                     </div>
@@ -2722,6 +3011,59 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
+      {/* Custom Soft Delete Confirmation Modal for Bank Partner */}
+      {bankToDelete && (
+        <div className={styles.confirmModalOverlay} onClick={() => !actionLoading && setBankToDelete(null)}>
+          <div className={styles.confirmModalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.confirmModalIconWrap}>
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#dc2626"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+            </div>
+
+            <h3 className={styles.confirmModalTitle}>Delete Bank Partner?</h3>
+            <p className={styles.confirmModalDesc}>
+              Are you sure you want to delete <strong>&quot;{bankToDelete.bankName}&quot;</strong> (Account: {bankToDelete.userName})?
+            </p>
+            <div className={styles.confirmModalNote}>
+              Note: This will soft-delete the bank partner profile and revoke dashboard login access while keeping existing customer lead records intact in the database.
+            </div>
+
+            <div className={styles.confirmModalActions}>
+              <button
+                type="button"
+                className={styles.btnCancelConfirm}
+                disabled={actionLoading === bankToDelete.id}
+                onClick={() => setBankToDelete(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.btnDeleteConfirm}
+                disabled={actionLoading === bankToDelete.id}
+                onClick={handleDeleteBankPartner}
+              >
+                {actionLoading === bankToDelete.id ? "Deleting..." : "Yes, Delete Bank Partner"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 7. CONTACT LEAD DETAIL / VIEW MESSAGE MODAL */}
       {selectedContactLead && (
         <div
@@ -2780,10 +3122,10 @@ export default function AdminDashboardPage() {
                 <div className={styles.contactInfoField}>
                   <span className={styles.contactInfoLabel}>Received At</span>
                   <span className={styles.contactInfoVal}>
-                    {new Date(selectedContactLead.createdAt).toLocaleString("en-IN", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
+                    {(() => {
+                      const dt = formatISTDateTime(selectedContactLead.createdAt);
+                      return `${dt.date} ${dt.time ? `(${dt.time})` : ""}`;
+                    })()}
                   </span>
                 </div>
               </div>
@@ -2966,6 +3308,102 @@ export default function AdminDashboardPage() {
                 {actionLoading === contactLeadToDelete.id ? "Deleting..." : "Yes, Delete Lead"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. BANK PARTNER SET / RESET PASSWORD MODAL */}
+      {pwdModalBank && (
+        <div
+          className={styles.confirmModalOverlay}
+          onClick={() => !pwdLoading && setPwdModalBank(null)}
+        >
+          <div className={styles.pwdModalCard} onClick={(e) => e.stopPropagation()}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSaveBankPassword();
+              }}
+              autoComplete="off"
+            >
+              <div className={styles.pwdModalHeader}>
+                <h3 className={styles.pwdModalTitle}>
+                  <span>🔑</span> Set Bank Partner Password
+                </h3>
+                <button
+                  type="button"
+                  className={styles.searchClearBtn}
+                  style={{ fontSize: "1.2rem", width: "30px", height: "30px" }}
+                  onClick={() => !pwdLoading && setPwdModalBank(null)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className={styles.pwdModalBody}>
+                <div className={styles.pwdUserBox}>
+                  <span style={{ fontSize: "0.88rem", fontWeight: 800, color: "#0f172a" }}>
+                    {pwdModalBank.bankName}
+                  </span>
+                  <span style={{ fontSize: "0.78rem", color: "#0284c7", fontWeight: 600 }}>
+                    ✉ {pwdModalBank.email}
+                  </span>
+                </div>
+
+                <div className={styles.pwdFormGroup}>
+                  <label className={styles.pwdLabel}>New Login Password</label>
+                  <div className={styles.pwdInputWrapper}>
+                    <input
+                      type={showPwdText ? "text" : "password"}
+                      name="partnerNewPassword"
+                      id="partnerNewPassword"
+                      autoComplete="new-password"
+                      data-lpignore="true"
+                      data-form-type="other"
+                      value={newPwdText}
+                      onChange={(e) => setNewPwdText(e.target.value)}
+                      placeholder="Enter minimum 6 characters..."
+                      className={styles.pwdInput}
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      className={styles.pwdEyeBtn}
+                      onClick={() => setShowPwdText(!showPwdText)}
+                      title={showPwdText ? "Hide password" : "Show password"}
+                    >
+                      {showPwdText ? "🙈" : "👁️"}
+                    </button>
+                  </div>
+                  {pwdError && (
+                    <div style={{ fontSize: "0.78rem", color: "#dc2626", fontWeight: 700, marginTop: "2px" }}>
+                      ⚠️ {pwdError}
+                    </div>
+                  )}
+                  <small style={{ fontSize: "0.74rem", color: "#64748b" }}>
+                    This updates the partner&apos;s password directly in the database.
+                  </small>
+                </div>
+              </div>
+
+              <div className={styles.pwdModalFooter}>
+                <button
+                  type="button"
+                  className={styles.btnCancelConfirm}
+                  onClick={() => setPwdModalBank(null)}
+                  disabled={pwdLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.btnSavePwd}
+                  disabled={pwdLoading || !newPwdText || newPwdText.trim().length < 6}
+                >
+                  {pwdLoading ? "Updating..." : "Save Password"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

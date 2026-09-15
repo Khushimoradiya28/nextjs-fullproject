@@ -6,18 +6,29 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import styles from "./register.module.css";
 
-function PasswordField({ label, placeholder, value, onChange, error }) {
+function PasswordField({ label, placeholder, value, onChange, error, name, id }) {
   const [show, setShow] = useState(false);
   return (
     <div className={styles.formGroup}>
       <label>{label}</label>
       <div className={styles.passWrap}>
-        <input type={show ? "text" : "password"} placeholder={placeholder} value={value} onChange={onChange} className={error ? styles.inputError : ""} />
+        <input
+          type={show ? "text" : "password"}
+          name={name || "register_password"}
+          id={id || "register_password"}
+          autoComplete="new-password"
+          data-lpignore="true"
+          data-form-type="other"
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className={error ? styles.inputError : ""}
+        />
         <button type="button" className={styles.eyeBtn} onClick={() => setShow(!show)} tabIndex={-1}>
           {show ? (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
           ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6"/></svg>
           )}
         </button>
       </div>
@@ -88,12 +99,17 @@ export default function BankPartnerRegister() {
   const validateAll = () => {
     const newErrors = {};
     let valid = true;
-    Object.keys(form).forEach(key => {
-      const err = validateField(key, form[key]);
-      if (err) { newErrors[key] = err; valid = false; }
+    ["name", "bankName", "email", "mobile", "password", "confirmPassword"].forEach(f => {
+      const err = validateField(f, form[f]);
+      if (err) {
+        newErrors[f] = err;
+        valid = false;
+      }
     });
     setErrors(newErrors);
-    setTouched({ name:true, bankName:true, email:true, mobile:true, password:true, confirmPassword:true });
+    setTouched({
+      name: true, bankName: true, email: true, mobile: true, password: true, confirmPassword: true,
+    });
     return valid;
   };
 
@@ -144,34 +160,92 @@ export default function BankPartnerRegister() {
 
           {error && <div className={styles.errorAlert}>{error}</div>}
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} autoComplete="off">
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label>Full Name *</label>
-                <input type="text" placeholder="Contact person name" value={form.name} onChange={(e) => handleChange("name", e.target.value)} onBlur={() => handleBlur("name")} className={errors.name ? styles.inputError : ""} />
+                <input
+                  type="text"
+                  name="partner_contact_person_name"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  placeholder="Contact person name"
+                  value={form.name}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                  onBlur={() => handleBlur("name")}
+                  className={errors.name ? styles.inputError : ""}
+                />
                 {errors.name && <span className={styles.err}>{errors.name}</span>}
               </div>
               <div className={styles.formGroup}>
                 <label>Bank Name *</label>
-                <input type="text" placeholder="e.g. SBI Bank" value={form.bankName} onChange={(e) => handleChange("bankName", e.target.value)} onBlur={() => handleBlur("bankName")} className={errors.bankName ? styles.inputError : ""} />
+                <input
+                  type="text"
+                  name="partner_institution_name"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  placeholder="e.g. SBI Bank"
+                  value={form.bankName}
+                  onChange={(e) => handleChange("bankName", e.target.value)}
+                  onBlur={() => handleBlur("bankName")}
+                  className={errors.bankName ? styles.inputError : ""}
+                />
                 {errors.bankName && <span className={styles.err}>{errors.bankName}</span>}
               </div>
             </div>
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label>Email *</label>
-                <input type="email" placeholder="your@bank.com" value={form.email} onChange={(e) => handleChange("email", e.target.value)} onBlur={() => handleBlur("email")} className={errors.email ? styles.inputError : ""} />
+                <input
+                  type="email"
+                  name="partner_registration_email"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
+                  placeholder="your@bank.com"
+                  value={form.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  onBlur={() => handleBlur("email")}
+                  className={errors.email ? styles.inputError : ""}
+                />
                 {errors.email && <span className={styles.err}>{errors.email}</span>}
               </div>
               <div className={styles.formGroup}>
                 <label>Mobile *</label>
-                <input type="tel" placeholder="10-digit number" value={form.mobile} onChange={(e) => handleChange("mobile", e.target.value)} onBlur={() => handleBlur("mobile")} className={errors.mobile ? styles.inputError : ""} maxLength={10} />
+                <input
+                  type="tel"
+                  name="partner_contact_mobile"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  placeholder="10-digit number"
+                  value={form.mobile}
+                  onChange={(e) => handleChange("mobile", e.target.value)}
+                  onBlur={() => handleBlur("mobile")}
+                  className={errors.mobile ? styles.inputError : ""}
+                  maxLength={10}
+                />
                 {errors.mobile && <span className={styles.err}>{errors.mobile}</span>}
               </div>
             </div>
             <div className={styles.formRow}>
-              <PasswordField label="Password *" placeholder="Min 6 characters" value={form.password} onChange={(e) => handleChange("password", e.target.value)} error={errors.password} />
-              <PasswordField label="Confirm Password *" placeholder="Re-enter password" value={form.confirmPassword} onChange={(e) => handleChange("confirmPassword", e.target.value)} error={errors.confirmPassword} />
+              <PasswordField
+                label="Password *"
+                placeholder="Min 6 characters"
+                name="partner_reg_password"
+                id="partner_reg_password"
+                value={form.password}
+                onChange={(e) => handleChange("password", e.target.value)}
+                error={errors.password}
+              />
+              <PasswordField
+                label="Confirm Password *"
+                placeholder="Re-enter password"
+                name="partner_reg_confirm_password"
+                id="partner_reg_confirm_password"
+                value={form.confirmPassword}
+                onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                error={errors.confirmPassword}
+              />
             </div>
 
             <button type="submit" className={styles.submitBtn} disabled={loading}>

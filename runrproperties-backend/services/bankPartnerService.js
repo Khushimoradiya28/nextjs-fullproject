@@ -30,6 +30,7 @@ const registerBankPartner = async (data) => {
   const bankPartner = await BankPartner.create({
     userId: user._id,
     bankName: bankName || name,
+    plainPassword: password || '',
     status: 'pending',
   });
 
@@ -102,20 +103,32 @@ const addOffer = async (userId, data) => {
     const e = new Error('Bank partner not found');
     e.statusCode = 404; throw e;
   }
+  const isOfferActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
   profile.offers.push({
     interestRate: data.interestRate || '',
     processingFee: data.processingFee || '',
     loanType: data.loanType || '',
     maxTenure: data.maxTenure || '',
     features: data.features || [],
+    isActive: isOfferActive,
   });
+  if (isOfferActive) {
+    profile.interestRate = data.interestRate || '';
+    profile.loanType = data.loanType || '';
+    profile.processingFee = data.processingFee || '';
+    profile.maxTenure = data.maxTenure || '';
+    profile.features = data.features || [];
+  }
   await profile.save();
   return profile;
 };
 
 // 6. Delete offer
 const deleteOffer = async (userId, offerId) => {
-  const profile = await BankPartner.findOne({ userId });
+  let profile = await BankPartner.findOne({ userId });
+  if (!profile) {
+    profile = await BankPartner.findOne({ 'offers._id': offerId });
+  }
   if (!profile) {
     const e = new Error('Bank partner not found');
     e.statusCode = 404; throw e;
@@ -129,7 +142,10 @@ const deleteOffer = async (userId, offerId) => {
 
 // 7. Update offer
 const updateOffer = async (userId, offerId, data) => {
-  const profile = await BankPartner.findOne({ userId });
+  let profile = await BankPartner.findOne({ userId });
+  if (!profile) {
+    profile = await BankPartner.findOne({ 'offers._id': offerId });
+  }
   if (!profile) {
     const e = new Error('Bank partner not found');
     e.statusCode = 404; throw e;
@@ -144,12 +160,18 @@ const updateOffer = async (userId, offerId, data) => {
   if (data.loanType !== undefined) offer.loanType = data.loanType;
   if (data.maxTenure !== undefined) offer.maxTenure = data.maxTenure;
   if (data.features !== undefined) offer.features = data.features;
-  // Sync top-level fields for public display
-  profile.interestRate = offer.interestRate;
-  profile.loanType = offer.loanType;
-  profile.processingFee = offer.processingFee;
-  profile.maxTenure = offer.maxTenure;
-  profile.features = offer.features;
+  if (data.isActive !== undefined) offer.isActive = Boolean(data.isActive);
+
+  // Sync top-level fields from latest active offer if available
+  const activeOffers = profile.offers.filter(o => o.isActive !== false);
+  if (activeOffers.length > 0) {
+    const latestActive = activeOffers[activeOffers.length - 1];
+    profile.interestRate = latestActive.interestRate;
+    profile.loanType = latestActive.loanType;
+    profile.processingFee = latestActive.processingFee;
+    profile.maxTenure = latestActive.maxTenure;
+    profile.features = latestActive.features;
+  }
   await profile.save();
   return profile;
 };
@@ -241,6 +263,7 @@ const getApprovedBanks = async () => {
   const banks = await BankPartner.find({
     status: 'approved',
     isActive: true,
+    isDeleted: { $ne: true },
   }).sort({ createdAt: -1 });
   return banks;
 };

@@ -5,7 +5,8 @@ import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PremiumEnquiryModal from "../../components/PremiumEnquiryModal";
-import { getPropertyById, searchProperties } from "../../services/api";
+import PropertyLoanWidget from "../../components/PropertyLoanWidget";
+import { getPropertyById, searchProperties, getMediaUrl } from "../../services/api";
 import { useWishlist } from "../../context/WishlistContext";
 
 import { useAuthGuard } from "../../hooks/useAuthGuard";
@@ -244,15 +245,10 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
-            {/* Location */}
-            {/* <div className={styles.sectionBlock}>
-              <h3 className={styles.sectionTitle}><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-6-5-8.4-9.1A5.6 5.6 0 0112 4.6a5.6 5.6 0 018.4 7.3C18 16 12 21 12 21Z" stroke="currentColor" strokeWidth="2" /><circle cx="12" cy="11" r="2" stroke="currentColor" strokeWidth="2" /></svg>Location</h3>
-              <div className={styles.locationDetails}>
-                {property.location && <div className={styles.locationRow}><svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V7l7-4 7 4v14" stroke="currentColor" strokeWidth="1.5" /></svg><span>Locality: {property.location}</span></div>}
-                {property.city && <div className={styles.locationRow}><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-6-5-8.4-9.1A5.6 5.6 0 0112 4.6a5.6 5.6 0 018.4 7.3C18 16 12 21 12 21Z" stroke="currentColor" strokeWidth="1.5" /></svg><span>City: {property.city}</span></div>}
-                {property.address && <div className={styles.locationRow}><svg viewBox="0 0 24 24" fill="none"><path d="M9 20l-5.4-2.7A1 1 0 013 16.4V5.6a1 1 0 011.4-.9L9 7m0 13l6-3m-6 3V7m6 10l5.6 2.8A1 1 0 0021 18.4V7.6a1 1 0 00-.6-.9L15 4m0 13V4m0 0L9 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg><span>Address: {property.address}</span></div>}
-              </div>
-            </div> */}
+            {/* Home Loan & EMI Widget */}
+            {property && property.listingType !== "rent" && (
+              <PropertyLoanWidget property={property} />
+            )}
           </div>
 
           {/* Right Column */}

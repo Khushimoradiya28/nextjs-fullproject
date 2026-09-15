@@ -207,8 +207,10 @@
 .mainContent {
   flex: 1;
   margin-left: 250px;
-  padding: 40px 48px;
-  max-width: 1440px;
+  padding: 36px 40px;
+  width: calc(100% - 250px);
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .topBar {
@@ -632,6 +634,17 @@
 }
 
 /* Property Table Cell Elements */
+.propTitleLink {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  transition: color 0.15s ease;
+}
+
+.propTitleLink:hover .propTitleText {
+  color: #007bbd;
+}
+
 .propTitleText {
   display: block;
   font-size: 0.92rem;
@@ -639,6 +652,32 @@
   color: #0f172a;
   line-height: 1.3;
   margin-bottom: 3px;
+  transition: color 0.15s ease;
+}
+
+.btnViewProperty {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0284c7;
+  padding: 5px 11px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.btnViewProperty:hover {
+  background: #007bbd;
+  color: #ffffff;
+  border-color: #007bbd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 123, 189, 0.25);
 }
 
 .categoryResidential {
@@ -1051,6 +1090,46 @@
 .btnToggleActive:hover {
   background: #f0f9ff;
   border-color: #bae6fd;
+}
+
+/* 🔴 Disable Action Button (when bank partner is currently Active) */
+.btnDisable {
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  color: #ea580c;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btnDisable:hover {
+  background: #ffedd5;
+  border-color: #fdba74;
+  color: #c2410c;
+  transform: translateY(-1px);
+}
+
+/* 🟢 Enable Action Button (when bank partner is currently Inactive/Disabled) */
+.btnEnable {
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  color: #047857;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btnEnable:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+  color: #065f46;
+  transform: translateY(-1px);
 }
 
 /* Pagination Bar */
@@ -2440,6 +2519,305 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+/* Bank Table Specific Column Distribution */
+.bankThName {
+  width: 17%;
+  min-width: 160px;
+}
+
+.bankThCred {
+  width: 27%;
+  min-width: 240px;
+}
+
+.bankThRate {
+  width: 12%;
+  min-width: 110px;
+}
+
+.bankThStatus {
+  width: 9%;
+  min-width: 85px;
+}
+
+.bankThReqDate {
+  width: 12%;
+  min-width: 115px;
+}
+
+.bankThApproveDate {
+  width: 12%;
+  min-width: 115px;
+}
+
+.bankThAction {
+  width: 11%;
+  min-width: 140px;
+  text-align: right !important;
+}
+
+.bankNameWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bankNameIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.bankNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bankUserCredWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bankUserAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border: 1.5px solid #dbeafe;
+  flex-shrink: 0;
+}
+
+/* Credentials Cell in Bank Partners Table */
+.credCellBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.credHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.credUserName {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.credContactRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.credEmailItem {
+  font-size: 0.78rem;
+  color: #0284c7;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.credPhoneItem {
+  font-size: 0.76rem;
+  color: #64748b;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.credDotDivider {
+  color: #cbd5e1;
+  font-size: 0.7rem;
+}
+
+/* Key / Password Button in Bank Partners Table */
+.btnKeyPassword {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.btnKeyPassword:hover {
+  background: #f0f9ff;
+  border-color: #007bbd;
+  color: #007bbd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 123, 189, 0.15);
+}
+
+/* Password Modal Custom Styles */
+.pwdModalCard {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 440px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pwdModalHeader {
+  padding: 20px 24px;
+  border-bottom: 1.5px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pwdModalTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pwdModalBody {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pwdUserBox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pwdFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pwdLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.pwdInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pwdInput {
+  width: 100%;
+  padding: 11px 42px 11px 14px;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.pwdInput::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.pwdInput:-webkit-autofill,
+.pwdInput:-webkit-autofill:hover, 
+.pwdInput:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #0f172a !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.pwdInput:focus {
+  background: #ffffff !important;
+  border-color: #007bbd;
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.15);
+}
+
+.pwdEyeBtn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 0.9rem;
+}
+
+.pwdModalFooter {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1.5px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btnSavePwd {
+  background: #007bbd;
+  color: #ffffff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btnSavePwd:hover:not(:disabled) {
+  background: #005f94;
+  transform: translateY(-1px);
+}
+
+.btnSavePwd:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 

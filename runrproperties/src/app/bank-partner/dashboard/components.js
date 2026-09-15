@@ -56,20 +56,78 @@ export function Nav({ activeTab, setActiveTab, profile, showNotifs, setShowNotif
 }
 
 export function Sidebar({ activeTab, setActiveTab, handleLogout }) {
+  const menuItems = [
+    { label: "Overview", icon: "📊" },
+    { label: "Leads", icon: "👥" },
+    { label: "Profile", icon: "📄" },
+    { label: "Add Offer", icon: "➕" },
+    { label: "All Offers", icon: "🏷️" },
+  ];
+
   return (
     <aside style={{ width:"240px", background:"#FFFFFF", borderRight:"1px solid rgba(0,123,189,0.12)", display:"flex", flexDirection:"column", minHeight:"calc(100vh - 60px)", position:"sticky", top:"60px", fontFamily:"'DM Sans',sans-serif" }}>
-      <div style={{ padding:"20px 0", flex:1 }}>
-        <p style={{ fontSize:"0.65rem", color:"#BBBBBB", letterSpacing:"0.12em", textTransform:"uppercase", padding:"16px 24px 6px", fontWeight:"500" }}>Main</p>
-        {[{label:"Overview",icon:"📊"},{label:"Leads",icon:"👥"},{label:"Profile",icon:"📄"},{label:"Add Offer",icon:"➕"},{label:"All Offers",icon:"🏷️"}].map(item => (
-          <div key={item.label} onClick={() => setActiveTab(item.label)} style={{ display:"flex", alignItems:"center", gap:"12px", padding:"12px 24px", fontSize:"14px", cursor:"pointer", borderLeft: activeTab===item.label ? "3px solid #007bbd" : "3px solid transparent", background: activeTab===item.label ? "rgba(0,123,189,0.07)" : "transparent", color: activeTab===item.label ? "#007bbd" : "#555555", fontWeight: activeTab===item.label ? "500" : "400", transition:"all 0.2s ease" }}><span style={{fontSize:"18px"}}>{item.icon}</span>{item.label}</div>
-        ))}
-        <p style={{ fontSize:"0.65rem", color:"#BBBBBB", letterSpacing:"0.12em", textTransform:"uppercase", padding:"16px 24px 6px", fontWeight:"500" }}>Reports</p>
-        {[{label:"Analytics",icon:"📈"},{label:"Settings",icon:"⚙️"}].map(item => (
-          <div key={item.label} onClick={() => setActiveTab(item.label)} style={{ display:"flex", alignItems:"center", gap:"12px", padding:"12px 24px", fontSize:"14px", cursor:"pointer", borderLeft: activeTab===item.label ? "3px solid #007bbd" : "3px solid transparent", background: activeTab===item.label ? "rgba(0,123,189,0.07)" : "transparent", color: activeTab===item.label ? "#007bbd" : "#555555", fontWeight: activeTab===item.label ? "500" : "400", transition:"all 0.2s ease" }}><span style={{fontSize:"18px"}}>{item.icon}</span>{item.label}</div>
-        ))}
+      <div style={{ padding:"16px 0", flex:1 }}>
+        <p style={{ fontSize:"0.65rem", color:"#94a3b8", letterSpacing:"0.12em", textTransform:"uppercase", padding:"12px 24px 8px", fontWeight:"600" }}>Navigation</p>
+        {menuItems.map(item => {
+          const isActive = activeTab === item.label;
+          return (
+            <div
+              key={item.label}
+              onClick={() => setActiveTab(item.label)}
+              style={{
+                display:"flex",
+                alignItems:"center",
+                gap:"12px",
+                padding:"12px 24px",
+                fontSize:"14px",
+                cursor:"pointer",
+                borderLeft: isActive ? "3px solid #007bbd" : "3px solid transparent",
+                background: isActive ? "rgba(0,123,189,0.07)" : "transparent",
+                color: isActive ? "#007bbd" : "#475569",
+                fontWeight: isActive ? "600" : "500",
+                transition:"all 0.2s ease"
+              }}
+              onMouseEnter={e => {
+                if (!isActive) {
+                  e.currentTarget.style.background = "rgba(0,123,189,0.03)";
+                  e.currentTarget.style.color = "#007bbd";
+                }
+              }}
+              onMouseLeave={e => {
+                if (!isActive) {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "#475569";
+                }
+              }}
+            >
+              <span style={{fontSize:"18px"}}>{item.icon}</span>
+              {item.label}
+            </div>
+          );
+        })}
       </div>
       <div style={{ padding:"16px 24px", borderTop:"1px solid rgba(0,123,189,0.1)" }}>
-        <button onClick={handleLogout} style={{ display:"flex", alignItems:"center", gap:"10px", color:"#8A8A8A", fontSize:"14px", background:"none", border:"none", cursor:"pointer", padding:"8px 0", transition:"color 0.2s" }} onMouseEnter={e=>e.currentTarget.style.color="#D4621F"} onMouseLeave={e=>e.currentTarget.style.color="#8A8A8A"}>🚪 Logout</button>
+        <button
+          onClick={handleLogout}
+          style={{
+            display:"flex",
+            alignItems:"center",
+            gap:"10px",
+            color:"#64748b",
+            fontSize:"14px",
+            fontWeight:"500",
+            background:"none",
+            border:"none",
+            cursor:"pointer",
+            padding:"8px 0",
+            transition:"color 0.2s",
+            width:"100%"
+          }}
+          onMouseEnter={e=>e.currentTarget.style.color="#dc2626"}
+          onMouseLeave={e=>e.currentTarget.style.color="#64748b"}
+        >
+          🚪 Logout
+        </button>
       </div>
     </aside>
   );

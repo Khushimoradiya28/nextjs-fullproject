@@ -196,6 +196,26 @@ export default function BankPartnerDashboard() {
       }
     } catch (e) {}
   };
+  const handleToggleOfferStatus = async (offer) => {
+    try {
+      const updatedStatus = offer.isActive === false ? true : false;
+      const res = await fetch(`${API}/bank-partners/offers/${offer._id}`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ isActive: updatedStatus }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Offer ${updatedStatus ? "activated" : "deactivated"}!`);
+        fetchOffers();
+      } else {
+        alert(data.message || "Failed to update status");
+      }
+    } catch (e) {
+      console.error("Toggle offer error:", e);
+      alert("Something went wrong");
+    }
+  };
   const handleSaveNewOffer = async () => {
     if (!newOffer.interestRate || !newOffer.loanType) {
       alert("Interest rate and loan type are required");
@@ -210,6 +230,7 @@ export default function BankPartnerDashboard() {
       processingFee: newOffer.processingFee || "",
       maxTenure: newOffer.maxTenure || "",
       features: featuresArr,
+      isActive: newOffer.isActive !== undefined ? newOffer.isActive : true,
     };
     try {
       const url = newOffer._id
@@ -224,7 +245,7 @@ export default function BankPartnerDashboard() {
       const data = await res.json();
       if (res.ok && data.success) {
         setShowAddForm(false);
-        setNewOffer({ interestRate: "", processingFee: "", loanType: "", maxTenure: "", features: "" });
+        setNewOffer({ interestRate: "", processingFee: "", loanType: "", maxTenure: "", features: "", isActive: true });
         showToast(newOffer._id ? "Offer updated!" : "Offer saved successfully!");
         fetchOffers();
       } else {
@@ -327,6 +348,7 @@ export default function BankPartnerDashboard() {
             <AllOffersTab
               offers={offers}
               handleDeleteOffer={handleDeleteOffer}
+              handleToggleOfferStatus={handleToggleOfferStatus}
               showAddForm={true}
               setShowAddForm={setShowAddForm}
               newOffer={newOffer}
@@ -342,6 +364,7 @@ export default function BankPartnerDashboard() {
             <AllOffersTab
               offers={offers}
               handleDeleteOffer={handleDeleteOffer}
+              handleToggleOfferStatus={handleToggleOfferStatus}
               showAddForm={false}
               setShowAddForm={setShowAddForm}
               newOffer={newOffer}
@@ -350,20 +373,6 @@ export default function BankPartnerDashboard() {
               setEditForm={setEditForm}
               setActiveTab={setActiveTab}
             />
-          )}
-          {activeTab === "Analytics" && (
-            <div
-              style={{ textAlign: "center", padding: "60px", color: "#999" }}
-            >
-              <p>Analytics coming soon</p>
-            </div>
-          )}
-          {activeTab === "Settings" && (
-            <div
-              style={{ textAlign: "center", padding: "60px", color: "#999" }}
-            >
-              <p>Settings coming soon</p>
-            </div>
           )}
         </main>
       </div>

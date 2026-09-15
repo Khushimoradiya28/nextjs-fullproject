@@ -11,8 +11,15 @@
 .formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .formGroup { display: flex; flex-direction: column; gap: 5px; }
 .formGroup label { font-size: 0.74rem; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.3px; }
-.formGroup input, .formGroup textarea { padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; color: #1e293b; background: #f9fafb; outline: none; transition: border-color 0.2s; font-family: inherit; }
+.formGroup input, .formGroup textarea { padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; color: #1e293b; background: #ffffff; outline: none; transition: border-color 0.2s; font-family: inherit; }
 .formGroup input:focus, .formGroup textarea:focus { border-color: #007bbd; background: #fff; }
+.formGroup input:-webkit-autofill,
+.formGroup input:-webkit-autofill:hover, 
+.formGroup input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #1e293b !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
 .inputError { border-color: #dc2626 !important; background: #fef2f2 !important; }
 .passWrap { position: relative; display: flex; align-items: center; }
 .passWrap input { width: 100%; padding-right: 40px; }

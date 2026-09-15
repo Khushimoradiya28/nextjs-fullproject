@@ -178,20 +178,25 @@ export default function HomeLoansPage() {
 
   const displayBanks =
     dynamicBanks.length > 0
-      ? dynamicBanks.map((b) => {
-          const latestOffer = b.offers && b.offers.length > 0 ? b.offers[b.offers.length - 1] : null;
-          const rate = latestOffer?.interestRate || b.interestRate;
-          return {
-            _id: b._id,
-            name: b.bankName,
-            rate: rate,
-            tagline: b.tagline || "",
-            loanType: latestOffer?.loanType || b.loanType || "Home Loan",
-            processingFee: latestOffer?.processingFee || b.processingFee || "",
-            maxTenure: latestOffer?.maxTenure || b.maxTenure || "",
-            image: getMediaUrl(b.logo, ""),
-          };
-        })
+      ? dynamicBanks
+          .filter((b) => b.isActive !== false)
+          .map((b) => {
+            const activeOffers = (b.offers || []).filter((o) => o.isActive !== false);
+            const latestOffer = activeOffers.length > 0 ? activeOffers[activeOffers.length - 1] : null;
+            const rate = latestOffer?.interestRate || b.interestRate;
+            return {
+              _id: b._id,
+              name: b.bankName,
+              rate: rate,
+              tagline: b.tagline || "",
+              loanType: latestOffer?.loanType || b.loanType || "Home Loan",
+              processingFee: latestOffer?.processingFee || b.processingFee || "",
+              maxTenure: latestOffer?.maxTenure || b.maxTenure || "",
+              image: getMediaUrl(b.logo, ""),
+              hasActiveOffer: activeOffers.length > 0 || Boolean(rate),
+            };
+          })
+          .filter((b) => b.hasActiveOffer)
       : fallbackBanks;
 
   const emi = useMemo(
