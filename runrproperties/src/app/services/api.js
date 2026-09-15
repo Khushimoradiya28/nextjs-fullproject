@@ -464,20 +464,23 @@ export async function getFeaturedProperties() {
 
 // Maps backend property shape to frontend expected shape
 function mapProperty(p) {
+  const backendOrigin = (
+    process.env.NEXT_PUBLIC_API_URL ||
+    (typeof window !== "undefined" && window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://nextjs-fullproject.onrender.com")
+  ).replace(/\/api\/?$/, "");
+
   const getImageUrl = (url) => {
     if (!url) return "/img/buy-properties/1.jpg";
     // Already a full URL
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    // Relative path from backend — serve via Next.js rewrite proxy
-    if (url.startsWith("/uploads") || url.startsWith("/images")) {
-      return url;
-    }
-    // Relative path without leading slash
-    if (url.startsWith("uploads/") || url.startsWith("images/")) {
-      return `/${url}`;
+    const cleanPath = url.startsWith("/") ? url : `/${url}`;
+    if (cleanPath.startsWith("/uploads") || cleanPath.startsWith("/images")) {
+      return backendOrigin ? `${backendOrigin}${cleanPath}` : cleanPath;
     }
     // Public asset or other path
-    return url;
+    return cleanPath;
   };
 
   // Handle both array (images) and singular (image) from backend
