@@ -29,7 +29,16 @@ function PropertyCard({ item }) {
   return (
     <article className={styles.propertyCard} onClick={() => router.push(`/property/${item.id}`)} style={{ cursor: "pointer" }}>
       <div className={styles.cardImage}>
-        <img src={item.image || "/img/featured-properties/1.jpg"} alt={item.title} className={styles.cardImg} loading="lazy" />
+        <img
+          src={item.image || "/img/featured-properties/1.jpg"}
+          alt={item.title}
+          className={styles.cardImg}
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/img/featured-properties/1.jpg";
+          }}
+        />
         <button
           className={liked ? `${styles.cardActionOverlay} ${styles.liked}` : styles.cardActionOverlay}
           aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}

@@ -31,10 +31,14 @@ export default function PropertyCard({ property, viewMode }) {
           )}
           <div className={styles.cardImage}>
             <img
-              src={property.image}
+              src={property.image || "/img/buy-properties/1.jpg"}
               alt={property.title}
               className={styles.cardImg}
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/img/buy-properties/1.jpg";
+              }}
             />
           </div>
           <button

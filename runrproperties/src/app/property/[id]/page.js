@@ -133,6 +133,10 @@ export default function PropertyDetailPage() {
               src={images[activeImg]}
               alt={property.title}
               className={styles.gallerySlideImg}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/img/buy-properties/1.jpg";
+              }}
             />
             <span className={styles.galleryCounter}>{activeImg + 1} / {images.length}</span>
 

@@ -35,7 +35,16 @@ function PropertyCard({ property }) {
   return (
     <Link href={`/property/${property.id}`} className={styles.cardLink}><article className={styles.card}>
       <div className={styles.cardImageWrap}>
-        <img src={property.image || "/img/buy-properties/1.jpg"} alt={property.title} className={styles.cardImg} loading="lazy" />
+        <img
+          src={property.image || "/img/buy-properties/1.jpg"}
+          alt={property.title}
+          className={styles.cardImg}
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/img/buy-properties/1.jpg";
+          }}
+        />
         <span className={styles.badge}>{property.type}</span>
         <button className={`${styles.likeBtn} ${liked ? styles.liked : ""}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(property); }} aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
