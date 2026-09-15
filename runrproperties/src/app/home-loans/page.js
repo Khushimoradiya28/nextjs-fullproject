@@ -73,18 +73,33 @@ const faqs = [
   },
 ];
 
+import { API_BASE, getMediaUrl } from "../services/api";
+
 function BankCard({ bank, onCheck, selected }) {
+  const logoUrl = getMediaUrl(bank.image);
+
   return (
     <div className={`${styles.bankCardItem} ${selected ? styles.bankCardItemSelected : ""}`}>
       {/* Big Logo on Top */}
       <div className={styles.bankLogoWrap}>
-        {bank.image ? (
-          <img src={bank.image} alt={bank.name} className={styles.bankLogoImg} />
-        ) : (
-          <div className={styles.bankAvatarText}>
-            {(bank.name || "BK").slice(0, 2).toUpperCase()}
-          </div>
-        )}
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={bank.name}
+            className={styles.bankLogoImg}
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+              const fb = e.currentTarget.parentElement.querySelector(`.${styles.bankAvatarText}`);
+              if (fb) fb.style.display = "flex";
+            }}
+          />
+        ) : null}
+        <div
+          className={styles.bankAvatarText}
+          style={{ display: logoUrl ? "none" : "flex" }}
+        >
+          {(bank.name || "BK").slice(0, 2).toUpperCase()}
+        </div>
       </div>
 
       {/* Name below Logo */}
@@ -174,7 +189,7 @@ export default function HomeLoansPage() {
             loanType: latestOffer?.loanType || b.loanType || "Home Loan",
             processingFee: latestOffer?.processingFee || b.processingFee || "",
             maxTenure: latestOffer?.maxTenure || b.maxTenure || "",
-            image: b.logo || "",
+            image: getMediaUrl(b.logo, ""),
           };
         })
       : fallbackBanks;

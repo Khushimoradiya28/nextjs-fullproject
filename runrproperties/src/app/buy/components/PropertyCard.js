@@ -185,6 +185,9 @@ export default function PropertyCard({ property, viewMode }) {
                           src={property.owner.profilePhoto}
                           alt={property.owner.name}
                           className={styles.ownerAvatarImg}
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
                         />
                       ) : (
                         <span className={styles.ownerInitial}>
@@ -249,6 +252,9 @@ export default function PropertyCard({ property, viewMode }) {
                           src={property.owner.profilePhoto}
                           alt={property.owner.name}
                           className={styles.ownerAvatarImg}
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
                         />
                       ) : (
                         <span className={styles.ownerInitialSmall}>

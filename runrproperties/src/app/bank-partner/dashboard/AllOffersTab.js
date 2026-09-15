@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { getMediaUrl } from "../../../services/api";
 const inputStyle = {width:"100%",padding:"11px 14px",border:"1px solid #e0e0da",borderRadius:"8px",fontSize:"14px",color:"#111",background:"#fff",outline:"none",boxSizing:"border-box"};
 const labelStyle = {fontSize:"11px",fontWeight:"600",color:"#888",letterSpacing:"0.8px",textTransform:"uppercase",display:"block",marginBottom:"6px"};
 const focusIn = (e) => { e.target.style.borderColor = "#1a6fd4"; };
@@ -71,7 +72,7 @@ export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm: s
         <div style={{background:"#f8f8f5",border:"1px solid #e5e5e0",borderRadius:"10px",padding:"20px 24px",marginBottom:"24px",display:"flex",alignItems:"center",gap:"20px"}}>
           <div style={{width:"72px",height:"72px",borderRadius:"10px",border:"1px solid #e5e5e0",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",background:"#fff",flexShrink:0}}>
             {(logoPreview || bankLogo)
-              ? <img src={logoPreview || bankLogo} style={{width:"100%",height:"100%",objectFit:"contain"}} />
+              ? <img src={getMediaUrl(logoPreview || bankLogo)} style={{width:"100%",height:"100%",objectFit:"contain"}} onError={(e) => { e.currentTarget.style.display = "none"; }} />
               : <span style={{fontSize:"20px",fontWeight:"700",color:"#ccc"}}>🖼️</span>
             }
           </div>
@@ -111,7 +112,7 @@ export default function AllOffersTab({ offers, handleDeleteOffer, showAddForm: s
           <div style={{display:"flex",alignItems:"flex-start",gap:"16px"}}>
             <div style={{width:"60px",height:"60px",borderRadius:"10px",border:"1px solid #e5e5e0",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",background:"#f8f8f5",flexShrink:0}}>
               {bankLogo
-                ? <img src={bankLogo} style={{width:"100%",height:"100%",objectFit:"contain"}} />
+                ? <img src={getMediaUrl(bankLogo)} style={{width:"100%",height:"100%",objectFit:"contain"}} onError={(e) => { e.currentTarget.style.display = "none"; }} />
                 : <span style={{fontSize:"16px",fontWeight:"700",color:"#1a6fd4"}}>{(bankName||"BP").slice(0,2).toUpperCase()}</span>
               }
             </div>

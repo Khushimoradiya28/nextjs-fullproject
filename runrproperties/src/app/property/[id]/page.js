@@ -259,10 +259,20 @@ export default function PropertyDetailPage() {
           <div className={styles.rightCol}>
             {owner && owner.name && <div className={styles.ownerCard}>
               <h4 className={styles.ownerCardTitle}>Property Owner</h4>
-              <div className={styles.ownerProfile}>
-                <div className={styles.ownerAvatar} style={{ background: owner.profilePhoto ? "transparent" : (owner.avatarColor || "#2980b9"), overflow: "hidden" }}>{owner.profilePhoto ? <img src={owner.profilePhoto} alt={owner.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : owner.name?.charAt(0)?.toUpperCase()}</div>
-                <div className={styles.ownerInfo}><span className={styles.ownerName}>{owner.name}</span><span className={styles.ownerRole}>Owner</span></div>
-              </div>
+                <div className={styles.ownerAvatar} style={{ background: owner.profilePhoto ? "transparent" : (owner.avatarColor || "#2980b9"), overflow: "hidden" }}>
+                  {owner.profilePhoto ? (
+                    <img
+                      src={getMediaUrl(owner.profilePhoto)}
+                      alt={owner.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    owner.name?.charAt(0)?.toUpperCase()
+                  )}
+                </div>
               <div className={styles.ownerDetails}>
                 {owner.email && <div className={styles.ownerDetailRow}><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" /><path d="M22 6l-10 7L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>{owner.email}</div>}
                 {owner.mobile && <div className={styles.ownerDetailRow}><svg viewBox="0 0 24 24" fill="none"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.9.6 2.8.7a2 2 0 011.7 2z" stroke="currentColor" strokeWidth="1.5" /></svg>{owner.mobile.slice(0, -2).replace(/./g, "*") + owner.mobile.slice(-2)}</div>}

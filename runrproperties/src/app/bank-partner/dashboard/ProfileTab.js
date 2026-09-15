@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { getMediaUrl } from "../../../services/api";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "/api";
 
@@ -44,7 +45,7 @@ export default function ProfileTab({ editForm, setEditForm, profile, userInfo, f
         <div style={{background:"linear-gradient(135deg, #f0f7fd 0%, #e8f4fd 100%)",padding:"28px 32px",display:"flex",alignItems:"center",gap:"24px",borderBottom:"1px solid #e8e8e3"}}>
           <div style={{width:"100px",height:"100px",borderRadius:"14px",border:"2px solid #fff",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",background:"#fff",flexShrink:0,boxShadow:"0 4px 12px rgba(0,0,0,0.08)"}}>
             {profile?.logo
-              ? <img src={profile.logo} alt="Logo" style={{width:"100%",height:"100%",objectFit:"contain",padding:"8px"}} />
+              ? <img src={getMediaUrl(profile.logo)} alt="Logo" style={{width:"100%",height:"100%",objectFit:"contain",padding:"8px"}} onError={(e) => { e.currentTarget.style.display = "none"; }} />
               : <div style={{fontSize:"28px",fontWeight:"700",color:"#1a6fd4"}}>{(editForm.bankName||"BP").slice(0,2).toUpperCase()}</div>
             }
           </div>

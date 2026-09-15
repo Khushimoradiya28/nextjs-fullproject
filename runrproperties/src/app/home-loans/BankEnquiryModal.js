@@ -101,7 +101,16 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
           <>
             <div className={styles.modalHeader}>
               <div className={styles.bankInfo}>
-                {bank?.image && <img src={bank.image} alt={bank.name} className={styles.bankLogo} />}
+                {bank?.image && (
+                  <img
+                    src={getMediaUrl(bank.image)}
+                    alt={bank.name}
+                    className={styles.bankLogo}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                )}
                 <div>
                   <h3 className={styles.modalTitle}>Apply for Home Loan</h3>
                   <p className={styles.bankRate}>{bank?.name} • From {bank?.rate}%</p>

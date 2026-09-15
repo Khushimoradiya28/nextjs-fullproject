@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
+import { getMediaUrl } from "../services/api";
 import styles from "./DashboardSidebar.module.css";
 
 export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
@@ -43,16 +44,21 @@ export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
     return currentPath.startsWith(href);
   };
 
+  const userPhotoUrl = getMediaUrl(user.profilePhoto);
+
   return (
     <aside className={styles.sidebar}>
       {/* Avatar Section */}
       <div className={styles.avatarSection}>
         <div className={styles.avatarWrap}>
-          {user.profilePhoto ? (
+          {userPhotoUrl ? (
             <img
-              src={user.profilePhoto}
+              src={userPhotoUrl}
               alt={user.name || "User"}
               className={styles.avatarImg}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
             />
           ) : (
             <div

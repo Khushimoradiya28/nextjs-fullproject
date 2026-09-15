@@ -8,8 +8,11 @@ function getAvatarColor(name) {
   return colors[Math.abs(hash) % colors.length];
 }
 
+import { getMediaUrl } from "../services/api";
+
 export default function OwnerAvatar({ owner, size = 44 }) {
-  const bg = owner?.profilePhoto ? "transparent" : (owner?.avatarColor || getAvatarColor(owner?.name));
+  const photoUrl = getMediaUrl(owner?.profilePhoto);
+  const bg = photoUrl ? "transparent" : (owner?.avatarColor || getAvatarColor(owner?.name));
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%",
@@ -18,8 +21,15 @@ export default function OwnerAvatar({ owner, size = 44 }) {
       overflow: "hidden", flexShrink: 0,
       boxShadow: "0 2px 8px rgba(0,0,0,0.12)"
     }}>
-      {owner?.profilePhoto ? (
-        <img src={owner.profilePhoto} alt={owner?.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      {photoUrl ? (
+        <img
+          src={photoUrl}
+          alt={owner?.name}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+        />
       ) : (
         <span style={{ fontSize: size * 0.38, fontWeight: 700, color: "white" }}>
           {owner?.name?.charAt(0)?.toUpperCase() || "O"}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "../context/AuthContext";
-import { contactOwner } from "../services/api";
+import { contactOwner, getMediaUrl } from "../services/api";
 import MobileInput from "./MobileInput";
 import styles from "./PremiumEnquiryModal.module.css";
 
@@ -84,7 +84,14 @@ export default function PremiumEnquiryModal({ property, onClose }) {
         <div className={styles.leftPanel}>
           <div className={styles.ownerAvatar} style={{ background: owner.profilePhoto ? "transparent" : (owner.avatarColor || "#2980b9") }}>
             {owner.profilePhoto ? (
-              <img src={owner.profilePhoto} alt={owner.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+              <img
+                src={getMediaUrl(owner.profilePhoto)}
+                alt={owner.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
             ) : (
               ownerInitial
             )}

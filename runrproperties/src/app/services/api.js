@@ -1,4 +1,45 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "https://nextjs-fullproject.onrender.com/api");
+
+export const getBackendOrigin = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "");
+  }
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    return "http://localhost:5000";
+  }
+  return "https://nextjs-fullproject.onrender.com";
+};
+
+export function getMediaUrl(url, fallback = "") {
+  if (!url) return fallback;
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
+    return url;
+  }
+  const backendOrigin = getBackendOrigin();
+  const cleanPath = url.startsWith("/") ? url : `/${url}`;
+  if (
+    cleanPath.startsWith("/uploads") ||
+    cleanPath.startsWith("/images") ||
+    cleanPath.startsWith("/banks") ||
+    cleanPath.startsWith("/avatars") ||
+    cleanPath.startsWith("/properties")
+  ) {
+    return `${backendOrigin}${cleanPath}`;
+  }
+  return cleanPath;
+}
+
+export function mapUser(u) {
+  if (!u) return null;
+  return {
+    ...u,
+    profilePhoto: getMediaUrl(u.profilePhoto, ""),
+  };
+}
 
 import { normalizeCity } from "./cityAliases";
 
@@ -464,25 +505,6 @@ export async function getFeaturedProperties() {
 
 // Maps backend property shape to frontend expected shape
 function mapProperty(p) {
-  const backendOrigin = (
-    process.env.NEXT_PUBLIC_API_URL ||
-    (typeof window !== "undefined" && window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://nextjs-fullproject.onrender.com")
-  ).replace(/\/api\/?$/, "");
-
-  const getImageUrl = (url) => {
-    if (!url) return "/img/buy-properties/1.jpg";
-    // Already a full URL
-    if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    const cleanPath = url.startsWith("/") ? url : `/${url}`;
-    if (cleanPath.startsWith("/uploads") || cleanPath.startsWith("/images")) {
-      return backendOrigin ? `${backendOrigin}${cleanPath}` : cleanPath;
-    }
-    // Public asset or other path
-    return cleanPath;
-  };
-
   // Handle both array (images) and singular (image) from backend
   let images = p.images || [];
   if (typeof images === "string") {
@@ -496,7 +518,7 @@ function mapProperty(p) {
   if (images.length === 0 && p.image) {
     images = [p.image];
   }
-  const imageUrls = images.map(getImageUrl);
+  const imageUrls = images.map((u) => getMediaUrl(u, "/img/buy-properties/1.jpg"));
 
   const ownerData = p.owner && typeof p.owner === "object" ? p.owner : null;
 
@@ -510,7 +532,7 @@ function mapProperty(p) {
           email: ownerData.email || "",
           mobile: ownerData.mobile || "",
           avatarColor: ownerData.avatarColor || "",
-          profilePhoto: ownerData.profilePhoto || "",
+          profilePhoto: getMediaUrl(ownerData.profilePhoto, ""),
         }
       : null,
     title: p.title || "",
