@@ -26,23 +26,32 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
       totalProperties,
       totalBanks,
       pendingBanks,
+      approvedBanks,
       totalEnquiries,
       totalLeads,
+      pendingLeads,
       totalContactLeads,
       newContactLeads,
       recentUsers,
       recentProperties,
+      bankWiseLeads,
     ] = await Promise.all([
       User.countDocuments({ role: { $ne: 'bank_partner' }, isDeleted: { $ne: true } }),
       Property.countDocuments({ isDeleted: { $ne: true } }),
       BankPartner.countDocuments(),
       BankPartner.countDocuments({ status: 'pending' }),
+      BankPartner.countDocuments({ status: 'approved' }),
       Enquiry.countDocuments(),
       BankLead.countDocuments(),
+      BankLead.countDocuments({ status: 'pending' }),
       ContactLead.countDocuments(),
       ContactLead.countDocuments({ status: 'new' }),
       User.find({ role: { $ne: 'bank_partner' }, isDeleted: { $ne: true } }).sort({ createdAt: -1 }).limit(5).select('name email role createdAt'),
       Property.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 }).limit(5).select('title propertyType city price status createdAt'),
+      BankLead.aggregate([
+        { $group: { _id: '$bankName', count: { $sum: 1 }, totalVolume: { $sum: { $toDouble: { $ifNull: ['$loanAmount', '0'] } } } } },
+        { $sort: { count: -1 } }
+      ]),
     ]);
 
     res.status(200).json({
@@ -52,12 +61,15 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
         totalProperties,
         totalBanks,
         pendingBanks,
+        approvedBanks,
         totalEnquiries,
         totalLeads,
+        pendingLeads,
         totalContactLeads,
         newContactLeads,
         recentUsers,
         recentProperties,
+        bankWiseLeads,
       },
     });
   } catch (err) {
@@ -560,9 +572,10 @@ router.get('/users/:id/details', protect, adminOnly, async (req, res, next) => {
 // 5. Loan Leads Management
 router.get('/leads', protect, adminOnly, async (req, res, next) => {
   try {
-    const { status, search } = req.query;
+    const { status, search, bankName, page = 1, limit = 50 } = req.query;
     const filter = {};
     if (status && status !== 'all') filter.status = status;
+    if (bankName && bankName !== 'all') filter.bankName = bankName;
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -572,12 +585,82 @@ router.get('/leads', protect, adminOnly, async (req, res, next) => {
       ];
     }
 
-    const leads = await BankLead.find(filter)
-      .populate('bankId', 'bankName logo interestRate')
-      .populate('userId', 'name email mobile')
-      .sort({ createdAt: -1 });
+    const [leads, total, pendingCount, approvedCount, rejectedCount] = await Promise.all([
+      BankLead.find(filter)
+        .populate('bankId', 'bankName logo interestRate')
+        .populate('userId', 'name email mobile')
+        .sort({ createdAt: -1 })
+        .skip((Number(page) - 1) * Number(limit))
+        .limit(Number(limit)),
+      BankLead.countDocuments(filter),
+      BankLead.countDocuments({ ...filter, status: 'pending' }),
+      BankLead.countDocuments({ ...filter, status: 'approved' }),
+      BankLead.countDocuments({ ...filter, status: 'rejected' }),
+    ]);
 
-    res.status(200).json({ success: true, data: leads });
+    res.status(200).json({
+      success: true,
+      data: leads,
+      counts: {
+        total,
+        pending: pendingCount,
+        approved: approvedCount,
+        rejected: rejectedCount,
+      },
+      pagination: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit)),
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Update Loan Lead Status & Optional Note
+router.patch('/leads/:id/status', protect, adminOnly, async (req, res, next) => {
+  try {
+    const { status, notes } = req.body;
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (notes !== undefined) updateData.notes = notes;
+
+    const lead = await BankLead.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { returnDocument: 'after' }
+    )
+      .populate('bankId', 'bankName logo interestRate')
+      .populate('userId', 'name email mobile');
+
+    if (!lead) {
+      return res.status(404).json({ success: false, message: 'Loan lead not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Lead status updated to ${lead.status}`,
+      data: lead,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Delete Loan Lead
+router.delete('/leads/:id', protect, adminOnly, async (req, res, next) => {
+  try {
+    const lead = await BankLead.findByIdAndDelete(req.params.id);
+    if (!lead) {
+      return res.status(404).json({ success: false, message: 'Loan lead not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Loan lead deleted successfully',
+    });
   } catch (err) {
     next(err);
   }

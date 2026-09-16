@@ -154,27 +154,27 @@ export default function PropertyLoanWidget({ property }) {
             </div>
             <input
               type="range"
-              min={Math.round(propertyPrice * 0.2)}
-              max={propertyPrice}
+              min={100000}
+              max={Math.max(propertyPrice, 5000000)}
               step={50000}
               value={loanAmount}
               onChange={(e) => setLoanAmount(Number(e.target.value))}
               style={{ width: "100%", accentColor: "#007bbd", cursor: "pointer" }}
             />
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#94a3b8", marginTop: "2px" }}>
-              <span>20% (₹{(Math.round(propertyPrice * 0.2) / 100000).toFixed(1)}L)</span>
-              <span>100% (₹{(propertyPrice / 100000).toFixed(1)}L)</span>
+              <span>₹ 1 Lakh</span>
+              <span>₹ {(Math.max(propertyPrice, 5000000) / 10000000 >= 1 ? (Math.max(propertyPrice, 5000000) / 10000000).toFixed(2) + " Cr" : (Math.max(propertyPrice, 5000000) / 100000).toFixed(1) + " Lakh")}</span>
             </div>
           </div>
 
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", fontWeight: "600", color: "#334155", marginBottom: "4px" }}>
               <span>Tenure</span>
-              <span style={{ color: "#007bbd", fontFamily: "'DM Mono', monospace" }}>{tenureYears} Years</span>
+              <span style={{ color: "#007bbd", fontFamily: "'DM Mono', monospace" }}>{tenureYears} {tenureYears === 1 ? "Year" : "Years"}</span>
             </div>
             <input
               type="range"
-              min={5}
+              min={1}
               max={30}
               step={1}
               value={tenureYears}
@@ -182,8 +182,8 @@ export default function PropertyLoanWidget({ property }) {
               style={{ width: "100%", accentColor: "#007bbd", cursor: "pointer" }}
             />
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#94a3b8", marginTop: "2px" }}>
-              <span>5 Yrs</span>
-              <span>30 Yrs</span>
+              <span>1 Year</span>
+              <span>30 Years</span>
             </div>
           </div>
         </div>

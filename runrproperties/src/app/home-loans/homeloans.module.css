@@ -142,10 +142,45 @@
   margin-bottom: 64px;
 }
 
+.calcTabHeader {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.calcTabBtn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calcTabBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.calcTabBtnActive {
+  background: #007bbd !important;
+  color: #ffffff !important;
+  border-color: #007bbd !important;
+  box-shadow: 0 4px 12px rgba(0, 123, 189, 0.25);
+}
+
 .calcHeader {
   margin-bottom: 32px;
-  border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 18px;
+  padding-bottom: 12px;
 }
 
 .calcHeader h2 {
@@ -353,6 +388,53 @@
   margin: 0;
 }
 
+.filterPillsWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.filterPill {
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterPill:hover {
+  border-color: #007bbd;
+  color: #007bbd;
+  background: #f0f9ff;
+}
+
+.filterPillActive {
+  background: #007bbd !important;
+  color: #ffffff !important;
+  border-color: #007bbd !important;
+  box-shadow: 0 4px 12px rgba(0, 123, 189, 0.25);
+}
+
+.noBanksFound {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    BANKING PARTNERS MARQUEE SLIDER
    ═══════════════════════════════════════════════════════════════ */
@@ -365,23 +447,38 @@
   -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
 }
 
-.marqueeTrack {
+.centeredBanksGrid {
   display: flex;
-  gap: 20px;
-  width: max-content;
-  animation: marqueeScroll 35s linear infinite;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 10px 0;
 }
 
-.marqueeWrap:hover .marqueeTrack {
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  gap: 20px;
+}
+
+.marqueeGroup {
+  display: flex;
+  gap: 20px;
+  flex-shrink: 0;
+  animation: scrollTrack 30s linear infinite;
+}
+
+.marqueeWrap:hover .marqueeGroup {
   animation-play-state: paused;
 }
 
-@keyframes marqueeScroll {
-  0% {
+@keyframes scrollTrack {
+  from {
     transform: translateX(0);
   }
-  100% {
-    transform: translateX(-50%);
+  to {
+    transform: translateX(-100%);
   }
 }
 

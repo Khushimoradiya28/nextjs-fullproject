@@ -3,6 +3,16 @@ import { createPortal } from "react-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
+import {
+  HiOutlineUser,
+  HiOutlineMail,
+  HiOutlinePhone,
+  HiOutlineCurrencyRupee,
+  HiOutlineBriefcase,
+  HiOutlineDocumentText,
+  HiOutlineX,
+  HiOutlineCheck,
+} from "react-icons/hi";
 import styles from "./BankEnquiryModal.module.css";
 
 export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
@@ -18,6 +28,8 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
     email: user?.email || "",
     mobile: user?.mobile || "",
     loanAmount: bank?.loanAmount || "",
+    employmentType: "Salaried",
+    monthlyIncome: "",
     message: bank?.message || "",
   });
 
@@ -38,12 +50,14 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
 
   const validate = () => {
     const errs = {};
-    if (!form.name.trim()) errs.name = "Name is required";
-    if (!form.email.trim()) errs.email = "Email is required";
-    else if (!/^\S+@\S+\.\S+$/.test(form.email)) errs.email = "Invalid email";
-    if (!form.mobile.trim()) errs.mobile = "Mobile is required";
-    else if (!/^\d{10}$/.test(form.mobile)) errs.mobile = "Enter valid 10-digit number";
-    if (!form.loanAmount.trim()) errs.loanAmount = "Loan amount is required";
+    if (!form.name.trim()) errs.name = "Full name is required";
+    if (!form.email.trim()) errs.email = "Email address is required";
+    else if (!/^\S+@\S+\.\S+$/.test(form.email)) errs.email = "Enter a valid email address";
+    if (!form.mobile.trim()) errs.mobile = "Mobile number is required";
+    else if (!/^\d{10}$/.test(form.mobile.trim())) errs.mobile = "Enter valid 10-digit mobile number";
+    if (!form.employmentType) errs.employmentType = "Employment type is required";
+    if (!form.monthlyIncome.trim()) errs.monthlyIncome = "Monthly net income is required";
+    if (!form.loanAmount.trim()) errs.loanAmount = "Please enter loan amount";
     return errs;
   };
 
@@ -71,6 +85,10 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
           email: form.email,
           phone: form.mobile,
           loanAmount: form.loanAmount,
+          employmentType: form.employmentType,
+          monthlyIncome: form.monthlyIncome,
+          propertyTitle: bank?.propertyTitle || "",
+          propertyId: bank?.propertyId || "",
           message: form.message,
         }),
       });
@@ -87,68 +105,98 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
   return createPortal(
     <>
       <div className={styles.backdrop} onClick={onClose} />
-      <div className={styles.modal}>
-        <button className={styles.closeBtn} onClick={onClose}>✕</button>
+      <div className={styles.modalCard}>
+        <button className={styles.closeBtn} onClick={onClose} aria-label="Close modal">
+          <HiOutlineX />
+        </button>
 
         {submitted ? (
           <div className={styles.successState}>
-            <div className={styles.successIcon}>✓</div>
+            <div className={styles.successIcon}>
+              <HiOutlineCheck />
+            </div>
             <h3>Enquiry Submitted!</h3>
-            <p>Our team will contact you shortly regarding your home loan with {bank?.name}.</p>
+            <p>Our loan advisor will get in touch with you shortly regarding your {bank?.name} loan.</p>
             <button className={styles.doneBtn} onClick={onClose}>Done</button>
           </div>
         ) : (
           <>
+            {/* Header with Bank Badge and Gradient Accent */}
             <div className={styles.modalHeader}>
-              <div className={styles.bankInfo}>
-                {bank?.image && (
+              <div className={styles.bankBrandBadge}>
+                {bank?.image ? (
                   <img
-                    src={getMediaUrl(bank.image)}
+                    src={bank.image}
                     alt={bank.name}
-                    className={styles.bankLogo}
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
+                    className={styles.bankModalLogo}
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
                   />
+                ) : (
+                  <div className={styles.bankAvatarInitials}>
+                    {(bank?.name || "BK").slice(0, 2).toUpperCase()}
+                  </div>
                 )}
-                <div>
-                  <h3 className={styles.modalTitle}>Apply for Home Loan</h3>
-                  <p className={styles.bankRate}>{bank?.name} • From {bank?.rate}%</p>
+                <div className={styles.headerTextGroup}>
+                  <h2 className={styles.modalMainTitle}>Apply for Home Loan</h2>
+                  <div className={styles.bankTagRow}>
+                    <span className={styles.bankNameLabel}>{bank?.name}</span>
+                    <span className={styles.rateHighlight}>From {bank?.rate || "Competitive"}% p.a.</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className={styles.form}>
+              {/* Full Name */}
               <div className={styles.formGroup}>
-                <label>Full Name *</label>
+                <label>
+                  <HiOutlineUser className={styles.inputIcon} />
+                  <span>Full Name *</span>
+                </label>
                 <input
                   type="text"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Your full name"
+                  onChange={(e) => {
+                    setForm({ ...form, name: e.target.value });
+                    if (errors.name) setErrors({ ...errors, name: "" });
+                  }}
+                  placeholder="e.g. John Doe"
                   className={errors.name ? styles.error : ""}
                 />
                 {errors.name && <span className={styles.errorMsg}>{errors.name}</span>}
               </div>
 
+              {/* Email & Mobile */}
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
-                  <label>Email *</label>
+                  <label>
+                    <HiOutlineMail className={styles.inputIcon} />
+                    <span>Email *</span>
+                  </label>
                   <input
                     type="email"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="your@email.com"
+                    onChange={(e) => {
+                      setForm({ ...form, email: e.target.value });
+                      if (errors.email) setErrors({ ...errors, email: "" });
+                    }}
+                    placeholder="name@email.com"
                     className={errors.email ? styles.error : ""}
                   />
                   {errors.email && <span className={styles.errorMsg}>{errors.email}</span>}
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Mobile *</label>
+                  <label>
+                    <HiOutlinePhone className={styles.inputIcon} />
+                    <span>Mobile *</span>
+                  </label>
                   <input
                     type="tel"
                     value={form.mobile}
-                    onChange={(e) => setForm({ ...form, mobile: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, mobile: e.target.value });
+                      if (errors.mobile) setErrors({ ...errors, mobile: "" });
+                    }}
                     placeholder="10-digit number"
                     className={errors.mobile ? styles.error : ""}
                   />
@@ -156,30 +204,82 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
                 </div>
               </div>
 
+              {/* Employment Type & Monthly Income */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label>
+                    <HiOutlineBriefcase className={styles.inputIcon} />
+                    <span>Employment *</span>
+                  </label>
+                  <select
+                    value={form.employmentType}
+                    onChange={(e) => {
+                      setForm({ ...form, employmentType: e.target.value });
+                      if (errors.employmentType) setErrors({ ...errors, employmentType: "" });
+                    }}
+                    className={errors.employmentType ? styles.error : ""}
+                  >
+                    <option value="Salaried">Salaried</option>
+                    <option value="Self-Employed">Self-Employed</option>
+                    <option value="Business">Business Owner</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {errors.employmentType && <span className={styles.errorMsg}>{errors.employmentType}</span>}
+                </div>
+                <div className={styles.formGroup}>
+                  <label>
+                    <HiOutlineCurrencyRupee className={styles.inputIcon} />
+                    <span>Monthly Income *</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={form.monthlyIncome}
+                    onChange={(e) => {
+                      setForm({ ...form, monthlyIncome: e.target.value });
+                      if (errors.monthlyIncome) setErrors({ ...errors, monthlyIncome: "" });
+                    }}
+                    placeholder="e.g. ₹ 75,000"
+                    className={errors.monthlyIncome ? styles.error : ""}
+                  />
+                  {errors.monthlyIncome && <span className={styles.errorMsg}>{errors.monthlyIncome}</span>}
+                </div>
+              </div>
+
+              {/* Loan Amount Required */}
               <div className={styles.formGroup}>
-                <label>Loan Amount Required *</label>
+                <label>
+                  <HiOutlineCurrencyRupee className={styles.inputIcon} />
+                  <span>Loan Amount Required *</span>
+                </label>
                 <input
                   type="text"
                   value={form.loanAmount}
-                  onChange={(e) => setForm({ ...form, loanAmount: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, loanAmount: e.target.value });
+                    if (errors.loanAmount) setErrors({ ...errors, loanAmount: "" });
+                  }}
                   placeholder="e.g. ₹ 50,00,000"
                   className={errors.loanAmount ? styles.error : ""}
                 />
                 {errors.loanAmount && <span className={styles.errorMsg}>{errors.loanAmount}</span>}
               </div>
 
+              {/* Message */}
               <div className={styles.formGroup}>
-                <label>Message (Optional)</label>
+                <label>
+                  <HiOutlineDocumentText className={styles.inputIcon} />
+                  <span>Message (Optional)</span>
+                </label>
                 <textarea
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  placeholder="Any specific requirements..."
-                  rows={3}
+                  placeholder="Any specific preferences or questions..."
+                  rows={2}
                 />
               </div>
 
               <button type="submit" className={styles.submitBtn} disabled={loading}>
-                {loading ? "Submitting..." : "Submit Enquiry"}
+                {loading ? "Submitting Application..." : "Submit Loan Enquiry"}
               </button>
             </form>
           </>

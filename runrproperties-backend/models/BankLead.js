@@ -35,13 +35,30 @@ const bankLeadSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Loan amount is required'],
   },
+  employmentType: {
+    type: String,
+    enum: ['Salaried', 'Self-Employed', 'Business', 'Other', ''],
+    default: 'Salaried',
+  },
+  monthlyIncome: {
+    type: String,
+    default: '',
+  },
+  propertyTitle: {
+    type: String,
+    default: '',
+  },
+  propertyId: {
+    type: String,
+    default: '',
+  },
   message: {
     type: String,
     default: '',
   },
   status: {
     type: String,
-    enum: ['pending', 'contacted', 'in_progress', 'closed_won', 'closed_lost'],
+    enum: ['pending', 'contacted', 'in_progress', 'approved', 'rejected', 'closed_won', 'closed_lost'],
     default: 'pending',
   },
   notes: {

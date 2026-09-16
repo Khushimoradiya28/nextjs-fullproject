@@ -7,6 +7,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import styles from "./homeloans.module.css";
 
+import { HiOutlineCalculator, HiOutlineBadgeCheck } from "react-icons/hi";
+
 import dynamic from "next/dynamic";
 const BankEnquiryModal = dynamic(() => import("./BankEnquiryModal"), {
   ssr: false,
@@ -19,6 +21,21 @@ function calculateEMI(principal, annualRate, years) {
   if (monthlyRate === 0) return principal / months;
   const rateFactor = Math.pow(1 + monthlyRate, months);
   return (principal * monthlyRate * rateFactor) / (rateFactor - 1);
+}
+
+function calculateEligibility(monthlyIncome, existingEmi, interestRate, tenureYears) {
+  const FOIR = 0.5; // Max 50% of income can go to EMI
+  const availableEmi = Math.max(0, monthlyIncome * FOIR - existingEmi);
+  if (availableEmi <= 0) return { maxLoan: 0, maxEmi: 0 };
+  
+  const monthlyRate = interestRate / 1200;
+  const months = tenureYears * 12;
+  if (monthlyRate === 0) return { maxLoan: availableEmi * months, maxEmi: availableEmi };
+  
+  const rateFactor = Math.pow(1 + monthlyRate, months);
+  // P = E * (rateFactor - 1) / (monthlyRate * rateFactor)
+  const maxLoan = (availableEmi * (rateFactor - 1)) / (monthlyRate * rateFactor);
+  return { maxLoan: Math.round(maxLoan), maxEmi: Math.round(availableEmi) };
 }
 
 const fallbackBanks = [];
@@ -145,9 +162,20 @@ function BankCard({ bank, onCheck, selected }) {
 }
 
 export default function HomeLoansPage() {
+  const [calcTab, setCalcTab] = useState("emi"); // "emi" | "eligibility"
+  const [loanTypeFilter, setLoanTypeFilter] = useState("All");
+
+  // EMI Calculator State
   const [loanAmount, setLoanAmount] = useState(5000000);
   const [interestRate, setInterestRate] = useState(8.5);
   const [tenure, setTenure] = useState(20);
+
+  // Eligibility Calculator State
+  const [monthlyIncome, setMonthlyIncome] = useState(75000);
+  const [existingEmi, setExistingEmi] = useState(0);
+  const [eligTenure, setEligTenure] = useState(20);
+  const [eligInterestRate, setEligInterestRate] = useState(8.5);
+
   const [openFaq, setOpenFaq] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
   const [enquiryBank, setEnquiryBank] = useState(null);
@@ -176,28 +204,46 @@ export default function HomeLoansPage() {
       .catch(() => {});
   }, []);
 
-  const displayBanks =
-    dynamicBanks.length > 0
-      ? dynamicBanks
-          .filter((b) => b.isActive !== false)
-          .map((b) => {
-            const activeOffers = (b.offers || []).filter((o) => o.isActive !== false);
-            const latestOffer = activeOffers.length > 0 ? activeOffers[activeOffers.length - 1] : null;
-            const rate = latestOffer?.interestRate || b.interestRate;
-            return {
-              _id: b._id,
-              name: b.bankName,
-              rate: rate,
-              tagline: b.tagline || "",
-              loanType: latestOffer?.loanType || b.loanType || "Home Loan",
-              processingFee: latestOffer?.processingFee || b.processingFee || "",
-              maxTenure: latestOffer?.maxTenure || b.maxTenure || "",
-              image: getMediaUrl(b.logo, ""),
-              hasActiveOffer: activeOffers.length > 0 || Boolean(rate),
-            };
-          })
-          .filter((b) => b.hasActiveOffer)
-      : fallbackBanks;
+  const displayBanks = useMemo(() => {
+    if (dynamicBanks.length === 0) return fallbackBanks;
+    const all = dynamicBanks
+      .filter((b) => b.isActive !== false)
+      .map((b) => {
+        const activeOffers = (b.offers || []).filter((o) => o.isActive !== false);
+        const latestOffer = activeOffers.length > 0 ? activeOffers[activeOffers.length - 1] : null;
+        const rate = latestOffer?.interestRate || b.interestRate;
+        const loanType = latestOffer?.loanType || b.loanType || "Home Loan";
+        return {
+          _id: b._id,
+          name: b.bankName,
+          rate: rate,
+          tagline: b.tagline || "",
+          loanType: loanType,
+          processingFee: latestOffer?.processingFee || b.processingFee || "",
+          maxTenure: latestOffer?.maxTenure || b.maxTenure || "",
+          image: getMediaUrl(b.logo, ""),
+          hasActiveOffer: activeOffers.length > 0 || Boolean(rate),
+        };
+      })
+      .filter((b) => b.hasActiveOffer);
+
+    if (loanTypeFilter === "All") return all;
+    return all.filter((b) =>
+      b.loanType?.toLowerCase().includes(loanTypeFilter.toLowerCase())
+    );
+  }, [dynamicBanks, loanTypeFilter]);
+
+  // Unique available loan types for filter buttons
+  const availableLoanTypes = useMemo(() => {
+    const types = new Set(["All"]);
+    dynamicBanks.forEach((b) => {
+      if (b.loanType) types.add(b.loanType);
+      (b.offers || []).forEach((o) => {
+        if (o.loanType) types.add(o.loanType);
+      });
+    });
+    return Array.from(types);
+  }, [dynamicBanks]);
 
   const emi = useMemo(
     () => calculateEMI(loanAmount, interestRate, tenure),
@@ -205,6 +251,12 @@ export default function HomeLoansPage() {
   );
   const totalPayment = emi * tenure * 12;
   const totalInterest = totalPayment - loanAmount;
+
+  // Eligibility results
+  const eligibility = useMemo(
+    () => calculateEligibility(monthlyIncome, existingEmi, eligInterestRate, eligTenure),
+    [monthlyIncome, existingEmi, eligInterestRate, eligTenure]
+  );
 
   const handleCheckOffer = (bank) => {
     if (!user) {
@@ -246,143 +298,345 @@ export default function HomeLoansPage() {
         </section>
 
         <section className={styles.calcSection}>
-          <div className={styles.calcHeader}>
-            <h2>EMI Calculator</h2>
-            <p className={styles.calcSubtitle}>
-              Plan your home loan with accurate monthly payment estimates
-            </p>
+          <div className={styles.calcTabHeader}>
+            <button
+              type="button"
+              className={`${styles.calcTabBtn} ${calcTab === "emi" ? styles.calcTabBtnActive : ""}`}
+              onClick={() => setCalcTab("emi")}
+            >
+              <HiOutlineCalculator style={{ fontSize: "1.15rem" }} />
+              <span>EMI Calculator</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.calcTabBtn} ${calcTab === "eligibility" ? styles.calcTabBtnActive : ""}`}
+              onClick={() => setCalcTab("eligibility")}
+            >
+              <HiOutlineBadgeCheck style={{ fontSize: "1.15rem" }} />
+              <span>Loan Eligibility Checker</span>
+            </button>
           </div>
 
-          <div className={styles.calcGrid}>
-            <div className={styles.calcInputs}>
-              <div className={styles.inputGroup}>
-                <div className={styles.inputHeader}>
-                  <label className={styles.inputLabel}>Loan Amount</label>
-                  <span className={styles.inputValueBadge}>
-                    ₹ {loanAmount.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className={styles.sliderWrap}>
-                  <input
-                    type="range"
-                    min="100000"
-                    max="50000000"
-                    step="100000"
-                    value={loanAmount}
-                    onChange={(e) => setLoanAmount(Number(e.target.value))}
-                    className={styles.rangeSlider}
-                  />
-                  <div className={styles.rangeLabels}>
-                    <span>₹ 1 Lakh</span>
-                    <span>₹ 5 Cr</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.inputGroup}>
-                <div className={styles.inputHeader}>
-                  <label className={styles.inputLabel}>Interest Rate (% p.a.)</label>
-                  <span className={styles.inputValueBadge}>{interestRate}%</span>
-                </div>
-                <div className={styles.sliderWrap}>
-                  <input
-                    type="range"
-                    min="5"
-                    max="15"
-                    step="0.05"
-                    value={interestRate}
-                    onChange={(e) => setInterestRate(Number(e.target.value))}
-                    className={styles.rangeSlider}
-                  />
-                  <div className={styles.rangeLabels}>
-                    <span>5%</span>
-                    <span>15%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.inputGroup}>
-                <div className={styles.inputHeader}>
-                  <label className={styles.inputLabel}>Loan Tenure</label>
-                  <span className={styles.inputValueBadge}>{tenure} Years</span>
-                </div>
-                <div className={styles.sliderWrap}>
-                  <input
-                    type="range"
-                    min="1"
-                    max="30"
-                    step="1"
-                    value={tenure}
-                    onChange={(e) => setTenure(Number(e.target.value))}
-                    className={styles.rangeSlider}
-                  />
-                  <div className={styles.rangeLabels}>
-                    <span>1 Year</span>
-                    <span>30 Years</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.calcResult}>
-              <div className={styles.emiCard}>
-                <span className={styles.emiLabel}>Monthly EMI</span>
-                <p className={styles.emiValue}>
-                  ₹ {Math.round(emi).toLocaleString("en-IN")}
+          {calcTab === "emi" ? (
+            <>
+              <div className={styles.calcHeader}>
+                <h2>EMI Calculator</h2>
+                <p className={styles.calcSubtitle}>
+                  Plan your home loan with accurate monthly payment estimates
                 </p>
-                {selectedBank && (
-                  <span className={styles.bankTag}>
-                    Selected: {selectedBank.name} ({interestRate}%)
-                  </span>
-                )}
               </div>
-              <div className={styles.breakdownGrid}>
-                <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Principal Amount</span>
-                  <span className={styles.breakdownValue}>
-                    ₹ {loanAmount.toLocaleString("en-IN")}
-                  </span>
+
+              <div className={styles.calcGrid}>
+                <div className={styles.calcInputs}>
+                  <div className={styles.inputGroup}>
+                    <div className={styles.inputHeader}>
+                      <label className={styles.inputLabel}>Loan Amount</label>
+                      <span className={styles.inputValueBadge}>
+                        ₹ {loanAmount.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className={styles.sliderWrap}>
+                      <input
+                        type="range"
+                        min="100000"
+                        max="50000000"
+                        step="100000"
+                        value={loanAmount}
+                        onChange={(e) => setLoanAmount(Number(e.target.value))}
+                        className={styles.rangeSlider}
+                      />
+                      <div className={styles.rangeLabels}>
+                        <span>₹ 1 Lakh</span>
+                        <span>₹ 5 Cr</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <div className={styles.inputHeader}>
+                      <label className={styles.inputLabel}>Interest Rate (% p.a.)</label>
+                      <span className={styles.inputValueBadge}>{interestRate}%</span>
+                    </div>
+                    <div className={styles.sliderWrap}>
+                      <input
+                        type="range"
+                        min="5"
+                        max="15"
+                        step="0.05"
+                        value={interestRate}
+                        onChange={(e) => setInterestRate(Number(e.target.value))}
+                        className={styles.rangeSlider}
+                      />
+                      <div className={styles.rangeLabels}>
+                        <span>5%</span>
+                        <span>15%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <div className={styles.inputHeader}>
+                      <label className={styles.inputLabel}>Loan Tenure</label>
+                      <span className={styles.inputValueBadge}>{tenure} Years</span>
+                    </div>
+                    <div className={styles.sliderWrap}>
+                      <input
+                        type="range"
+                        min="1"
+                        max="30"
+                        step="1"
+                        value={tenure}
+                        onChange={(e) => setTenure(Number(e.target.value))}
+                        className={styles.rangeSlider}
+                      />
+                      <div className={styles.rangeLabels}>
+                        <span>1 Year</span>
+                        <span>30 Years</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Total Interest</span>
-                  <span className={styles.breakdownValue}>
-                    ₹ {Math.round(totalInterest).toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Total Amount Payable</span>
-                  <span className={styles.breakdownValue}>
-                    ₹ {Math.round(totalPayment).toLocaleString("en-IN")}
-                  </span>
+
+                <div className={styles.calcResult}>
+                  <div className={styles.emiCard}>
+                    <span className={styles.emiLabel}>Monthly EMI</span>
+                    <p className={styles.emiValue}>
+                      ₹ {Math.round(emi).toLocaleString("en-IN")}
+                    </p>
+                    {selectedBank && (
+                      <span className={styles.bankTag}>
+                        Selected: {selectedBank.name} ({interestRate}%)
+                      </span>
+                    )}
+                  </div>
+                  <div className={styles.breakdownGrid}>
+                    <div className={styles.breakdownItem}>
+                      <span className={styles.breakdownLabel}>Principal Amount</span>
+                      <span className={styles.breakdownValue}>
+                        ₹ {loanAmount.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className={styles.breakdownItem}>
+                      <span className={styles.breakdownLabel}>Total Interest</span>
+                      <span className={styles.breakdownValue}>
+                        ₹ {Math.round(totalInterest).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className={styles.breakdownItem}>
+                      <span className={styles.breakdownLabel}>Total Amount Payable</span>
+                      <span className={styles.breakdownValue}>
+                        ₹ {Math.round(totalPayment).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.calcHeader}>
+                <h2>Loan Eligibility Checker</h2>
+                <p className={styles.calcSubtitle}>
+                  Find out the maximum loan amount you can qualify for based on your net income & existing EMIs
+                </p>
+              </div>
+
+              <div className={styles.calcGrid}>
+                <div className={styles.calcInputs}>
+                  <div className={styles.inputGroup}>
+                    <div className={styles.inputHeader}>
+                      <label className={styles.inputLabel}>Monthly Net Income</label>
+                      <span className={styles.inputValueBadge}>
+                        ₹ {monthlyIncome.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className={styles.sliderWrap}>
+                      <input
+                        type="range"
+                        min="15000"
+                        max="1000000"
+                        step="5000"
+                        value={monthlyIncome}
+                        onChange={(e) => setMonthlyIncome(Number(e.target.value))}
+                        className={styles.rangeSlider}
+                      />
+                      <div className={styles.rangeLabels}>
+                        <span>₹ 15,000</span>
+                        <span>₹ 10 Lakh</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <div className={styles.inputHeader}>
+                      <label className={styles.inputLabel}>Existing Monthly EMIs (if any)</label>
+                      <span className={styles.inputValueBadge}>
+                        ₹ {existingEmi.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className={styles.sliderWrap}>
+                      <input
+                        type="range"
+                        min="0"
+                        max="500000"
+                        step="2500"
+                        value={existingEmi}
+                        onChange={(e) => setExistingEmi(Number(e.target.value))}
+                        className={styles.rangeSlider}
+                      />
+                      <div className={styles.rangeLabels}>
+                        <span>₹ 0</span>
+                        <span>₹ 5 Lakh</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <div className={styles.inputHeader}>
+                      <label className={styles.inputLabel}>Expected Interest Rate (% p.a.)</label>
+                      <span className={styles.inputValueBadge}>{eligInterestRate}%</span>
+                    </div>
+                    <div className={styles.sliderWrap}>
+                      <input
+                        type="range"
+                        min="5"
+                        max="15"
+                        step="0.05"
+                        value={eligInterestRate}
+                        onChange={(e) => setEligInterestRate(Number(e.target.value))}
+                        className={styles.rangeSlider}
+                      />
+                      <div className={styles.rangeLabels}>
+                        <span>5%</span>
+                        <span>15%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <div className={styles.inputHeader}>
+                      <label className={styles.inputLabel}>Desired Tenure</label>
+                      <span className={styles.inputValueBadge}>{eligTenure} Years</span>
+                    </div>
+                    <div className={styles.sliderWrap}>
+                      <input
+                        type="range"
+                        min="1"
+                        max="30"
+                        step="1"
+                        value={eligTenure}
+                        onChange={(e) => setEligTenure(Number(e.target.value))}
+                        className={styles.rangeSlider}
+                      />
+                      <div className={styles.rangeLabels}>
+                        <span>1 Year</span>
+                        <span>30 Years</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.calcResult}>
+                  <div className={styles.emiCard}>
+                    <span className={styles.emiLabel}>Maximum Loan Eligibility</span>
+                    <p className={styles.emiValue} style={{ color: "#059669" }}>
+                      ₹ {eligibility.maxLoan.toLocaleString("en-IN")}
+                    </p>
+                    <span className={styles.bankTag} style={{ background: "#d1fae5", color: "#065f46" }}>
+                      Max Allowed EMI: ₹ {eligibility.maxEmi.toLocaleString("en-IN")}/mo
+                    </span>
+                  </div>
+                  <div className={styles.breakdownGrid}>
+                    <div className={styles.breakdownItem}>
+                      <span className={styles.breakdownLabel}>Net Monthly Income</span>
+                      <span className={styles.breakdownValue}>
+                        ₹ {monthlyIncome.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className={styles.breakdownItem}>
+                      <span className={styles.breakdownLabel}>Existing Obligation</span>
+                      <span className={styles.breakdownValue}>
+                        ₹ {existingEmi.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className={styles.breakdownItem}>
+                      <span className={styles.breakdownLabel}>Max FOIR (50% rule)</span>
+                      <span className={styles.breakdownValue}>
+                        ₹ {Math.round(monthlyIncome * 0.5).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </section>
 
-        {/* Banking Partners Section (Marquee Slider) */}
-        {displayBanks.length > 0 && (
+        {/* Banking Partners Section (Marquee Slider with Filters) */}
+        {dynamicBanks.length > 0 && (
           <section className={styles.banksSection}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Our Banking Partners</h2>
               <p className={styles.sectionSubtitle}>
                 Compare pre-approved offers, interest rates, and apply directly
               </p>
+
+              {/* Loan Type Filter Pills */}
+              {availableLoanTypes.length > 2 && (
+                <div className={styles.filterPillsWrap}>
+                  {availableLoanTypes.map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      className={`${styles.filterPill} ${loanTypeFilter === type ? styles.filterPillActive : ""}`}
+                      onClick={() => setLoanTypeFilter(type)}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className={styles.marqueeWrap}>
-              <div className={styles.marqueeTrack}>
-                {/* Quadruple repeat to ensure seamless infinite looping on any screen width */}
-                {[...displayBanks, ...displayBanks, ...displayBanks, ...displayBanks].map((bank, idx) => (
-                  <BankCard
-                    key={`${bank._id || bank.name}-${idx}`}
-                    bank={bank}
-                    onCheck={handleCheckOffer}
-                    selected={selectedBank?.name === bank.name}
-                  />
-                ))}
+            {displayBanks.length > 0 ? (
+              <div className={styles.marqueeWrap}>
+                {(() => {
+                  // Ensure we have at least 8 items in each group so there is NEVER a break or gap
+                  let repeatedBanks = [...displayBanks];
+                  while (repeatedBanks.length < 8) {
+                    repeatedBanks = [...repeatedBanks, ...displayBanks];
+                  }
+                  return (
+                    <div className={styles.marqueeTrack}>
+                      <div className={styles.marqueeGroup}>
+                        {repeatedBanks.map((bank, idx) => (
+                          <BankCard
+                            key={`track1-${bank._id || bank.name}-${idx}`}
+                            bank={bank}
+                            onCheck={handleCheckOffer}
+                            selected={selectedBank?.name === bank.name}
+                          />
+                        ))}
+                      </div>
+                      <div className={styles.marqueeGroup} aria-hidden="true">
+                        {repeatedBanks.map((bank, idx) => (
+                          <BankCard
+                            key={`track2-${bank._id || bank.name}-${idx}`}
+                            bank={bank}
+                            onCheck={handleCheckOffer}
+                            selected={selectedBank?.name === bank.name}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
-            </div>
+            ) : (
+              <div className={styles.noBanksFound}>
+                No bank partner offers found for "{loanTypeFilter}".
+              </div>
+            )}
           </section>
         )}
 

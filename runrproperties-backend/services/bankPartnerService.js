@@ -251,6 +251,10 @@ const submitLead = async (data, userId = null) => {
     email: data.email,
     phone: data.phone,
     loanAmount: data.loanAmount,
+    employmentType: data.employmentType || 'Salaried',
+    monthlyIncome: data.monthlyIncome || '',
+    propertyTitle: data.propertyTitle || '',
+    propertyId: data.propertyId || '',
     message: data.message || '',
     status: 'pending',
   });

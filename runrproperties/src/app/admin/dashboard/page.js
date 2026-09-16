@@ -17,6 +17,10 @@ export default function AdminDashboardPage() {
   const [properties, setProperties] = useState([]);
   const [usersList, setUsersList] = useState([]);
   const [leadsList, setLeadsList] = useState([]);
+  const [leadCounts, setLeadCounts] = useState({ total: 0, pending: 0, approved: 0, rejected: 0 });
+  const [leadStatusFilter, setLeadStatusFilter] = useState("all");
+  const [leadBankFilter, setLeadBankFilter] = useState("all");
+  const [searchLead, setSearchLead] = useState("");
   const [contactLeadsList, setContactLeadsList] = useState([]);
   const [contactLeadCounts, setContactLeadCounts] = useState({ total: 0, new: 0, contacted: 0, resolved: 0, closed: 0 });
   const [contactLeadPagination, setContactLeadPagination] = useState({
@@ -103,6 +107,7 @@ export default function AdminDashboardPage() {
   const [propertyCityFilter, setPropertyCityFilter] = useState("all");
   const [searchProperty, setSearchProperty] = useState("");
   const [openStatusDropdownId, setOpenStatusDropdownId] = useState(null);
+  const [openLeadStatusDropdownId, setOpenLeadStatusDropdownId] = useState(null);
 
   // User Drawer / Modal & Pagination States
   const [selectedUserDetail, setSelectedUserDetail] = useState(null);
@@ -131,6 +136,7 @@ export default function AdminDashboardPage() {
       if (!e.target.closest(`.${styles.customStatusWrap}`)) {
         setOpenStatusDropdownId(null);
         setOpenContactStatusDropdownId(null);
+        setOpenLeadStatusDropdownId(null);
       }
     };
     document.addEventListener("mousedown", handleOutsideClick);
@@ -198,11 +204,7 @@ export default function AdminDashboardPage() {
       fetchUsersWithFilters("all", "", 1);
 
       // 5. Fetch Leads
-      const resLeads = await fetch(`${API_BASE}/admin/leads`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      const dataLeads = await resLeads.json();
-      if (dataLeads.success) setLeadsList(dataLeads.data);
+      fetchLeads("all", "all", "", 1);
 
       // 6. Fetch Contact Leads
       fetchContactLeads("all", "", 1);
@@ -210,6 +212,70 @@ export default function AdminDashboardPage() {
       console.error("Admin data fetch error:", err);
     }
     setLoading(false);
+  };
+
+  const fetchLeads = async (
+    status = leadStatusFilter,
+    bankName = leadBankFilter,
+    search = searchLead,
+    page = 1,
+    limit = 50
+  ) => {
+    const authToken = token || localStorage.getItem("runr_token");
+    try {
+      const query = new URLSearchParams();
+      if (status !== "all") query.append("status", status);
+      if (bankName !== "all") query.append("bankName", bankName);
+      if (search) query.append("search", search);
+      query.append("page", String(page));
+      query.append("limit", String(limit));
+
+      const res = await fetch(`${API_BASE}/admin/leads?${query.toString()}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLeadsList(data.data);
+        if (data.counts) setLeadCounts(data.counts);
+      }
+    } catch (err) {
+      console.error("Leads fetch error:", err);
+    }
+  };
+
+  const handleUpdateLeadStatus = async (leadId, newStatus, notes) => {
+    setActionLoading(leadId);
+    const authToken = token || localStorage.getItem("runr_token");
+    try {
+      const body = { status: newStatus };
+      if (notes !== undefined) body.notes = notes;
+
+      const res = await fetch(`${API_BASE}/admin/leads/${leadId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLeadsList((prev) =>
+          prev.map((l) => (l._id === leadId ? { ...l, ...data.data } : l))
+        );
+        fetchLeads(leadStatusFilter, leadBankFilter, searchLead, 1);
+        const resStats = await fetch(`${API_BASE}/admin/stats`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        const dataStats = await resStats.json();
+        if (dataStats.success) setStats(dataStats.data);
+      } else {
+        alert(data.message || "Failed to update lead status");
+      }
+    } catch (err) {
+      alert("Error updating lead status");
+    }
+    setActionLoading(null);
   };
 
   const fetchContactLeads = async (
@@ -775,8 +841,13 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <h3 className={styles.statValue}>{stats?.totalBanks ?? 0}</h3>
-                    <p className={styles.statLabel}>
-                      Bank Partners {stats?.pendingBanks > 0 && <span style={{ color: "#d97706" }}>({stats.pendingBanks} Pending)</span>}
+                    <p className={styles.statLabel} style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+                      <span>Bank Partners</span>
+                      {stats?.pendingBanks > 0 && (
+                        <span style={{ color: "#d97706", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.78rem" }}>
+                          ({stats.pendingBanks} Pending)
+                        </span>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -830,7 +901,10 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 className={styles.statCard}
-                onClick={() => setActiveTab("leads")}
+                onClick={() => {
+                  setActiveTab("leads");
+                  fetchLeads("all", "all", "", 1);
+                }}
                 title="Click to view Loan Leads"
               >
                 <div className={styles.statCardLeft}>
@@ -842,7 +916,14 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <h3 className={styles.statValue}>{stats?.totalLeads ?? 0}</h3>
-                    <p className={styles.statLabel}>Total Loan Leads</p>
+                    <p className={styles.statLabel} style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+                      <span>Total Loan Leads</span>
+                      {stats?.pendingLeads > 0 && (
+                        <span style={{ color: "#d97706", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.78rem" }}>
+                          ({stats.pendingLeads} Pending)
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
                 <div className={styles.statArrow}>→</div>
@@ -865,8 +946,13 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <h3 className={styles.statValue}>{stats?.totalContactLeads ?? 0}</h3>
-                    <p className={styles.statLabel}>
-                      Contact Leads {stats?.newContactLeads > 0 && <span style={{ color: "#ef4444" }}>({stats.newContactLeads} New)</span>}
+                    <p className={styles.statLabel} style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+                      <span>Contact Leads</span>
+                      {stats?.newContactLeads > 0 && (
+                        <span style={{ color: "#ef4444", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.78rem" }}>
+                          ({stats.newContactLeads} New)
+                        </span>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -1975,21 +2061,100 @@ export default function AdminDashboardPage() {
           <div className={styles.panel}>
             <div className={styles.toolbarHeader}>
               <div>
-                <h2 className={styles.panelTitle}>Customer Home Loan Leads</h2>
-                <p className={styles.panelSubtitle}>
-                  Showing {leadsList.length} total loan applications and inquiries
+                <p className={styles.panelSubtitle} style={{ margin: 0, fontWeight: 600, color: "#475569" }}>
+                  Showing {leadsList.length} total loan applications • Click status badge to update lead approval or progress
                 </p>
               </div>
+
+              <div className={styles.filterGroup}>
+                <div className={styles.searchWrapper}>
+                  <svg className={styles.searchIcon} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search Applicant, Email, Phone, Bank..."
+                    value={searchLead}
+                    onChange={(e) => {
+                      setSearchLead(e.target.value);
+                      fetchLeads(leadStatusFilter, leadBankFilter, e.target.value, 1);
+                    }}
+                    className={styles.searchInputWithIcon}
+                  />
+                  {searchLead && (
+                    <button
+                      type="button"
+                      className={styles.searchClearBtn}
+                      onClick={() => {
+                        setSearchLead("");
+                        fetchLeads(leadStatusFilter, leadBankFilter, "", 1);
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Status Filter Pills */}
+            <div className={styles.filterPillsRow} style={{ marginBottom: "20px" }}>
+              <button
+                type="button"
+                className={`${styles.filterPillBtn} ${leadStatusFilter === "all" ? styles.filterPillBtnActive : ""}`}
+                onClick={() => {
+                  setLeadStatusFilter("all");
+                  fetchLeads("all", leadBankFilter, searchLead, 1);
+                }}
+              >
+                <span>All Leads</span>
+                <span className={styles.pillCount}>{leadCounts.total || leadsList.length}</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.filterPillBtn} ${leadStatusFilter === "pending" ? styles.filterPillBtnActive : ""}`}
+                onClick={() => {
+                  setLeadStatusFilter("pending");
+                  fetchLeads("pending", leadBankFilter, searchLead, 1);
+                }}
+              >
+                <span>🟡 Pending</span>
+                <span className={styles.pillCount}>{leadCounts.pending || 0}</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.filterPillBtn} ${leadStatusFilter === "approved" ? styles.filterPillBtnActive : ""}`}
+                onClick={() => {
+                  setLeadStatusFilter("approved");
+                  fetchLeads("approved", leadBankFilter, searchLead, 1);
+                }}
+              >
+                <span>🟢 Approved</span>
+                <span className={styles.pillCount}>{leadCounts.approved || 0}</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.filterPillBtn} ${leadStatusFilter === "rejected" ? styles.filterPillBtnActive : ""}`}
+                onClick={() => {
+                  setLeadStatusFilter("rejected");
+                  fetchLeads("rejected", leadBankFilter, searchLead, 1);
+                }}
+              >
+                <span>🔴 Rejected</span>
+                <span className={styles.pillCount}>{leadCounts.rejected || 0}</span>
+              </button>
             </div>
             <div className={styles.tableWrap}>
               <table className={styles.table}>
                 <thead>
                   <tr>
                     <th className={styles.thNumber}>#</th>
-                    <th>Applicant Name</th>
-                    <th>Contact</th>
+                    <th>Applicant Details</th>
+                    <th>Employment & Income</th>
                     <th>Target Bank</th>
                     <th>Loan Amount</th>
+                    <th>Property / Message</th>
                     <th>Status</th>
                     <th>Applied Date</th>
                   </tr>
@@ -1997,47 +2162,300 @@ export default function AdminDashboardPage() {
                 <tbody>
                   {leadsList.length === 0 ? (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: "center", color: "#64748b", padding: "30px" }}>
+                      <td colSpan={8} style={{ textAlign: "center", color: "#64748b", padding: "30px" }}>
                         No home loan leads found.
                       </td>
                     </tr>
                   ) : (
-                    leadsList.map((l, index) => (
-                      <tr key={l._id}>
-                        <td className={styles.tdNumber}>{index + 1}</td>
-                        <td>
-                          <strong>{l.name}</strong>
-                        </td>
-                        <td>
-                          <div>{l.email}</div>
-                          <div style={{ fontSize: "0.78rem", color: "#64748b" }}>{l.phone || "—"}</div>
-                        </td>
-                        <td>
-                          <strong>{l.bankName || l.bankId?.bankName || "—"}</strong>
-                        </td>
-                        <td>
-                          <span style={{ fontWeight: 800, color: "#007bbd" }}>
-                            ₹ {l.loanAmount ? Number(l.loanAmount).toLocaleString("en-IN") : "—"}
-                          </span>
-                        </td>
-                        <td>
-                          {l.status === "approved" && <span className={styles.statusApproved}>Approved</span>}
-                          {l.status === "pending" && <span className={styles.statusPending}>Pending</span>}
-                          {l.status === "rejected" && <span className={styles.statusRejected}>Rejected</span>}
-                        </td>
-                        <td>
-                          {(() => {
-                            const dt = formatISTDateTime(l.createdAt);
-                            return (
-                              <>
-                                <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{dt.date}</div>
-                                {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
-                              </>
-                            );
-                          })()}
-                        </td>
-                      </tr>
-                    ))
+                    leadsList.map((l, index) => {
+                      const currentStatus = l.status || "pending";
+                      const isDropdownOpen = openLeadStatusDropdownId === l._id;
+                      return (
+                        <tr key={l._id}>
+                          <td className={styles.tdNumber}>{index + 1}</td>
+                          <td>
+                            <strong>{l.name}</strong>
+                            <div style={{ fontSize: "0.82rem", color: "#334155" }}>{l.email}</div>
+                            <div style={{ fontSize: "0.78rem", color: "#64748b", display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
+                              <span>📞 {l.phone || "—"}</span>
+                              {l.phone && (
+                                <a
+                                  href={`https://wa.me/91${String(l.phone).replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Hello ${l.name}, thank you for your home loan enquiry on RunR Properties.`)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Chat on WhatsApp"
+                                  style={{ color: "#22c55e", fontSize: "0.8rem", textDecoration: "none" }}
+                                >
+                                  💬
+                                </a>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div>
+                              <span style={{
+                                display: "inline-block",
+                                background: "#f0f9ff",
+                                color: "#007bbd",
+                                border: "1px solid #bae6fd",
+                                fontSize: "0.72rem",
+                                fontWeight: 700,
+                                padding: "2px 8px",
+                                borderRadius: "6px",
+                                marginBottom: "4px"
+                              }}>
+                                {l.employmentType || "Salaried"}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: "0.78rem", color: "#475569", fontWeight: 600 }}>
+                              Income: {l.monthlyIncome ? (l.monthlyIncome.startsWith("₹") ? l.monthlyIncome : `₹ ${l.monthlyIncome}`) : "—"}
+                            </div>
+                          </td>
+                          <td>
+                            <strong>{l.bankName || l.bankId?.bankName || "—"}</strong>
+                          </td>
+                          <td>
+                            <span style={{ fontWeight: 800, color: "#007bbd", fontSize: "0.95rem" }}>
+                              ₹ {l.loanAmount ? Number(l.loanAmount).toLocaleString("en-IN") : "—"}
+                            </span>
+                          </td>
+                          <td>
+                            {l.propertyTitle ? (
+                              <div style={{ fontSize: "0.8rem", color: "#0f172a", fontWeight: 600, marginBottom: "4px" }}>
+                                🏢 {l.propertyTitle}
+                              </div>
+                            ) : null}
+                            {l.message ? (
+                              <div style={{
+                                fontSize: "0.76rem",
+                                color: "#334155",
+                                background: "#f8fafc",
+                                padding: "4px 8px",
+                                borderRadius: "6px",
+                                border: "1px solid #e2e8f0",
+                                maxWidth: "240px",
+                                whiteSpace: "pre-wrap",
+                                wordBreak: "break-word"
+                              }}>
+                                💬 {l.message}
+                              </div>
+                            ) : null}
+                            {l.notes ? (
+                              <div style={{
+                                fontSize: "0.74rem",
+                                color: "#005f94",
+                                background: "#f0f9ff",
+                                padding: "4px 8px",
+                                borderRadius: "6px",
+                                border: "1px solid #bae6fd",
+                                marginTop: "4px",
+                                maxWidth: "240px",
+                                wordBreak: "break-word"
+                              }}>
+                                📝 <strong>Bank Note:</strong> {l.notes}
+                              </div>
+                            ) : null}
+                            {!l.message && !l.notes && (
+                              <span style={{ color: "#94a3b8", fontSize: "0.75rem" }}>—</span>
+                            )}
+                          </td>
+                          <td>
+                            {/* Interactive Status Selector Dropdown */}
+                            <div
+                              className={styles.customStatusWrap}
+                              onClick={(e) => e.stopPropagation()}
+                              style={{ position: "relative" }}
+                            >
+                              <button
+                                type="button"
+                                disabled={actionLoading === l._id}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                  padding: "5px 12px",
+                                  borderRadius: "20px",
+                                  fontSize: "0.78rem",
+                                  fontWeight: "700",
+                                  cursor: "pointer",
+                                  border: (currentStatus === "approved" || currentStatus === "closed_won")
+                                    ? "1px solid #a7f3d0"
+                                    : (currentStatus === "rejected" || currentStatus === "closed_lost")
+                                    ? "1px solid #fecaca"
+                                    : (currentStatus === "contacted" || currentStatus === "in_progress")
+                                    ? "1px solid #bae6fd"
+                                    : "1px solid #fde68a",
+                                  background: (currentStatus === "approved" || currentStatus === "closed_won")
+                                    ? "#ecfdf5"
+                                    : (currentStatus === "rejected" || currentStatus === "closed_lost")
+                                    ? "#fef2f2"
+                                    : (currentStatus === "contacted" || currentStatus === "in_progress")
+                                    ? "#f0f9ff"
+                                    : "#fffbeb",
+                                  color: (currentStatus === "approved" || currentStatus === "closed_won")
+                                    ? "#059669"
+                                    : (currentStatus === "rejected" || currentStatus === "closed_lost")
+                                    ? "#dc2626"
+                                    : (currentStatus === "contacted" || currentStatus === "in_progress")
+                                    ? "#007bbd"
+                                    : "#d97706",
+                                  transition: "all 0.15s ease",
+                                }}
+                                onClick={() =>
+                                  setOpenLeadStatusDropdownId(isDropdownOpen ? null : l._id)
+                                }
+                              >
+                                <span
+                                  style={{
+                                    width: "6px",
+                                    height: "6px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "currentColor",
+                                  }}
+                                />
+                                <span>
+                                  {currentStatus === "approved" || currentStatus === "closed_won"
+                                    ? "Approved"
+                                    : currentStatus === "rejected" || currentStatus === "closed_lost"
+                                    ? "Rejected"
+                                    : currentStatus === "contacted"
+                                    ? "Contacted"
+                                    : currentStatus === "in_progress"
+                                    ? "In Progress"
+                                    : "Pending"}
+                                </span>
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  style={{
+                                    width: "12px",
+                                    height: "12px",
+                                    transition: "transform 0.2s",
+                                    transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                                  }}
+                                >
+                                  <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                              </button>
+
+                              {isDropdownOpen && (
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: "calc(100% + 4px)",
+                                    left: 0,
+                                    background: "#ffffff",
+                                    borderRadius: "10px",
+                                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.12)",
+                                    border: "1px solid #e2e8f0",
+                                    padding: "6px",
+                                    minWidth: "150px",
+                                    zIndex: 100,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "3px",
+                                  }}
+                                >
+                                  <button
+                                    type="button"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "8px",
+                                      width: "100%",
+                                      padding: "8px 12px",
+                                      border: "none",
+                                      background: currentStatus === "pending" ? "#fffbeb" : "transparent",
+                                      color: "#d97706",
+                                      fontWeight: "700",
+                                      fontSize: "0.78rem",
+                                      cursor: "pointer",
+                                      textAlign: "left",
+                                      borderRadius: "6px",
+                                    }}
+                                    onClick={() => {
+                                      setOpenLeadStatusDropdownId(null);
+                                      if (currentStatus !== "pending") handleUpdateLeadStatus(l._id, "pending");
+                                    }}
+                                  >
+                                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#d97706" }} />
+                                    🟡 Pending
+                                    {currentStatus === "pending" && <span style={{ marginLeft: "auto" }}>✓</span>}
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "8px",
+                                      width: "100%",
+                                      padding: "8px 12px",
+                                      border: "none",
+                                      background: (currentStatus === "approved" || currentStatus === "closed_won") ? "#ecfdf5" : "transparent",
+                                      color: "#059669",
+                                      fontWeight: "700",
+                                      fontSize: "0.78rem",
+                                      cursor: "pointer",
+                                      textAlign: "left",
+                                      borderRadius: "6px",
+                                    }}
+                                    onClick={() => {
+                                      setOpenLeadStatusDropdownId(null);
+                                      if (currentStatus !== "approved") handleUpdateLeadStatus(l._id, "approved");
+                                    }}
+                                  >
+                                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#059669" }} />
+                                    🟢 Approved
+                                    {(currentStatus === "approved" || currentStatus === "closed_won") && <span style={{ marginLeft: "auto" }}>✓</span>}
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "8px",
+                                      width: "100%",
+                                      padding: "8px 12px",
+                                      border: "none",
+                                      background: (currentStatus === "rejected" || currentStatus === "closed_lost") ? "#fef2f2" : "transparent",
+                                      color: "#dc2626",
+                                      fontWeight: "700",
+                                      fontSize: "0.78rem",
+                                      cursor: "pointer",
+                                      textAlign: "left",
+                                      borderRadius: "6px",
+                                    }}
+                                    onClick={() => {
+                                      setOpenLeadStatusDropdownId(null);
+                                      if (currentStatus !== "rejected") handleUpdateLeadStatus(l._id, "rejected");
+                                    }}
+                                  >
+                                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#dc2626" }} />
+                                    🔴 Rejected
+                                    {(currentStatus === "rejected" || currentStatus === "closed_lost") && <span style={{ marginLeft: "auto" }}>✓</span>}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            {(() => {
+                              const dt = formatISTDateTime(l.createdAt);
+                              return (
+                                <>
+                                  <div style={{ fontSize: "0.82rem", color: "#334155", fontWeight: 600 }}>{dt.date}</div>
+                                  {dt.time && <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>{dt.time}</div>}
+                                </>
+                              );
+                            })()}
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
