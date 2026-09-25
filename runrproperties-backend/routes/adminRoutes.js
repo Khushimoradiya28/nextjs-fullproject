@@ -8,7 +8,14 @@ const BankPartner = require('../models/BankPartner');
 const BankLead = require('../models/BankLead');
 const Enquiry = require('../models/Enquiry');
 const Wishlist = require('../models/Wishlist');
+const Blog = require('../models/Blog');
 const ContactLead = require('../models/ContactLead');
+const path = require('path');
+const fs = require('fs');
+const { createUploader, compressToWebp } = require('../middleware/imageCompressor');
+
+const uploadBlogImage = createUploader({ maxSize: 10 * 1024 * 1024 });
+const compressBlogCover = compressToWebp({ maxWidth: 1920, quality: 85, prefix: 'blog' });
 
 // Middleware to restrict access strictly to admins
 const adminOnly = (req, res, next) => {
@@ -18,58 +25,101 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-// 1. Overview Statistics
+// 1. Overview / Dashboard Statistics
 router.get('/stats', protect, adminOnly, async (req, res, next) => {
   try {
     const [
       totalUsers,
       totalProperties,
+      activeProperties,
+      soldProperties,
       totalBanks,
       pendingBanks,
       approvedBanks,
       totalEnquiries,
+      pendingPropertyEnquiries,
       totalLeads,
       pendingLeads,
+      approvedLeads,
       totalContactLeads,
       newContactLeads,
+      totalBlogs,
+      publishedBlogs,
       recentUsers,
       recentProperties,
+      recentLeads,
+      recentContactLeads,
+      recentPropertyEnquiries,
       bankWiseLeads,
+      pendingBanksList,
     ] = await Promise.all([
       User.countDocuments({ role: { $ne: 'bank_partner' }, isDeleted: { $ne: true } }),
       Property.countDocuments({ isDeleted: { $ne: true } }),
-      BankPartner.countDocuments(),
-      BankPartner.countDocuments({ status: 'pending' }),
-      BankPartner.countDocuments({ status: 'approved' }),
+      Property.countDocuments({ isDeleted: { $ne: true }, status: 'active' }),
+      Property.countDocuments({ isDeleted: { $ne: true }, status: 'sold' }),
+      BankPartner.countDocuments({ isDeleted: { $ne: true } }),
+      BankPartner.countDocuments({ status: 'pending', isDeleted: { $ne: true } }),
+      BankPartner.countDocuments({ status: 'approved', isDeleted: { $ne: true } }),
       Enquiry.countDocuments(),
+      Enquiry.countDocuments({ status: 'Pending' }),
       BankLead.countDocuments(),
       BankLead.countDocuments({ status: 'pending' }),
+      BankLead.countDocuments({ status: { $in: ['approved', 'closed_won'] } }),
       ContactLead.countDocuments(),
       ContactLead.countDocuments({ status: 'new' }),
+      Blog.countDocuments({ isDeleted: { $ne: true } }),
+      Blog.countDocuments({ isDeleted: { $ne: true }, status: 'published' }),
       User.find({ role: { $ne: 'bank_partner' }, isDeleted: { $ne: true } }).sort({ createdAt: -1 }).limit(5).select('name email role createdAt'),
-      Property.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 }).limit(5).select('title propertyType city price status createdAt'),
+      Property.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 }).limit(6).select('title propertyType listingType category city locality price status photos createdAt'),
+      BankLead.find().sort({ createdAt: -1 }).limit(6).select('name email phone bankName loanAmount employmentType propertyTitle status createdAt'),
+      ContactLead.find().sort({ createdAt: -1 }).limit(5).select('name email phone subject message status createdAt'),
+      Enquiry.find()
+        .sort({ createdAt: -1 })
+        .limit(6)
+        .populate('property', 'title price city locality photos propertyType listingType category status')
+        .populate('owner', 'name email mobile role')
+        .populate('buyer', 'name email mobile role'),
       BankLead.aggregate([
         { $group: { _id: '$bankName', count: { $sum: 1 }, totalVolume: { $sum: { $toDouble: { $ifNull: ['$loanAmount', '0'] } } } } },
         { $sort: { count: -1 } }
       ]),
+      BankPartner.find({ status: 'pending', isDeleted: { $ne: true } })
+        .populate('userId', 'name email mobile createdAt')
+        .sort({ createdAt: -1 })
+        .limit(10),
     ]);
+
+    // Calculate total loan volume
+    const totalLoanVolume = bankWiseLeads.reduce((acc, curr) => acc + (curr.totalVolume || 0), 0);
 
     res.status(200).json({
       success: true,
       data: {
         totalUsers,
         totalProperties,
+        activeProperties,
+        soldProperties,
         totalBanks,
         pendingBanks,
         approvedBanks,
         totalEnquiries,
+        pendingPropertyEnquiries,
         totalLeads,
         pendingLeads,
+        approvedLeads,
         totalContactLeads,
         newContactLeads,
+        totalBlogs,
+        publishedBlogs,
+        draftBlogs: totalBlogs - publishedBlogs,
+        totalLoanVolume,
         recentUsers,
         recentProperties,
+        recentLeads,
+        recentContactLeads,
+        recentPropertyEnquiries,
         bankWiseLeads,
+        pendingBanksList,
       },
     });
   } catch (err) {
@@ -774,4 +824,343 @@ router.delete('/contact-leads/:id', protect, adminOnly, async (req, res, next) =
   }
 });
 
+// ═══════════════════════════════════════════════════════════════
+// 6.5. Property Leads & Enquiries Management (Admin)
+// ═══════════════════════════════════════════════════════════════
+router.get('/property-enquiries', protect, adminOnly, async (req, res, next) => {
+  try {
+    const { status, search, page = 1, limit = 10 } = req.query;
+    const pageNum = Math.max(1, parseInt(page) || 1);
+    const limitNum = Math.max(1, parseInt(limit) || 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    const filter = {};
+
+    if (status && status !== 'all') {
+      filter.status = new RegExp(`^${status}$`, 'i');
+    }
+
+    if (search && search.trim()) {
+      const regex = new RegExp(search.trim(), 'i');
+      // Find matching properties first
+      const matchingProps = await Property.find({
+        $or: [{ title: regex }, { city: regex }, { locality: regex }],
+      }).select('_id');
+      const matchingPropIds = matchingProps.map((p) => p._id);
+
+      filter.$or = [
+        { name: regex },
+        { email: regex },
+        { mobile: regex },
+        { message: regex },
+        { property: { $in: matchingPropIds } },
+      ];
+    }
+
+    const [
+      enquiries,
+      total,
+      totalCount,
+      pendingCount,
+      contactedCount,
+      closedCount,
+    ] = await Promise.all([
+      Enquiry.find(filter)
+        .populate('property', 'title price city locality images photos propertyType listingType category status')
+        .populate('owner', 'name email mobile avatar role')
+        .populate('buyer', 'name email mobile avatar role')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum),
+      Enquiry.countDocuments(filter),
+      Enquiry.countDocuments(),
+      Enquiry.countDocuments({ status: { $regex: /^pending$/i } }),
+      Enquiry.countDocuments({ status: { $regex: /^contacted$/i } }),
+      Enquiry.countDocuments({ status: { $regex: /^closed$/i } }),
+    ]);
+
+    const totalPages = Math.ceil(total / limitNum) || 1;
+
+    res.status(200).json({
+      success: true,
+      data: enquiries,
+      counts: {
+        total: totalCount,
+        pending: pendingCount,
+        contacted: contactedCount,
+        closed: closedCount,
+      },
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages,
+        hasPrev: pageNum > 1,
+        hasNext: pageNum < totalPages,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Update Property Enquiry Status
+router.patch('/property-enquiries/:id/status', protect, adminOnly, async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['Pending', 'Contacted', 'Closed'];
+    const matchedStatus = validStatuses.find(s => s.toLowerCase() === (status || '').toLowerCase());
+    if (!matchedStatus) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid status. Allowed: Pending, Contacted, Closed',
+      });
+    }
+
+    const enquiry = await Enquiry.findByIdAndUpdate(
+      req.params.id,
+      { status: matchedStatus },
+      { new: true, runValidators: true }
+    )
+      .populate('property', 'title price city locality images photos propertyType listingType category status')
+      .populate('owner', 'name email mobile')
+      .populate('buyer', 'name email mobile');
+
+    if (!enquiry) {
+      return res.status(404).json({ success: false, message: 'Property enquiry not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Enquiry status updated to ${enquiry.status}`,
+      data: enquiry,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Delete Property Enquiry
+router.delete('/property-enquiries/:id', protect, adminOnly, async (req, res, next) => {
+  try {
+    const enquiry = await Enquiry.findByIdAndDelete(req.params.id);
+    if (!enquiry) {
+      return res.status(404).json({ success: false, message: 'Property enquiry not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Property enquiry deleted successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 7. Blogs Management (Admin)
+// List blogs with search, category, status filters & pagination
+router.get('/blogs', protect, adminOnly, async (req, res, next) => {
+  try {
+    const { search, category, status, page = 1, limit = 10 } = req.query;
+    const pageNum = Math.max(1, parseInt(page) || 1);
+    const limitNum = Math.max(1, parseInt(limit) || 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    const filter = { isDeleted: { $ne: true } };
+
+    if (category && category !== 'all') {
+      filter.category = category;
+    }
+
+    if (status && status !== 'all') {
+      filter.status = status;
+    }
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { excerpt: { $regex: search, $options: 'i' } },
+        { author: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const [filteredTotal, blogs, totalAll, publishedCount, draftCount] = await Promise.all([
+      Blog.countDocuments(filter),
+      Blog.find(filter)
+        .select('-content') // Optimize payload size for super-fast list response
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
+      Blog.countDocuments({ isDeleted: { $ne: true } }),
+      Blog.countDocuments({ isDeleted: { $ne: true }, status: 'published' }),
+      Blog.countDocuments({ isDeleted: { $ne: true }, status: 'draft' }),
+    ]);
+
+    const totalPages = Math.ceil(filteredTotal / limitNum) || 1;
+
+    res.status(200).json({
+      success: true,
+      counts: {
+        total: totalAll,
+        published: publishedCount,
+        draft: draftCount,
+      },
+      pagination: {
+        total: filteredTotal,
+        page: pageNum,
+        limit: limitNum,
+        totalPages,
+        hasPrev: pageNum > 1,
+        hasNext: pageNum < totalPages,
+      },
+      data: blogs,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Create New Blog
+router.post('/blogs', protect, adminOnly, uploadBlogImage.single('coverImage'), compressBlogCover, async (req, res, next) => {
+  try {
+    const { title, excerpt, content, category, author, readTime, status, isFeatured } = req.body;
+
+    if (!title || !excerpt || !content) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title, excerpt, and content are required fields',
+      });
+    }
+
+    let coverImage = '/img/blog/1.jpg';
+    if (req.file) {
+      coverImage = `/uploads/images/${req.file.filename}`;
+    } else if (req.body.coverImage && typeof req.body.coverImage === 'string' && req.body.coverImage.trim()) {
+      coverImage = req.body.coverImage.trim();
+    }
+
+    const newBlog = await Blog.create({
+      title: title.trim(),
+      excerpt: excerpt.trim(),
+      content: content.trim(),
+      category: category || 'Market Trends',
+      author: (author || req.user.name || 'runr team').trim(),
+      readTime: (readTime || '5 min').trim(),
+      status: status === 'draft' ? 'draft' : 'published',
+      isFeatured: isFeatured === 'true' || isFeatured === true,
+      coverImage,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Blog post created successfully',
+      data: newBlog,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Get Single Blog Detail (Includes full content for editing)
+router.get('/blogs/:id', protect, adminOnly, async (req, res, next) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog || blog.isDeleted) {
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
+    }
+    res.status(200).json({ success: true, data: blog });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Update Existing Blog
+router.put('/blogs/:id', protect, adminOnly, uploadBlogImage.single('coverImage'), compressBlogCover, async (req, res, next) => {
+  try {
+    const { title, excerpt, content, category, author, readTime, status, isFeatured } = req.body;
+
+    const blog = await Blog.findById(req.params.id);
+    if (!blog || blog.isDeleted) {
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
+    }
+
+    if (title) blog.title = title.trim();
+    if (excerpt) blog.excerpt = excerpt.trim();
+    if (content) blog.content = content.trim();
+    if (category) blog.category = category;
+    if (author) blog.author = author.trim();
+    if (readTime) blog.readTime = readTime.trim();
+    if (status) blog.status = status;
+    if (isFeatured !== undefined) blog.isFeatured = isFeatured === 'true' || isFeatured === true;
+
+    if (req.file) {
+      blog.coverImage = `/uploads/images/${req.file.filename}`;
+    } else if (req.body.coverImage && typeof req.body.coverImage === 'string' && req.body.coverImage.trim()) {
+      blog.coverImage = req.body.coverImage.trim();
+    }
+
+    await blog.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Blog post updated successfully',
+      data: blog,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Quick Toggle Blog Status (published / draft)
+router.patch('/blogs/:id/status', protect, adminOnly, async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!['published', 'draft'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status. Must be "published" or "draft"' });
+    }
+
+    const blog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { $set: { status } },
+      { new: true }
+    );
+
+    if (!blog || blog.isDeleted) {
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Blog status updated to ${status}`,
+      data: blog,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Soft Delete Blog
+router.delete('/blogs/:id', protect, adminOnly, async (req, res, next) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog || blog.isDeleted) {
+      return res.status(404).json({ success: false, message: 'Blog post not found' });
+    }
+
+    blog.isDeleted = true;
+    await blog.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Blog post deleted successfully',
+      data: { _id: blog._id },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
+

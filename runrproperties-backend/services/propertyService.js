@@ -303,12 +303,56 @@ const deleteProperty = async (propertyId, ownerId) => {
     throw error;
   }
 
-  // Soft delete: flag isDeleted to true & status to inactive
   property.isDeleted = true;
   property.status = "inactive";
   await property.save();
 
   return { message: "Property deleted successfully" };
+};
+
+/**
+ * Get platform statistics and city counts (public)
+ */
+const getPropertyStats = async () => {
+  const matchFilter = { status: "active", isDeleted: { $ne: true } };
+
+  const [totalCount, cityAgg, priceAgg] = await Promise.all([
+    Property.countDocuments(matchFilter),
+    Property.aggregate([
+      { $match: matchFilter },
+      {
+        $group: {
+          _id: { $toLower: "$city" },
+          city: { $first: "$city" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]),
+    Property.aggregate([
+      { $match: matchFilter },
+      {
+        $group: {
+          _id: null,
+          totalValue: { $sum: "$price" },
+        },
+      },
+    ]),
+  ]);
+
+  const cityMap = {};
+  cityAgg.forEach((item) => {
+    if (item.city) {
+      cityMap[item.city.toLowerCase().trim()] = item.count;
+    }
+  });
+
+  return {
+    totalProperties: totalCount,
+    cities: cityAgg,
+    cityMap,
+    totalValue: priceAgg[0]?.totalValue || 0,
+  };
 };
 
 module.exports = {
@@ -320,4 +364,5 @@ module.exports = {
   getMyProperties,
   updateProperty,
   deleteProperty,
+  getPropertyStats,
 };

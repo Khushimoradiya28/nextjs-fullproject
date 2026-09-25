@@ -72,13 +72,19 @@ export default function WishlistPage() {
             <div className={styles.pageHeader}>
               <div className={styles.pageHeaderInner}>
                 <div>
-                  <h1 className={styles.pageTitle}>My Wishlist</h1>
+                  <div className={styles.heroBadge}>
+                    <span className={styles.badgeDot} />
+                    <span>Saved Favourites</span>
+                  </div>
+                  <h1 className={styles.pageTitle}>
+                    My <span className={styles.highlight}>Wishlist</span>
+                  </h1>
                   <p className={styles.pageSubtitle}>
                     {!loaded
-                      ? "Loading..."
+                      ? "Loading your saved properties..."
                       : wishlist.length > 0
-                        ? `You have ${wishlist.length} saved ${wishlist.length === 1 ? "property" : "properties"}`
-                        : "Your wishlist is empty"}
+                        ? `You have ${wishlist.length} saved ${wishlist.length === 1 ? "property" : "properties"} ready to compare`
+                        : "Your wishlist is empty. Save properties you like to compare them easily."}
                   </p>
                 </div>
                 {wishlist.length > 0 && (

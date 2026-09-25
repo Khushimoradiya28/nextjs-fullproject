@@ -146,7 +146,7 @@ export default function BankPartnerLogin() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <img src="/logo/runr-logo-new.svg" alt="Runr" className={styles.logo} />
+        <img src="/logo/runr-logo-new.svg" alt="runr properties" className={styles.logo} />
         <h1 className={styles.title}>Bank Partner Login</h1>
 
         <Suspense fallback={null}>

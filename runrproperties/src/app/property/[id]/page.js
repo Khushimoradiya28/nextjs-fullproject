@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Header from "../../components/Header";
@@ -47,7 +48,13 @@ export default function PropertyDetailPage() {
     if (id) load();
   }, [id]);
 
-  const images = property?.images?.length > 0 ? property.images : [property?.image || "/img/featured-properties/1.jpg"];
+  const images = useMemo(
+    () =>
+      property?.images?.length > 0
+        ? property.images
+        : [property?.image || "/img/featured-properties/1.jpg"],
+    [property?.images, property?.image]
+  );
 
   // Continuous Infinite Auto-Slider Loop (Switches every 3 seconds endlessly)
   useEffect(() => {

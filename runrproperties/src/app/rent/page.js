@@ -178,12 +178,21 @@ export default function RentPage() {
           </div>
           <div className={styles.pageHeaderInner}>
             <div>
-              <h1 className={styles.pageTitle}>Rent Properties</h1>
+              <div className={styles.heroBadge}>
+                <span className={styles.badgeDot} />
+                <span>Verified Rental Homes</span>
+              </div>
+              <h1 className={styles.pageTitle}>
+                Rental <span className={styles.highlight}>Properties</span> in Gujarat
+              </h1>
               <p className={styles.pageSubtitle}>
-                {gridLoading
-                  ? "Searching..."
-                  : `${totalResults} rental properties found`}
+                Discover fully furnished flats, spacious villas, and affordable rentals across prime neighborhoods.
               </p>
+            </div>
+            <div className={styles.headerMetaBox}>
+              <div className={styles.metaCountBadge}>
+                {gridLoading ? "Searching..." : `✦ ${totalResults} Rentals Found`}
+              </div>
             </div>
           </div>
         </div>

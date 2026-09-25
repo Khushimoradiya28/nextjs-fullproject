@@ -16,6 +16,10 @@ connectDB().then(() => {
   const seedRoles = require('./utils/seedRoles');
   seedRoles();
 
+  // Seed default blogs if collection is empty
+  const seedBlogs = require('./utils/seedBlogs');
+  seedBlogs();
+
   // Backfill avatarColor for all existing users missing it (runs once on startup)
   const User = require('./models/User');
   const { getRandomAvatarColor } = require('./utils/avatarColors');
@@ -80,8 +84,21 @@ const forgotPasswordLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Serve static uploads
+// Serve static uploads with fallback for legacy subfolder paths
 const path = require('path');
+const fs = require('fs');
+
+app.use('/uploads/:subfolder/:filename', (req, res, next) => {
+  const { subfolder, filename } = req.params;
+  if (['blogs', 'properties', 'banks', 'avatars'].includes(subfolder)) {
+    const directImagePath = path.join(__dirname, 'uploads/images', filename);
+    if (fs.existsSync(directImagePath)) {
+      return res.sendFile(directImagePath);
+    }
+  }
+  next();
+});
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check route
@@ -104,6 +121,7 @@ app.use('/api/enquiries', require('./routes/enquiryRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/bank-partners', require('./routes/bankPartnerRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
+app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
 // 404 handler

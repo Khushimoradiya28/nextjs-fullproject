@@ -1,30 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const ctrl = require('../controllers/bankPartnerController');
 const { protect } = require('../middleware/auth');
+const { createUploader, compressToWebp } = require('../middleware/imageCompressor');
 
-// Ensure uploads/banks directory exists
-const bankUploadDir = path.join(__dirname, '../uploads/banks');
-if (!fs.existsSync(bankUploadDir)) {
-  fs.mkdirSync(bankUploadDir, { recursive: true });
-}
-
-// Multer for bank logo
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, bankUploadDir),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random() * 1e9) + path.extname(file.originalname)),
-});
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) cb(null, true);
-    else cb(new Error('Only images allowed'));
-  },
-});
+// Multer and compression for bank logo
+const uploadBankLogo = createUploader({ maxSize: 5 * 1024 * 1024 });
+const compressBankLogo = compressToWebp({ maxWidth: 800, quality: 90, prefix: 'bank' });
 
 // Middleware to check bank_partner or admin role
 const bankPartnerOnly = (req, res, next) => {
@@ -44,7 +26,7 @@ router.post('/leads', protect, ctrl.submitLead);
 // Bank partner protected routes
 router.get('/profile', protect, bankPartnerOnly, ctrl.getProfile);
 router.put('/profile', protect, bankPartnerOnly, ctrl.updateProfile);
-router.post('/profile/logo', protect, bankPartnerOnly, upload.single('logo'), ctrl.uploadLogo);
+router.post('/profile/logo', protect, bankPartnerOnly, uploadBankLogo.single('logo'), compressBankLogo, ctrl.uploadLogo);
 router.get('/leads', protect, bankPartnerOnly, ctrl.getLeads);
 router.patch('/leads/:leadId', protect, bankPartnerOnly, ctrl.updateLead);
 

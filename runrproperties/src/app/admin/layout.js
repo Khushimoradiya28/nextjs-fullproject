@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Admin Portal | Runr Properties",
-  description: "Administrative control portal for RunR Properties platform.",
+  title: "Admin Portal | runr properties",
+  description: "Administrative control portal for runr properties platform.",
 };
 
 export default function AdminLayout({ children }) {

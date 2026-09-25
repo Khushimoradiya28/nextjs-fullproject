@@ -33,10 +33,23 @@
 
 /* Page Header */
 .pageHeader {
+  position: relative;
   padding: 32px 0 28px;
 }
 
-.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #94a3b8; margin-bottom: 16px; padding: 6px 0; }
+.pageHeader::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -40px;
+  width: 320px;
+  height: 140px;
+  background: radial-gradient(ellipse, rgba(0, 123, 189, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #94a3b8; margin-bottom: 16px; padding: 4px 0; position: relative; z-index: 1; }
 
 .breadcrumbLink { color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s; }
 
@@ -51,26 +64,67 @@
   display: block;
 }
 
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: rgba(0, 123, 189, 0.08);
+  border: 1px solid rgba(0, 123, 189, 0.18);
+  color: #007bbd;
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #007bbd;
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.2);
+  display: inline-block;
+}
+
 .pageHeaderInner {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .pageTitle {
-  margin: 0 0 8px;
-  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
-  font-weight: 800;
-  color: #10203b;
-  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-family: 'Rimouski Sb', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.highlight {
+  color: #007bbd;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+  display: inline;
 }
 
 .pageSubtitle {
   margin: 0;
-  color: #5a6f85;
-  font-size: 1rem;
-  line-height: 1.5;
+  color: #475569;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  max-width: 620px;
 }
 
 .clearAllBtn {

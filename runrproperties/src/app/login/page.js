@@ -87,11 +87,11 @@ function LoginForm() {
       <main className={styles.main}>
         <div className={styles.authCard}>
           <div className={styles.cardLogo}>
-            <img src="/logo/runr-logo-new.svg" alt="Runr Properties" />
+            <img src="/logo/runr-logo-new.svg" alt="runr properties" />
           </div>
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Welcome Back</h1>
-            <p className={styles.authSubtitle}>Sign in to your Runr Properties account</p>
+            <p className={styles.authSubtitle}>Sign in to your runr properties account</p>
           </div>
 
           <form className={styles.authForm} onSubmit={handleSubmit} noValidate>

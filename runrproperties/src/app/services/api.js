@@ -61,14 +61,59 @@ function getHeaders() {
   };
 }
 
+const apiCache = new Map();
+const inFlightRequests = new Map();
+const CACHE_TTL_MS = 20000; // 20 seconds fast client cache for public GETs
+
+export function clearApiCache() {
+  apiCache.clear();
+  inFlightRequests.clear();
+}
+
 async function request(url, options = {}) {
-  try {
-    const res = await fetch(url, options);
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    return { success: false, message: "Network error. Please try again." };
+  const method = (options.method || "GET").toUpperCase();
+  const hasAuth = Boolean(options.headers && options.headers.Authorization);
+  const isCacheableGet = method === "GET" && !hasAuth;
+
+  // 1. Instant response from in-memory cache for public GETs
+  if (isCacheableGet) {
+    const cached = apiCache.get(url);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data;
+    }
+    // 2. In-flight request deduplication: reuse ongoing promise if already fetching
+    if (inFlightRequests.has(url)) {
+      return inFlightRequests.get(url);
+    }
   }
+
+  const fetchPromise = (async () => {
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+
+      if (isCacheableGet && data && data.success) {
+        apiCache.set(url, { data, timestamp: Date.now() });
+      } else if (method !== "GET") {
+        // Invalidate cache on mutations
+        clearApiCache();
+      }
+
+      return data;
+    } catch (err) {
+      return { success: false, message: "Network error. Please try again." };
+    } finally {
+      if (isCacheableGet) {
+        inFlightRequests.delete(url);
+      }
+    }
+  })();
+
+  if (isCacheableGet) {
+    inFlightRequests.set(url, fetchPromise);
+  }
+
+  return fetchPromise;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -495,12 +540,20 @@ export async function getPropertyById(propertyId) {
 }
 
 export async function getFeaturedProperties() {
-  const properties = data.data || [];
+  const data = await request(`${API_BASE}/properties/featured`);
+  if (data.success) {
+    const properties = data.data || data.properties || [];
+    return {
+      success: true,
+      properties: properties.map(mapProperty),
+    };
+  }
+  return { success: false, properties: [] };
+}
 
-  return {
-    success: true,
-    properties: properties.map(mapProperty),
-  };
+export async function getPropertyStats() {
+  const data = await request(`${API_BASE}/properties/stats`);
+  return data;
 }
 
 // Maps backend property shape to frontend expected shape
@@ -663,3 +716,73 @@ export async function addReview({ propertyId, rating, comment }) {
     },
   };
 }
+
+// ═══════════════════════════════════════════════════════════════
+// BLOGS (Public & Admin)
+// ═══════════════════════════════════════════════════════════════
+
+export async function getPublicBlogs({ page = 1, limit = 9, category = "all", search = "" } = {}) {
+  const params = new URLSearchParams();
+  if (page) params.set("page", page);
+  if (limit) params.set("limit", limit);
+  if (category && category !== "all") params.set("category", category);
+  if (search) params.set("search", search);
+
+  return await request(`${API_BASE}/blogs?${params.toString()}`);
+}
+
+export async function getFeaturedBlogs(limit = 3) {
+  return await request(`${API_BASE}/blogs/featured?limit=${limit}`);
+}
+
+export async function getBlogBySlug(slug) {
+  return await request(`${API_BASE}/blogs/${slug}`);
+}
+
+// Admin Blog APIs
+export async function getAdminBlogs({ page = 1, limit = 10, category = "all", status = "all", search = "" } = {}) {
+  const params = new URLSearchParams();
+  if (page) params.set("page", page);
+  if (limit) params.set("limit", limit);
+  if (category && category !== "all") params.set("category", category);
+  if (status && status !== "all") params.set("status", status);
+  if (search) params.set("search", search);
+
+  return await request(`${API_BASE}/admin/blogs?${params.toString()}`, {
+    headers: getHeaders(),
+  });
+}
+
+export async function createAdminBlog(formData) {
+  const token = getToken();
+  return await request(`${API_BASE}/admin/blogs`, {
+    method: "POST",
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: formData,
+  });
+}
+
+export async function updateAdminBlog(id, formData) {
+  const token = getToken();
+  return await request(`${API_BASE}/admin/blogs/${id}`, {
+    method: "PUT",
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: formData,
+  });
+}
+
+export async function toggleAdminBlogStatus(id, status) {
+  return await request(`${API_BASE}/admin/blogs/${id}/status`, {
+    method: "PATCH",
+    headers: getHeaders(),
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function deleteAdminBlog(id) {
+  return await request(`${API_BASE}/admin/blogs/${id}`, {
+    method: "DELETE",
+    headers: getHeaders(),
+  });
+}
+

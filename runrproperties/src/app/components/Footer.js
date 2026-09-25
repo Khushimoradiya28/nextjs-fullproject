@@ -57,7 +57,7 @@ export default function Footer() {
               <img
                 className={styles.logoMark}
                 src="/logo/footer-logo-white.png"
-                alt="Runr Properties logo"
+                alt="runr properties logo"
                 style={{ height: "38px", width: "auto" }}
               />
             </Link>
@@ -131,7 +131,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className={styles.bottomBar}>
-          <p>© {new Date().getFullYear()} Runr Properties. All Rights Reserved.</p>
+          <p>© {new Date().getFullYear()} runr properties. All Rights Reserved.</p>
           <div className={styles.legalLinks}>
             <Link href="/privacy">Privacy Policy</Link>
             <span>•</span>

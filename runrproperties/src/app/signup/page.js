@@ -129,11 +129,11 @@ export default function SignupPage() {
       <main className={styles.main}>
         <div className={styles.authCard}>
           <div className={styles.cardLogo}>
-            <img src="/logo/runr-logo-new.svg" alt="Runr Properties" />
+            <img src="/logo/runr-logo-new.svg" alt="runr properties" />
           </div>
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Create Account</h1>
-            <p className={styles.authSubtitle}>Join Runr Properties to find your dream property</p>
+            <p className={styles.authSubtitle}>Join runr properties to find your dream property</p>
           </div>
 
           <form className={styles.authForm} onSubmit={handleSubmit} noValidate>

@@ -207,12 +207,21 @@ export default function BuyPage() {
           </div>
           <div className={styles.pageHeaderInner}>
             <div>
-              <h1 className={styles.pageTitle}>Buy Properties</h1>
+              <div className={styles.heroBadge}>
+                <span className={styles.badgeDot} />
+                <span>Verified Listings for Sale</span>
+              </div>
+              <h1 className={styles.pageTitle}>
+                Buy <span className={styles.highlight}>Properties</span> in Gujarat
+              </h1>
               <p className={styles.pageSubtitle}>
-                {gridLoading
-                  ? "Searching..."
-                  : `${totalResults} properties found`}
+                Explore luxury apartments, modern villas, and verified residential properties with transparent pricing.
               </p>
+            </div>
+            <div className={styles.headerMetaBox}>
+              <div className={styles.metaCountBadge}>
+                {gridLoading ? "Searching..." : `✦ ${totalResults} Properties Found`}
+              </div>
             </div>
           </div>
         </div>

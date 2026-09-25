@@ -35,9 +35,9 @@ const createProperty = async (req, res, next) => {
 
     let uploadedImages = [];
     if (req.files && req.files.length > 0) {
-      uploadedImages = req.files.map(f => '/uploads/properties/' + f.filename);
+      uploadedImages = req.files.map(f => '/uploads/images/' + f.filename);
     } else if (req.file) {
-      uploadedImages = ['/uploads/properties/' + req.file.filename];
+      uploadedImages = ['/uploads/images/' + req.file.filename];
     }
 
     let existingImages = [];
@@ -182,9 +182,9 @@ const updateProperty = async (req, res, next) => {
 
     let uploadedImages = [];
     if (req.files && req.files.length > 0) {
-      uploadedImages = req.files.map(f => '/uploads/properties/' + f.filename);
+      uploadedImages = req.files.map(f => '/uploads/images/' + f.filename);
     } else if (req.file) {
-      uploadedImages = ['/uploads/properties/' + req.file.filename];
+      uploadedImages = ['/uploads/images/' + req.file.filename];
     }
 
     let existingImages = [];
@@ -255,6 +255,23 @@ const markAsSold = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get property statistics & city counts
+ * @route   GET /api/properties/stats
+ * @access  Public
+ */
+const getPropertyStats = async (req, res, next) => {
+  try {
+    const stats = await propertyService.getPropertyStats();
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createProperty,
   getAllProperties,
@@ -265,4 +282,5 @@ module.exports = {
   updateProperty,
   deleteProperty,
   markAsSold,
+  getPropertyStats,
 };

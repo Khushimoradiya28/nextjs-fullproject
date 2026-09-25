@@ -11,13 +11,13 @@ export default function TermsPage() {
         <div className={styles.content}>
           <p><strong>Last Updated:</strong> July 2025</p>
           <h2>1. Acceptance of Terms</h2>
-          <p>By accessing and using Runr Properties, you agree to be bound by these Terms & Conditions. If you do not agree, please do not use our platform.</p>
+          <p>By accessing and using runr properties, you agree to be bound by these Terms & Conditions. If you do not agree, please do not use our platform.</p>
           <h2>2. Use of Platform</h2>
-          <p>Runr Properties provides a platform for property listings. We do not own, sell, or manage any properties listed on our platform. All listings are provided by third-party sellers, agents, or builders.</p>
+          <p>runr properties provides a platform for property listings. We do not own, sell, or manage any properties listed on our platform. All listings are provided by third-party sellers, agents, or builders.</p>
           <h2>3. User Responsibilities</h2>
           <p>Users must provide accurate information when creating accounts or making inquiries. Any misuse of the platform may result in account suspension.</p>
           <h2>4. Disclaimer</h2>
-          <p>While we verify listings to the best of our ability, Runr Properties does not guarantee the accuracy of all information provided by property listers.</p>
+          <p>While we verify listings to the best of our ability, runr properties does not guarantee the accuracy of all information provided by property listers.</p>
           <h2>5. Contact</h2>
           <p>For any questions regarding these terms, please contact us at hello@runrproperties.com</p>
         </div>

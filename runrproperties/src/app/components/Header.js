@@ -53,11 +53,13 @@ export default function Header() {
     [pathname]
   );
 
-  // Handle Scroll Effect for Header
+  // Handle Scroll Effect for Header (state only updates when boundary is crossed)
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
+      const isPast = window.scrollY > 20;
+      setScrolled((prev) => (prev !== isPast ? isPast : prev));
     };
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -105,15 +107,23 @@ export default function Header() {
   // User avatar initials
   const userInitial = user?.name ? user.name.trim().charAt(0).toUpperCase() : "U";
 
+  // Transparent header on homepage before scroll
+  const isHome = pathname === "/";
+  const isTransparent = isHome && !scrolled;
+
   return (
-    <header className={`${styles.headerWrapper} ${scrolled ? styles.scrolled : ""}`} role="banner">
+    <>
+      <header
+        className={`${styles.headerWrapper} ${isTransparent ? styles.transparentHeader : styles.scrolled}`}
+        role="banner"
+      >
       <div className={styles.container}>
         {/* Brand / Logo */}
-        <Link href="/" className={styles.brand} aria-label="Runr Properties home">
+        <Link href="/" className={styles.brand} aria-label="runr properties home">
           <img
             className={styles.logoMark}
-            src="/logo/runr-logo-new.svg"
-            alt="Runr Properties logo"
+            src={isTransparent ? "/logo/footer-logo-white.png" : "/logo/runr-logo-new.svg"}
+            alt="runr properties logo"
           />
         </Link>
 
@@ -398,7 +408,7 @@ export default function Header() {
           <div className={styles.mobileBrand}>
             <img
               src="/logo/runr-logo-new.svg"
-              alt="Runr Properties"
+              alt="runr properties"
               style={{ height: "34px", width: "auto" }}
             />
           </div>
@@ -506,5 +516,7 @@ export default function Header() {
         </div>
       </nav>
     </header>
+    {!isHome && <div className={styles.headerSpacer} />}
+  </>
   );
 }

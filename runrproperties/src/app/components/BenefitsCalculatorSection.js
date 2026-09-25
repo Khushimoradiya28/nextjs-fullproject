@@ -65,7 +65,7 @@ export default function BenefitsCalculatorSection() {
           <div className={styles.benefitsPanel}>
             <div className={styles.sectionTitleBox}>
               <span className={styles.sectionTag}>✦ Why Us</span>
-              <h2>Why Choose Runr Properties?</h2>
+              <h2>Why Choose runr properties?</h2>
               <span className={styles.titleUnderline} aria-hidden="true" />
             </div>
 

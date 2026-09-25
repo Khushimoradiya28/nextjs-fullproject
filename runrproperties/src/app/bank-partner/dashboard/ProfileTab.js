@@ -51,7 +51,7 @@ export default function ProfileTab({ editForm, setEditForm, profile, userInfo, f
           </div>
           <div>
             <div style={{fontSize:"20px",fontWeight:"700",color:"#0E2248",marginBottom:"2px"}}>{editForm.bankName || "Your Bank"}</div>
-            <div style={{fontSize:"13px",color:"#6b7b8f"}}>{editForm.tagline || "Banking partner on Runr Properties"}</div>
+            <div style={{fontSize:"13px",color:"#6b7b8f"}}>{editForm.tagline || "Banking partner on runr properties"}</div>
           </div>
         </div>
 

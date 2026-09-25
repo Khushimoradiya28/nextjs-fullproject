@@ -24,7 +24,7 @@ const updateProfile = async (req, res, next) => {
 const uploadLogo = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-    const logoPath = '/uploads/banks/' + req.file.filename;
+    const logoPath = '/uploads/images/' + req.file.filename;
     const profile = await bankPartnerService.updateBankLogo(req.user._id, logoPath);
     res.status(200).json({ success: true, data: profile });
   } catch (error) { next(error); }

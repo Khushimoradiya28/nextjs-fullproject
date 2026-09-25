@@ -52,10 +52,15 @@ export default function ContactPage() {
       <main className={styles.main}>
         {/* Standard Website Page Header */}
         <section className={styles.pageHeader}>
-          <span className={styles.sectionTag}>CONTACT US</span>
-          <h1 className={styles.pageTitle}>Get in Touch</h1>
+          <div className={styles.heroBadge}>
+            <span className={styles.badgeDot} />
+            <span>Customer Support & Advisory</span>
+          </div>
+          <h1 className={styles.pageTitle}>
+            Get in <span className={styles.highlight}>Touch With Us</span>
+          </h1>
           <p className={styles.pageSubtitle}>
-            Have a question or need help finding the right property? We are here for you.
+            Have a question, need assistance with buying or selling, or want expert consultation? We are here for you.
           </p>
         </section>
 

@@ -153,9 +153,9 @@ export default function BankPartnerRegister() {
       <main className={styles.main}>
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <img src="/logo/runr-logo-new.svg" alt="Runr" className={styles.logo} />
+            <img src="/logo/runr-logo-new.svg" alt="runr properties" className={styles.logo} />
             <h1 className={styles.title}>Bank Partner Registration</h1>
-            <p className={styles.subtitle}>Join Runr Properties as a banking partner</p>
+            <p className={styles.subtitle}>Join runr properties as a banking partner</p>
           </div>
 
           {error && <div className={styles.errorAlert}>{error}</div>}
