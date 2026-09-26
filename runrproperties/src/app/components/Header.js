@@ -147,7 +147,7 @@ export default function Header() {
         {/* Action Controls */}
         <div className={styles.actions}>
           {/* Wishlist Button */}
-          {user?.role !== "bank_partner" && (
+          {user?.role !== "bank_partner" && user?.role !== "admin" && (
             <Link
               href="/wishlist"
               className={`${styles.iconButton} ${pathname === "/wishlist" ? styles.iconButtonActive : ""}`}
@@ -176,7 +176,10 @@ export default function Header() {
                 type="button"
                 onClick={toggleDropdown}
                 className={`${styles.userPillButton} ${dropdownOpen ? styles.userPillActive : ""} ${
-                  pathname?.startsWith("/profile") || pathname?.startsWith("/dashboard")
+                  pathname?.startsWith("/profile") ||
+                  pathname?.startsWith("/dashboard") ||
+                  pathname?.startsWith("/admin") ||
+                  pathname?.startsWith("/bank-partner")
                     ? styles.userPillRouteActive
                     : ""
                 }`}
@@ -217,7 +220,9 @@ export default function Header() {
                       </span>
                       {user?.role && (
                         <span className={styles.dropdownRoleBadge}>
-                          {user.role === "bank_partner"
+                          {user.role === "admin"
+                            ? "Super Admin"
+                            : user.role === "bank_partner"
                             ? "Bank Partner"
                             : user.role === "owner"
                             ? "Property Owner"
@@ -431,7 +436,9 @@ export default function Header() {
             <div className={styles.mobileUserInfo}>
               <span className={styles.mobileUserName}>{user?.name}</span>
               <span className={styles.mobileUserRole}>
-                {user?.role === "bank_partner"
+                {user?.role === "admin"
+                  ? "Super Admin"
+                  : user?.role === "bank_partner"
                   ? "Bank Partner"
                   : user?.role === "owner"
                   ? "Property Owner"
@@ -462,30 +469,61 @@ export default function Header() {
           {isAuthenticated && (
             <>
               <div className={styles.mobileNavSectionTitle} style={{ marginTop: "12px" }}>Account</div>
-              <Link
-                href="/profile"
-                className={`${styles.mobileNavLink} ${pathname === "/profile" ? styles.mobileNavLinkActive : ""}`}
-                onClick={closeMenu}
-              >
-                <span>My Profile</span>
-                {pathname === "/profile" && <span className={styles.activeTag}>Current</span>}
-              </Link>
-              <Link
-                href="/wishlist"
-                className={`${styles.mobileNavLink} ${pathname === "/wishlist" ? styles.mobileNavLinkActive : ""}`}
-                onClick={closeMenu}
-              >
-                <span>Wishlist</span>
-                {wishlistCount > 0 && <span className={styles.activeTag}>{wishlistCount}</span>}
-              </Link>
-              {isOwner && (
+              {user?.role === "admin" ? (
                 <Link
-                  href="/dashboard"
-                  className={`${styles.mobileNavLink} ${pathname?.startsWith("/dashboard") ? styles.mobileNavLinkActive : ""}`}
+                  href="/admin/dashboard"
+                  className={`${styles.mobileNavLink} ${pathname?.startsWith("/admin") ? styles.mobileNavLinkActive : ""}`}
                   onClick={closeMenu}
                 >
-                  <span>My Dashboard</span>
+                  <span>Admin Dashboard</span>
+                  {pathname?.startsWith("/admin") && <span className={styles.activeTag}>Current</span>}
                 </Link>
+              ) : user?.role === "bank_partner" ? (
+                <Link
+                  href="/bank-partner/dashboard"
+                  className={`${styles.mobileNavLink} ${pathname?.startsWith("/bank-partner") ? styles.mobileNavLinkActive : ""}`}
+                  onClick={closeMenu}
+                >
+                  <span>Partner Dashboard</span>
+                  {pathname?.startsWith("/bank-partner") && <span className={styles.activeTag}>Current</span>}
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/profile"
+                    className={`${styles.mobileNavLink} ${pathname === "/profile" ? styles.mobileNavLinkActive : ""}`}
+                    onClick={closeMenu}
+                  >
+                    <span>My Profile</span>
+                    {pathname === "/profile" && <span className={styles.activeTag}>Current</span>}
+                  </Link>
+                  <Link
+                    href="/wishlist"
+                    className={`${styles.mobileNavLink} ${pathname === "/wishlist" ? styles.mobileNavLinkActive : ""}`}
+                    onClick={closeMenu}
+                  >
+                    <span>Wishlist</span>
+                    {wishlistCount > 0 && <span className={styles.activeTag}>{wishlistCount}</span>}
+                  </Link>
+                  {isOwner && (
+                    <>
+                      <Link
+                        href="/dashboard"
+                        className={`${styles.mobileNavLink} ${pathname === "/dashboard" ? styles.mobileNavLinkActive : ""}`}
+                        onClick={closeMenu}
+                      >
+                        <span>My Dashboard</span>
+                      </Link>
+                      <Link
+                        href="/dashboard/my-properties"
+                        className={`${styles.mobileNavLink} ${pathname === "/dashboard/my-properties" ? styles.mobileNavLinkActive : ""}`}
+                        onClick={closeMenu}
+                      >
+                        <span>My Properties</span>
+                      </Link>
+                    </>
+                  )}
+                </>
               )}
             </>
           )}

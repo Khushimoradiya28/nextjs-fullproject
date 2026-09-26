@@ -16,15 +16,25 @@ import styles from "../../add-property/addproperty.module.css";
 export default function EditPropertyPage() {
   const router = useRouter();
   const { id } = useParams();
-  const { loading: authLoading, isAuthenticated, isOwner } = useAuth();
+  const { user, loading: authLoading, isAuthenticated, isOwner } = useAuth();
   const [property, setProperty] = useState(null);
   const [fetching, setFetching] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!authLoading && (!isAuthenticated || !isOwner)) router.push("/login");
-  }, [authLoading, isAuthenticated, isOwner, router]);
+    if (!authLoading) {
+      if (!isAuthenticated) {
+        router.replace("/login");
+      } else if (user?.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else if (user?.role === "bank_partner") {
+        router.replace("/bank-partner/dashboard");
+      } else if (!isOwner) {
+        router.replace("/profile");
+      }
+    }
+  }, [authLoading, isAuthenticated, user, isOwner, router]);
 
   const [isSoldOrInactive, setIsSoldOrInactive] = useState(false);
 

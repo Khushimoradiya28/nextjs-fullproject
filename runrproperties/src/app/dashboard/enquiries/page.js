@@ -40,7 +40,7 @@ function getImage(prop) {
 
 export default function EnquiriesPage() {
   const router = useRouter();
-  const { loading, isAuthenticated, isOwner } = useAuth();
+  const { user, loading, isAuthenticated, isOwner } = useAuth();
   const [enquiries, setEnquiries] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState("");
@@ -50,8 +50,18 @@ export default function EnquiriesPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    if (!loading && (!isAuthenticated || !isOwner)) router.push("/login");
-  }, [loading, isAuthenticated, isOwner, router]);
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.replace("/login");
+      } else if (user?.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else if (user?.role === "bank_partner") {
+        router.replace("/bank-partner/dashboard");
+      } else if (!isOwner) {
+        router.replace("/profile");
+      }
+    }
+  }, [loading, isAuthenticated, user, isOwner, router]);
 
   const fetchEnquiries = async () => {
     setFetching(true);

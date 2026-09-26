@@ -32,15 +32,24 @@ export default function ProfilePage() {
   const [passMsgType, setPassMsgType] = useState("success");
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) router.push("/login");
-    if (!loading && user?.role === "bank_partner") router.push("/bank-partner/dashboard");
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.replace("/login");
+      } else if (user?.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else if (user?.role === "bank_partner") {
+        router.replace("/bank-partner/dashboard");
+      }
+    }
   }, [loading, isAuthenticated, user, router]);
 
   useEffect(() => {
-    if (user) setEditForm({ name: user.name || "", mobile: user.mobile || "" });
+    if (user && user.role !== "admin" && user.role !== "bank_partner") {
+      setEditForm({ name: user.name || "", mobile: user.mobile || "" });
+    }
   }, [user]);
 
-  if (loading || !user) {
+  if (loading || !user || user.role === "admin" || user.role === "bank_partner") {
     return (
       <div className={styles.page}>
         <Header />

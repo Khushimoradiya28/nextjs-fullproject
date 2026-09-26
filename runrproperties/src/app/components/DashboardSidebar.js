@@ -100,7 +100,13 @@ export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
         <h3 className={styles.sidebarName}>{user.name}</h3>
         <p className={styles.sidebarEmail}>{user.email}</p>
         <div className={styles.sidebarRoleBadge}>
-          {isOwner ? "Property Owner" : "Buyer / Tenant"}
+          {user.role === "admin"
+            ? "Super Admin"
+            : user.role === "bank_partner"
+            ? "Bank Partner"
+            : isOwner
+            ? "Property Owner"
+            : "Buyer / Tenant"}
         </div>
       </div>
 

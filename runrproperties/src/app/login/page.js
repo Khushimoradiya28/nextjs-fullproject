@@ -60,17 +60,15 @@ function LoginForm() {
     setLoading(false);
 
     if (result.success) {
-      if (redirectUrl) {
+      const role = result.user?.role || result.role;
+      if (role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (role === "bank_partner") {
+        router.push("/bank-partner/dashboard");
+      } else if (redirectUrl && !redirectUrl.startsWith("/admin") && !redirectUrl.startsWith("/bank-partner")) {
         router.push(redirectUrl);
       } else {
-        const role = result.user?.role || result.role;
-        if (role === "admin") {
-          router.push("/admin/dashboard");
-        } else if (role === "bank_partner") {
-          router.push("/bank-partner/dashboard");
-        } else {
-          router.push("/profile");
-        }
+        router.push("/profile");
       }
     } else {
       setApiError(result.message?.toLowerCase().includes("pending") 

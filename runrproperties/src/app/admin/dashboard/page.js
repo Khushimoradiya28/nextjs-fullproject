@@ -494,6 +494,7 @@ export default function AdminDashboardPage() {
   const [pwdError, setPwdError] = useState("");
   const [searchUser, setSearchUser] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("all");
+  const [userCounts, setUserCounts] = useState({ total: 0, buyer: 0, owner: 0, admin: 0 });
   const [userPagination, setUserPagination] = useState({
     page: 1,
     limit: 10,
@@ -1108,6 +1109,9 @@ export default function AdminDashboardPage() {
       const data = await res.json();
       if (data.success) {
         setUsersList(data.data);
+        if (data.counts) {
+          setUserCounts(data.counts);
+        }
         if (data.pagination) {
           setUserPagination(data.pagination);
         }
@@ -1307,36 +1311,6 @@ export default function AdminDashboardPage() {
 
       {/* Main Dashboard Content */}
       <main className={styles.mainContent}>
-        {/* Premium Top Bar & Title View (for sub-pages/tabs) */}
-        {activeTab !== "overview" && !(activeTab === "blogs" && blogViewMode !== "list") && (
-          <div className={styles.topBar}>
-            <div className={styles.headerTitleWrap}>
-              <div className={styles.welcomeBadge}>
-                <span className={styles.liveDot}></span>
-                RunR Platform Control
-              </div>
-              <h1 className={styles.pageHeading}>
-                {activeTab === "bank_partners" && "Bank Partners Approval & Management"}
-                {activeTab === "properties" && "Properties Moderation"}
-                {activeTab === "users" && "User Accounts Management"}
-                {activeTab === "leads" && "Customer Loan Leads"}
-                {activeTab === "contact_leads" && "Contact Us Leads & Inquiries"}
-                {activeTab === "property_leads" && "Property Inquiries & Buyer Leads"}
-                {activeTab === "blogs" && "Blog & Insights Management"}
-              </h1>
-              <p className={styles.pageSubtitle}>
-                {activeTab === "bank_partners" && "Review, approve, reject or disable bank partners and their loan offers"}
-                {activeTab === "properties" && "Monitor all posted listings, verify owner information and pricing"}
-                {activeTab === "users" && "View all registered buyers, property owners, and agent accounts"}
-                {activeTab === "leads" && "Monitor customer home loan applications and assigned bank partners"}
-                {activeTab === "contact_leads" && "Manage customer inquiries submitted from Contact Us, view messages, and track follow-up status"}
-                {activeTab === "property_leads" && "Manage buyer inquiries submitted from property enquiry modals, track buyer interest, and monitor owner leads"}
-                {activeTab === "blogs" && "Publish, update, and manage articles, real estate insights, guides, and tips"}
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* 1. DASHBOARD OVERVIEW TAB */}
         {activeTab === "overview" && (
           <>
@@ -1443,7 +1417,7 @@ export default function AdminDashboardPage() {
                 type="button"
                 className={styles.statCard}
                 onClick={() => setActiveTab("users")}
-                title="Click to view Users"
+                title="Click to view Users (Buyers & Owners)"
               >
                 <div className={styles.statCardLeft}>
                   <div className={styles.statIconWrap} style={{ background: "#fffbeb", color: "#f59e0b" }}>
@@ -1456,7 +1430,50 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <h3 className={styles.statValue}>{stats?.totalUsers ?? 0}</h3>
-                    <p className={styles.statLabel}>Registered Users</p>
+                    <p className={styles.statLabel} style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", marginTop: "3px" }}>
+                      <span style={{ color: "#475569", fontWeight: 700 }}>Users:</span>
+                      <span style={{ color: "#0284c7", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.78rem" }}>
+                        {stats?.totalBuyers ?? userCounts?.buyer ?? 0} Buyers
+                      </span>
+                      <span style={{ color: "#cbd5e1" }}>•</span>
+                      <span style={{ color: "#d97706", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.78rem" }}>
+                        {stats?.totalOwners ?? userCounts?.owner ?? 0} Owners
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className={styles.statArrow}>→</div>
+              </button>
+
+              <button
+                type="button"
+                className={styles.statCard}
+                onClick={() => {
+                  setActiveTab("leads");
+                  fetchLeads("all", "all", "", 1);
+                }}
+                title="Click to view Loan Volume & Pipeline"
+              >
+                <div className={styles.statCardLeft}>
+                  <div className={styles.statIconWrap} style={{ background: "#fdf2f8", color: "#db2777" }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+                      <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className={styles.statValue}>
+                      {stats?.totalLoanVolume
+                        ? stats.totalLoanVolume >= 10000000
+                          ? `₹ ${(stats.totalLoanVolume / 10000000).toFixed(2)} Cr`
+                          : `₹ ${stats.totalLoanVolume.toLocaleString("en-IN")}`
+                        : "₹ 0"}
+                    </h3>
+                    <p className={styles.statLabel} style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+                      <span>Loan Volume</span>
+                      <span style={{ color: "#db2777", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.75rem" }}>
+                        (Live Pipeline)
+                      </span>
+                    </p>
                   </div>
                 </div>
                 <div className={styles.statArrow}>→</div>
@@ -1954,9 +1971,9 @@ export default function AdminDashboardPage() {
           <div className={styles.panel}>
             <div className={styles.toolbarHeader}>
               <div>
-                <h2 className={styles.panelTitle}>Bank Partners List</h2>
+                <h2 className={styles.panelTitle}>Bank Partners Management</h2>
                 <p className={styles.panelSubtitle}>
-                  Showing {banks.length} registered bank partners and loan institutions
+                  Showing {banks.length} registered bank partners and lending institutions
                 </p>
               </div>
               <div className={styles.filterGroup}>
@@ -2221,7 +2238,7 @@ export default function AdminDashboardPage() {
             {/* Top Toolbar: Title & Search/Filters in balanced rows */}
             <div className={styles.toolbarHeader}>
               <div>
-                <h2 className={styles.panelTitle}>Platform Properties</h2>
+                <h2 className={styles.panelTitle}>Platform Properties Directory</h2>
                 <p className={styles.panelSubtitle}>
                   Showing {properties.length} of {propertyCounts.total || properties.length} total listings
                 </p>
@@ -2677,9 +2694,16 @@ export default function AdminDashboardPage() {
             {/* Users Toolbar Header */}
             <div className={styles.toolbarHeader}>
               <div>
-                <h2 className={styles.panelTitle}>Registered Platform Users</h2>
+                <h2 className={styles.panelTitle}>User Accounts Management</h2>
                 <p className={styles.panelSubtitle}>
-                  Showing {usersList.length} of {userPagination.total || usersList.length} total users • Click on any user row to view details
+                  Showing {usersList.length} of {userPagination.total || usersList.length} total users •{" "}
+                  <strong style={{ color: "#0284c7" }}>
+                    {userCounts?.buyer || stats?.totalBuyers || 0} Buyers
+                  </strong>
+                  {" • "}
+                  <strong style={{ color: "#d97706" }}>
+                    {userCounts?.owner || stats?.totalOwners || 0} Owners
+                  </strong>
                 </p>
               </div>
 
@@ -2721,10 +2745,10 @@ export default function AdminDashboardPage() {
                   }}
                   className={styles.filterSelect}
                 >
-                  <option value="all">All Users</option>
-                  <option value="buyer">Buyers / Seekers</option>
-                  <option value="owner">Property Owners</option>
-                  <option value="admin">Administrators</option>
+                  <option value="all">All Roles ({userCounts?.total || stats?.totalUsers || 0})</option>
+                  <option value="buyer">Buyers / Seekers ({userCounts?.buyer || stats?.totalBuyers || 0})</option>
+                  <option value="owner">Property Owners ({userCounts?.owner || stats?.totalOwners || 0})</option>
+                  <option value="admin">Administrators ({userCounts?.admin || stats?.totalAdmins || 0})</option>
                 </select>
               </div>
             </div>
@@ -2965,7 +2989,8 @@ export default function AdminDashboardPage() {
           <div className={styles.panel}>
             <div className={styles.toolbarHeader}>
               <div>
-                <p className={styles.panelSubtitle} style={{ margin: 0, fontWeight: 600, color: "#475569" }}>
+                <h2 className={styles.panelTitle}>Customer Loan Leads</h2>
+                <p className={styles.panelSubtitle}>
                   Showing {leadsList.length} total loan applications • Click status badge to update lead approval or progress
                 </p>
               </div>
@@ -3691,7 +3716,8 @@ export default function AdminDashboardPage() {
             {/* Toolbar Header */}
             <div className={styles.toolbarHeader}>
               <div>
-                <p className={styles.panelSubtitle} style={{ margin: 0, fontWeight: 600, color: "#475569" }}>
+                <h2 className={styles.panelTitle}>Property Leads & Buyer Enquiries</h2>
+                <p className={styles.panelSubtitle}>
                   Showing {propertyLeadsList.length} of {propertyLeadPagination.total || propertyLeadsList.length} total enquiries • Track buyer messages, properties and assigned owners
                 </p>
               </div>
@@ -4099,8 +4125,9 @@ export default function AdminDashboardPage() {
                 {/* Toolbar Header */}
                 <div className={styles.toolbarHeader}>
                   <div>
-                    <p className={styles.panelSubtitle} style={{ margin: 0, fontWeight: 600, color: "#475569" }}>
-                      Showing {blogsList.length} of {blogCounts.total} total articles • Manage real estate market guides and news
+                    <h2 className={styles.panelTitle}>Blog & Insights Management</h2>
+                    <p className={styles.panelSubtitle}>
+                      Showing {blogsList.length} of {blogCounts.total || blogsList.length} total articles • Manage real estate market guides and news
                     </p>
                   </div>
 

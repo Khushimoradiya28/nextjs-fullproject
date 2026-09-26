@@ -20,8 +20,18 @@ export default function AddPropertyPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!loading && (!isAuthenticated || !isOwner)) router.push("/login");
-  }, [loading, isAuthenticated, isOwner, router]);
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.replace("/login");
+      } else if (user?.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else if (user?.role === "bank_partner") {
+        router.replace("/bank-partner/dashboard");
+      } else if (!isOwner) {
+        router.replace("/profile");
+      }
+    }
+  }, [loading, isAuthenticated, user, isOwner, router]);
 
   const handleSubmit = async (formData) => {
     setError("");

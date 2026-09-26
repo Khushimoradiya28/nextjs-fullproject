@@ -30,6 +30,9 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
   try {
     const [
       totalUsers,
+      totalBuyers,
+      totalOwners,
+      totalAdmins,
       totalProperties,
       activeProperties,
       soldProperties,
@@ -54,6 +57,9 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
       pendingBanksList,
     ] = await Promise.all([
       User.countDocuments({ role: { $ne: 'bank_partner' }, isDeleted: { $ne: true } }),
+      User.countDocuments({ role: 'buyer', isDeleted: { $ne: true } }),
+      User.countDocuments({ role: 'owner', isDeleted: { $ne: true } }),
+      User.countDocuments({ role: 'admin', isDeleted: { $ne: true } }),
       Property.countDocuments({ isDeleted: { $ne: true } }),
       Property.countDocuments({ isDeleted: { $ne: true }, status: 'active' }),
       Property.countDocuments({ isDeleted: { $ne: true }, status: 'sold' }),
@@ -96,6 +102,9 @@ router.get('/stats', protect, adminOnly, async (req, res, next) => {
       success: true,
       data: {
         totalUsers,
+        totalBuyers,
+        totalOwners,
+        totalAdmins,
         totalProperties,
         activeProperties,
         soldProperties,
@@ -432,13 +441,16 @@ router.get('/users', protect, adminOnly, async (req, res, next) => {
       ];
     }
 
-    const [totalUsers, users] = await Promise.all([
+    const [totalUsers, users, totalBuyers, totalOwners, totalAdmins] = await Promise.all([
       User.countDocuments(filter),
       User.find(filter)
         .populate('roleId', 'displayName name')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
+      User.countDocuments({ role: 'buyer', isDeleted: { $ne: true } }),
+      User.countDocuments({ role: 'owner', isDeleted: { $ne: true } }),
+      User.countDocuments({ role: 'admin', isDeleted: { $ne: true } }),
     ]);
 
     // Aggregate property counts per user
@@ -464,6 +476,12 @@ router.get('/users', protect, adminOnly, async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      counts: {
+        total: totalBuyers + totalOwners + totalAdmins,
+        buyer: totalBuyers,
+        owner: totalOwners,
+        admin: totalAdmins,
+      },
       pagination: {
         total: totalUsers,
         page,

@@ -30,77 +30,164 @@ const gujaratTopDestinations = [
   {
     id: "ahmedabad",
     name: "Ahmedabad",
-    tagline: "Mega City & Commercial Capital",
+    tagline: "Sabarmati Riverfront & Commercial Megacity",
     icon: "🏙️",
-    bgPhoto: "/img/home-banner.png",
-    avgPrice: "₹ 5,450 / sq.ft",
+    bgPhoto: "/img/hero-3d-ahmedabad.jpg",
+    avgPrice: "₹ 5,450",
+    unit: "/ sq.ft",
     growth: "+14.8% YoY",
+    growthPositive: true,
     rentalYield: "4.2% Yield",
-    hotspots: ["SG Highway", "Bopal", "Science City", "Sindhu Bhavan"],
-    properties: "1,450+ Verified",
+    hotspots: [
+      { name: "SG Highway", count: "320+ verified" },
+      { name: "Riverfront", count: "190+ verified" },
+      { name: "Sindhu Bhavan", count: "210+ verified" },
+      { name: "Science City", count: "140+ verified" },
+    ],
+    properties: "1,450+",
     directOwners: "980+ Direct Owners",
-    highlightTag: "Highest Demand",
-    activity: "3 new direct villas listed in SG Highway",
+    highlightTag: "Highest Demand 🔥",
+    liveActivity: "3 new direct villas listed on SG Highway • 2m ago",
+    beaconLoc: { top: "35px", right: "42%" },
+    beaconTitle: "Sabarmati Riverfront & SG Highway Hub",
+    sparklineData: "M 0 35 Q 25 32, 45 22 T 85 14 T 120 4",
+    sparklineArea: "M 0 35 Q 25 32, 45 22 T 85 14 T 120 4 L 120 40 L 0 40 Z",
+    accentColor: "#38bdf8",
   },
   {
     id: "surat",
     name: "Surat",
-    tagline: "Diamond & Textile Hub",
+    tagline: "Diamond Bourse & Tapi Riverfront Capital",
     icon: "💎",
-    bgPhoto: "/img/home-banner-villa.jpg",
-    avgPrice: "₹ 4,850 / sq.ft",
+    bgPhoto: "/img/hero-3d-surat.jpg",
+    avgPrice: "₹ 4,850",
+    unit: "/ sq.ft",
     growth: "+15.2% YoY",
+    growthPositive: true,
     rentalYield: "4.6% Yield",
-    hotspots: ["Vesu", "VIP Road", "Pal", "Dumas Road"],
-    properties: "920+ Verified",
+    hotspots: [
+      { name: "Diamond Bourse", count: "310+ verified" },
+      { name: "Vesu", count: "240+ verified" },
+      { name: "VIP Road", count: "160+ verified" },
+      { name: "Dumas Road", count: "190+ verified" },
+    ],
+    properties: "920+",
     directOwners: "640+ Direct Owners",
-    highlightTag: "Top Rental Yield",
-    activity: "Luxury penthouse verified in Vesu",
+    highlightTag: "Top Rental Yield 💎",
+    liveActivity: "Luxury penthouse near Diamond Bourse verified • 5m ago",
+    beaconLoc: { top: "35px", right: "42%" },
+    beaconTitle: "Surat Diamond Bourse & Tapi Waterfront",
+    sparklineData: "M 0 38 Q 30 30, 55 26 T 90 12 T 120 2",
+    sparklineArea: "M 0 38 Q 30 30, 55 26 T 90 12 T 120 2 L 120 40 L 0 40 Z",
+    accentColor: "#06b6d4",
   },
   {
     id: "gandhinagar",
     name: "Gandhinagar",
-    tagline: "GIFT City & Smart FinTech Hub",
+    tagline: "GIFT City Global FinTech & IT Towers",
     icon: "⚡",
-    bgPhoto: "/img/home-banner-estate.jpg",
-    avgPrice: "₹ 6,200 / sq.ft",
+    bgPhoto: "/img/hero-3d-gandhinagar.jpg",
+    avgPrice: "₹ 6,200",
+    unit: "/ sq.ft",
     growth: "+16.5% YoY",
+    growthPositive: true,
     rentalYield: "5.1% Yield",
-    hotspots: ["GIFT City", "Kudasan", "Infocity", "Randesan"],
-    properties: "740+ Verified",
+    hotspots: [
+      { name: "GIFT City", count: "290+ verified" },
+      { name: "Kudasan", count: "150+ verified" },
+      { name: "Infocity", count: "120+ verified" },
+      { name: "Randesan", count: "110+ verified" },
+    ],
+    properties: "740+",
     directOwners: "510+ Direct Owners",
-    highlightTag: "Global FinTech Hub",
-    activity: "Commercial smart floor available in GIFT City",
+    highlightTag: "Global FinTech Hub ⚡",
+    liveActivity: "Direct commercial floor in GIFT Diamond Tower • Just now",
+    beaconLoc: { top: "35px", right: "42%" },
+    beaconTitle: "GIFT City Diamond Tower & FinTech Corridor",
+    sparklineData: "M 0 36 Q 20 34, 40 20 T 80 8 T 120 0",
+    sparklineArea: "M 0 36 Q 20 34, 40 20 T 80 8 T 120 0 L 120 40 L 0 40 Z",
+    accentColor: "#60a5fa",
   },
   {
     id: "vadodara",
     name: "Vadodara",
-    tagline: "Cultural Heritage & Industrial Hub",
+    tagline: "Royal Heritage & Alkapuri Luxury Estates",
     icon: "🏛️",
-    bgPhoto: "/img/home-banner-glass-pavilion.jpg",
-    avgPrice: "₹ 3,950 / sq.ft",
+    bgPhoto: "/img/hero-3d-vadodara.jpg",
+    avgPrice: "₹ 3,950",
+    unit: "/ sq.ft",
     growth: "+12.6% YoY",
+    growthPositive: true,
     rentalYield: "3.9% Yield",
-    hotspots: ["Alkapuri", "Vasna Road", "Gotri", "Bhayli"],
-    properties: "580+ Verified",
+    hotspots: [
+      { name: "Alkapuri", count: "170+ verified" },
+      { name: "Palace Road", count: "140+ verified" },
+      { name: "Gotri", count: "120+ verified" },
+      { name: "Bhayli", count: "150+ verified" },
+    ],
+    properties: "580+",
     directOwners: "420+ Direct Owners",
-    highlightTag: "Peaceful Living",
-    activity: "Direct owner bungalow in Alkapuri",
+    highlightTag: "Peaceful Living 🌿",
+    liveActivity: "4BHK luxury estate verified near Alkapuri • 12m ago",
+    beaconLoc: { top: "35px", right: "42%" },
+    beaconTitle: "Laxmi Vilas Palace & Alkapuri Estates",
+    sparklineData: "M 0 34 Q 30 32, 60 22 T 95 16 T 120 8",
+    sparklineArea: "M 0 34 Q 30 32, 60 22 T 95 16 T 120 8 L 120 40 L 0 40 Z",
+    accentColor: "#10b981",
   },
   {
     id: "rajkot",
     name: "Rajkot",
-    tagline: "Saurashtra's Rapidly Growing Corridor",
+    tagline: "150ft Ring Road Flyovers & Smart Metropolis",
     icon: "🌆",
-    bgPhoto: "/img/home-banner-cantilever.jpg",
-    avgPrice: "₹ 4,100 / sq.ft",
+    bgPhoto: "/img/hero-3d-rajkot.jpg",
+    avgPrice: "₹ 4,100",
+    unit: "/ sq.ft",
     growth: "+13.4% YoY",
+    growthPositive: true,
     rentalYield: "4.0% Yield",
-    hotspots: ["Kalawad Road", "150ft Ring Rd", "University Rd"],
-    properties: "430+ Verified",
+    hotspots: [
+      { name: "150ft Ring Rd", count: "180+ verified" },
+      { name: "Kalawad Road", count: "150+ verified" },
+      { name: "University Rd", count: "90+ verified" },
+      { name: "Nana Mava", count: "60+ verified" },
+    ],
+    properties: "430+",
     directOwners: "310+ Direct Owners",
-    highlightTag: "Fastest Growing",
-    activity: "3BHK high-rise apartment verified direct",
+    highlightTag: "Fastest Growing 🚀",
+    liveActivity: "3BHK apartment verified on 150ft Ring Road • 8m ago",
+    beaconLoc: { top: "35px", right: "42%" },
+    beaconTitle: "150ft Ring Road Flyovers & Kalawad Hub",
+    sparklineData: "M 0 36 Q 25 30, 50 24 T 85 14 T 120 6",
+    sparklineArea: "M 0 36 Q 25 30, 50 24 T 85 14 T 120 6 L 120 40 L 0 40 Z",
+    accentColor: "#f59e0b",
+  },
+  {
+    id: "bhavnagar",
+    name: "Bhavnagar",
+    tagline: "Waghawadi Luxury Corridor & Coastal Port Hub",
+    icon: "🌊",
+    bgPhoto: "/img/hero-3d-bhavnagar.jpg",
+    avgPrice: "₹ 3,450",
+    unit: "/ sq.ft",
+    growth: "+11.8% YoY",
+    growthPositive: true,
+    rentalYield: "3.8% Yield",
+    hotspots: [
+      { name: "Waghawadi Rd", count: "140+ verified" },
+      { name: "Hill Drive", count: "90+ verified" },
+      { name: "Kaliyabid", count: "110+ verified" },
+      { name: "Ghogha Road", count: "80+ verified" },
+    ],
+    properties: "360+",
+    directOwners: "280+ Direct Owners",
+    highlightTag: "Coastal Living 🌊",
+    liveActivity: "Direct owner 3BHK bungalow verified in Waghawadi Rd • 15m ago",
+    beaconLoc: { top: "35px", right: "42%" },
+    beaconTitle: "Waghawadi Luxury Corridor & Takhteshwar Vista",
+    sparklineData: "M 0 36 Q 25 32, 50 26 T 85 16 T 120 8",
+    sparklineArea: "M 0 36 Q 25 32, 50 26 T 85 16 T 120 8 L 120 40 L 0 40 Z",
+    accentColor: "#0ea5e9",
   },
 ];
 
@@ -117,8 +204,32 @@ export default function HeroBanner() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeCityIdx, setActiveCityIdx] = useState(0);
   const [isCityAutoPaused, setIsCityAutoPaused] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
+  const cardRef = useRef(null);
   const suggestionsRef = useRef(null);
   const router = useRouter();
+
+  // 3D Parallax Tilt Effect on Mouse Move
+  const handleCardMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -6;
+    const rotateY = ((x - centerX) / centerX) * 6;
+    setTilt({
+      x: rotateX,
+      y: rotateY,
+      glareX: (x / rect.width) * 100,
+      glareY: (y / rect.height) * 100,
+    });
+  };
+
+  const handleCardMouseLeave = () => {
+    setTilt({ x: 0, y: 0, glareX: 50, glareY: 50 });
+  };
 
   // Auto-cycle through top Gujarat cities every 5s (pauses on hover)
   useEffect(() => {
@@ -164,10 +275,6 @@ export default function HeroBanner() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const filteredCities = cities.filter(c =>
-    c.toLowerCase().includes(location.toLowerCase().trim())
-  );
-
   const handleSearch = (e) => {
     e.preventDefault();
 
@@ -199,6 +306,7 @@ export default function HeroBanner() {
   };
 
   const currentBudgetRanges = activeTab === "Rent" ? rentBudgetRanges : buyBudgetRanges;
+  const currentDest = gujaratTopDestinations[activeCityIdx];
 
   // Quick select trending city
   const handleQuickCity = (city) => {
@@ -221,7 +329,7 @@ export default function HeroBanner() {
             >
               <img
                 src={dest.bgPhoto}
-                alt={`${dest.name.toLowerCase()} luxury architecture`}
+                alt={`${dest.name} 3D architectural masterplan`}
                 className={styles.bgSlideImg}
               />
             </div>
@@ -231,6 +339,7 @@ export default function HeroBanner() {
 
         <div className={styles.ambientGlowOrb1}></div>
         <div className={styles.ambientGlowOrb2}></div>
+        <div className={styles.ambientCyberGrid}></div>
 
         <div className={styles.bannerContainer}>
           {/* Left Column: Hero Content & Search */}
@@ -243,11 +352,13 @@ export default function HeroBanner() {
               <span className={styles.liveBadgeSub}>Gujarat's #1 Direct-Owner Real Estate Portal</span>
             </div>
 
-            {/* Clean, Elegant Headline */}
+            {/* Clean, Elegant Dynamic Headline with Fixed 2-Line Layout */}
             <div className={styles.bannerCopy}>
               <h1 className={styles.bannerTitle}>
-                Find Direct Verified Properties on{" "}
-                <span className={styles.bannerHighlight}>runr properties</span>
+                <span className={styles.bannerTitlePrefix}>Find Direct Verified Properties in</span>
+                <span key={currentDest.name} className={styles.bannerHighlight}>
+                  {currentDest.name}
+                </span>
               </h1>
               <p className={styles.bannerText}>
                 Buy or rent 100% verified direct-owner homes & luxury properties across Gujarat with zero brokerage.
@@ -319,12 +430,12 @@ export default function HeroBanner() {
                   <div className={styles.inputWithIcon}>
                     <svg className={styles.fieldIcon} viewBox="0 0 24 24" aria-hidden="true">
                       <path
-                        d="M4 10.5 12 5l8 5.5V19a1 1 0 0 1-1 1h-5v-5.5h-4V20H5a1 1 0 0 1-1-1v-8.5Z"
+                        d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"
                         stroke="currentColor"
                         strokeWidth="1.6"
                         fill="none"
-                        strokeLinejoin="round"
                       />
+                      <path d="M9 21V12h6v9" stroke="currentColor" strokeWidth="1.6" fill="none" />
                     </svg>
                     <div className={styles.selectWrap}>
                       <select
@@ -409,42 +520,42 @@ export default function HeroBanner() {
                 </button>
               </form>
             </div>
-
-            {/* Trending Gujarat Cities Quick Select */}
-            <div className={styles.trendingCitiesRow}>
-              <span className={styles.trendingLabel}>🔥 Trending:</span>
-              <div className={styles.trendingPills}>
-                {["Ahmedabad", "Surat", "Rajkot", "Vadodara", "Gandhinagar"].map((city) => (
-                  <button
-                    key={city}
-                    type="button"
-                    className={`${styles.trendingCityBtn} ${location === city ? styles.trendingCityActive : ""}`}
-                    onClick={() => handleQuickCity(city)}
-                  >
-                    📍 {city}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* Right Column: Clean & Sleek Gujarat Cities Hub */}
+          {/* Right Column: 3D Holographic Gujarat PropTech Command Center */}
           <div
             className={styles.bannerRightCol}
             onMouseEnter={() => setIsCityAutoPaused(true)}
             onMouseLeave={() => setIsCityAutoPaused(false)}
           >
             {/* Gujarat Real Estate Index & City Insights Hub Card */}
-            <div className={styles.marketHubCard}>
-              {/* Card Header with Live Pulse */}
+            <div
+              ref={cardRef}
+              className={styles.marketHubCard}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
+              style={{
+                transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                '--glare-x': `${tilt.glareX}%`,
+                '--glare-y': `${tilt.glareY}%`,
+              }}
+            >
+              {/* Dynamic Glare Reflection Overlay */}
+              <div className={styles.cardGlare}></div>
+
+              {/* Card Header with Live Radar & Status */}
               <div className={styles.marketHubHeader}>
                 <div className={styles.marketHubBadge}>
-                  <span className={styles.livePulseDot}></span>
-                  <span>gujarat real estate index</span>
+                  <div className={styles.radarScanner}>
+                    <span className={styles.radarSweep}></span>
+                    <span className={styles.radarDot}></span>
+                  </div>
+                  <span className={styles.radarText}>GUJARAT REAL ESTATE INDEX</span>
                 </div>
-                <span className={styles.marketHubCounter}>
-                  {activeCityIdx + 1} / {gujaratTopDestinations.length}
-                </span>
+                <div className={styles.marketHubCounter}>
+                  <span className={styles.counterDot}></span>
+                  <span>{activeCityIdx + 1} / {gujaratTopDestinations.length}</span>
+                </div>
               </div>
 
               {/* Active City Headline & Highlight */}
@@ -452,35 +563,51 @@ export default function HeroBanner() {
                 <div className={styles.marketCityTopRow}>
                   <div className={styles.marketCityTitleGroup}>
                     <span className={styles.marketCityIcon}>
-                      {gujaratTopDestinations[activeCityIdx].icon}
+                      {currentDest.icon}
                     </span>
                     <div>
                       <h3 className={styles.marketCityName}>
-                        {gujaratTopDestinations[activeCityIdx].name.toLowerCase()}
+                        {currentDest.name}
                       </h3>
                       <p className={styles.marketCityTagline}>
-                        {gujaratTopDestinations[activeCityIdx].tagline}
+                        {currentDest.tagline}
                       </p>
                     </div>
                   </div>
                   <span className={styles.marketHighlightBadge}>
-                    {gujaratTopDestinations[activeCityIdx].highlightTag}
+                    {currentDest.highlightTag}
                   </span>
                 </div>
               </div>
 
-              {/* Market Intelligence 2-Metric Clean Grid */}
+              {/* Live Intelligence 2-Metric Grid with Live Sparkline Growth */}
               <div className={styles.marketMetricsGrid}>
                 <div className={styles.marketMetricBox}>
                   <div className={styles.metricBoxHeader}>
                     <span className={styles.metricLabel}>Avg Property Rate</span>
                     <span className={styles.metricTrend}>
-                      {gujaratTopDestinations[activeCityIdx].growth}
+                      <span className={styles.trendArrow}>↗</span> {currentDest.growth}
                     </span>
                   </div>
-                  <span className={styles.metricValue}>
-                    {gujaratTopDestinations[activeCityIdx].avgPrice}
-                  </span>
+                  <div className={styles.metricRateRow}>
+                    <span className={styles.metricValue}>{currentDest.avgPrice}</span>
+                    <span className={styles.metricUnit}>{currentDest.unit}</span>
+                  </div>
+                  {/* Live Animated SVG Sparkline */}
+                  <div className={styles.metricSparklineWrap}>
+                    <svg className={styles.sparklineSvg} viewBox="0 0 120 40" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id={`sparkGrad-${activeCityIdx}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={currentDest.accentColor} stopOpacity="0.4" />
+                          <stop offset="100%" stopColor={currentDest.accentColor} stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d={currentDest.sparklineArea} fill={`url(#sparkGrad-${activeCityIdx})`} />
+                      <path d={currentDest.sparklineData} fill="none" stroke={currentDest.accentColor} strokeWidth="2.2" strokeLinecap="round" />
+                      <circle cx="120" cy="4" r="3.5" fill={currentDest.accentColor} className={styles.sparklineDot} />
+                    </svg>
+                    <span className={styles.sparklineCaption}>Real-time Q3 Growth</span>
+                  </div>
                 </div>
 
                 <div className={styles.marketMetricBox}>
@@ -488,29 +615,52 @@ export default function HeroBanner() {
                     <span className={styles.metricLabel}>Verified Listings</span>
                     <span className={styles.metricZeroFee}>Zero Brokerage</span>
                   </div>
-                  <span className={styles.metricValue}>
-                    {gujaratTopDestinations[activeCityIdx].properties}
-                  </span>
+                  <div className={styles.metricRateRow}>
+                    <span className={styles.metricValue}>{currentDest.properties}</span>
+                    <span className={styles.metricDirectTag}>Verified</span>
+                  </div>
+                  <div className={styles.verifiedOwnersBar}>
+                    <div className={styles.verifiedOwnersProgress}>
+                      <div className={styles.verifiedOwnersFill} style={{ width: "88%", background: currentDest.accentColor }}></div>
+                    </div>
+                    <span className={styles.verifiedOwnersText}>⚡ {currentDest.directOwners}</span>
+                  </div>
                 </div>
+              </div>
+
+              {/* Live Real-Time Activity Feed Broadcast */}
+              <div className={styles.liveActivityTicker}>
+                <div className={styles.liveActivityDotWrap}>
+                  <span className={styles.liveActivityRing}></span>
+                  <span className={styles.liveActivityDot}></span>
+                </div>
+                <span className={styles.liveActivityText}>
+                  <strong>LIVE:</strong> {currentDest.liveActivity}
+                </span>
               </div>
 
               {/* Hot Localities Interactive Chips */}
               <div className={styles.hotspotsSection}>
-                <span className={styles.hotspotsTitle}>📍 Prime Localities:</span>
+                <div className={styles.hotspotsHeader}>
+                  <span className={styles.hotspotsTitle}>📍 High-Demand Prime Localities:</span>
+                  <span className={styles.hotspotsSub}>Instant Connect</span>
+                </div>
                 <div className={styles.hotspotsList}>
-                  {gujaratTopDestinations[activeCityIdx].hotspots.map((spot) => (
+                  {currentDest.hotspots.map((spot) => (
                     <button
-                      key={spot}
+                      key={typeof spot === "string" ? spot : spot.name}
                       type="button"
                       className={styles.hotspotChip}
                       onClick={() => {
-                        setLocation(gujaratTopDestinations[activeCityIdx].name);
+                        const spotName = typeof spot === "string" ? spot : spot.name;
+                        setLocation(currentDest.name);
                         router.push(
-                          `/buy?city=${encodeURIComponent(gujaratTopDestinations[activeCityIdx].name)}`
+                          `/buy?city=${encodeURIComponent(currentDest.name)}`
                         );
                       }}
                     >
-                      {spot}
+                      <span className={styles.chipName}>{typeof spot === "string" ? spot : spot.name}</span>
+                      {spot.count && <span className={styles.chipCount}>{spot.count}</span>}
                     </button>
                   ))}
                 </div>
@@ -529,7 +679,7 @@ export default function HeroBanner() {
                     }}
                   >
                     <span className={styles.switchIcon}>{dest.icon}</span>
-                    <span className={styles.switchName}>{dest.name.toLowerCase()}</span>
+                    <span className={styles.switchName}>{dest.name}</span>
                     {activeCityIdx === idx && <span className={styles.switchProgressBar} />}
                   </button>
                 ))}
@@ -540,12 +690,13 @@ export default function HeroBanner() {
                 type="button"
                 className={styles.cityExploreBtn}
                 onClick={() => {
-                  const c = gujaratTopDestinations[activeCityIdx].name;
+                  const c = currentDest.name;
                   setLocation(c);
                   router.push(`/buy?city=${encodeURIComponent(c)}`);
                 }}
               >
-                <span>Browse Properties in {gujaratTopDestinations[activeCityIdx].name.toLowerCase()}</span>
+                <span className={styles.exploreBtnIcon}>🚀</span>
+                <span>Browse Verified Properties in {currentDest.name}</span>
                 <span className={styles.exploreArrow}>→</span>
               </button>
             </div>
@@ -559,6 +710,7 @@ export default function HeroBanner() {
               <div className={styles.trustPillDivider} />
               <div className={styles.trustPillRight}>
                 <span className={styles.trustPillTag}>⚡ 100% Direct Owners</span>
+                <span className={styles.trustPillInquiry}>● 240+ Enquiries Today</span>
               </div>
             </div>
           </div>

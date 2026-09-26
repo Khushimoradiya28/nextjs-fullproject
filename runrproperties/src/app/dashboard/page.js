@@ -56,8 +56,16 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) router.push("/login");
-  }, [loading, isAuthenticated, router]);
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.replace("/login");
+      } else if (user?.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else if (user?.role === "bank_partner") {
+        router.replace("/bank-partner/dashboard");
+      }
+    }
+  }, [loading, isAuthenticated, user, router]);
 
   const fetchData = useCallback(async () => {
     setFetching(true);
@@ -106,7 +114,7 @@ export default function DashboardPage() {
 
   const handleLogout = () => { logout(); router.push("/"); };
 
-  if (loading || !user) {
+  if (loading || !user || user.role === "admin" || user.role === "bank_partner") {
     return (
       <div className={profileStyles.page}>
         <Header />

@@ -37,18 +37,21 @@ export default function WishlistPage() {
   const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login?redirect=/wishlist");
-    }
-    if (!loading && user?.role === "bank_partner") {
-      router.push("/bank-partner/dashboard");
+    if (!loading) {
+      if (!user) {
+        router.replace("/login?redirect=/wishlist");
+      } else if (user?.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else if (user?.role === "bank_partner") {
+        router.replace("/bank-partner/dashboard");
+      }
     }
   }, [user, loading, router]);
 
   const totalPages = Math.ceil(wishlist.length / ITEMS_PER_PAGE);
   const paginatedWishlist = wishlist.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  if (!user) return null;
+  if (!user || user.role === "admin" || user.role === "bank_partner") return null;
 
   return (
     <div className={profileStyles.page}>

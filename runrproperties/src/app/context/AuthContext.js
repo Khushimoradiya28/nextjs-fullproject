@@ -92,6 +92,8 @@ export function AuthProvider({ children }) {
         user,
         loading,
         isAuthenticated: !!user,
+        isAdmin: user?.role === "admin",
+        isBankPartner: user?.role === "bank_partner",
         isBuyer: user?.role === "buyer",
         isOwner: user?.role === "owner",
         login,
