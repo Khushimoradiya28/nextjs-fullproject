@@ -97,8 +97,8 @@ router.get('/:slug', async (req, res, next) => {
       });
     }
 
-    // Also get 3 related blogs
-    const relatedBlogs = await Blog.find({
+    // Also get 3 related blogs (same category first, fallback to latest)
+    let relatedBlogs = await Blog.find({
       _id: { $ne: blog._id },
       category: blog.category,
       status: 'published',
@@ -107,6 +107,19 @@ router.get('/:slug', async (req, res, next) => {
       .sort({ createdAt: -1 })
       .limit(3)
       .select('title slug excerpt category coverImage author readTime createdAt');
+
+    if (relatedBlogs.length < 3) {
+      const existingIds = [blog._id, ...relatedBlogs.map((b) => b._id)];
+      const additional = await Blog.find({
+        _id: { $nin: existingIds },
+        status: 'published',
+        isDeleted: { $ne: true },
+      })
+        .sort({ createdAt: -1 })
+        .limit(3 - relatedBlogs.length)
+        .select('title slug excerpt category coverImage author readTime createdAt');
+      relatedBlogs = [...relatedBlogs, ...additional];
+    }
 
     res.status(200).json({
       success: true,

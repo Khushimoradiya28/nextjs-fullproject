@@ -131,17 +131,7 @@ const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    // Validate required fields
-    const missing = getMissingFields({ currentPassword, newPassword });
-    if (missing.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: `Missing required fields: ${missing.join(', ')}`,
-      });
-    }
-
-    // Validate new password length
-    if (newPassword.length < 6) {
+    if (!newPassword || typeof newPassword !== 'string' || newPassword.trim().length < 6) {
       return res.status(400).json({
         success: false,
         message: 'New password must be at least 6 characters',
@@ -150,12 +140,12 @@ const changePassword = async (req, res, next) => {
 
     const result = await authService.changePassword(req.user._id, {
       currentPassword,
-      newPassword,
+      newPassword: newPassword.trim(),
     });
 
     res.status(200).json({
       success: true,
-      message: 'Password changed successfully',
+      message: 'Password updated successfully',
       data: result,
     });
   } catch (error) {

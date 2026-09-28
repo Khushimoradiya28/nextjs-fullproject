@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { FiBell, FiBarChart2, FiUsers, FiUser, FiPlusCircle, FiTag, FiLogOut } from "react-icons/fi";
 import OverviewTab from "./OverviewTab";
 import LeadsTab from "./LeadsTab";
 import ProfileTab from "./ProfileTab";
@@ -24,9 +25,9 @@ export function Nav({ activeTab, setActiveTab, profile, showNotifs, setShowNotif
           ))}
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
-          <div style={{position:"relative", cursor:"pointer"}} onClick={() => setShowNotifs(!showNotifs)}>
-            <span style={{fontSize:"18px"}}>🔔</span>
-            {unreadCount > 0 && <span style={{position:"absolute",top:"-4px",right:"-4px",background:"#D4621F",color:"#fff",fontSize:"10px",width:"16px",height:"16px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"600"}}>{unreadCount}</span>}
+          <div style={{position:"relative", cursor:"pointer", display:"flex", alignItems:"center"}} onClick={() => setShowNotifs(!showNotifs)}>
+            <FiBell size={19} color="#475569" />
+            {unreadCount > 0 && <span style={{position:"absolute",top:"-6px",right:"-6px",background:"#D4621F",color:"#fff",fontSize:"10px",width:"16px",height:"16px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"600"}}>{unreadCount}</span>}
             {showNotifs && (
               <div style={{position:"absolute",top:"36px",right:0,width:"300px",background:"#fff",border:"1px solid rgba(0,123,189,0.15)",borderRadius:"12px",boxShadow:"0 8px 32px rgba(0,0,0,0.1)",zIndex:100,overflow:"hidden"}}>
                 <div style={{padding:"12px 16px",borderBottom:"1px solid rgba(0,123,189,0.08)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -57,11 +58,11 @@ export function Nav({ activeTab, setActiveTab, profile, showNotifs, setShowNotif
 
 export function Sidebar({ activeTab, setActiveTab, handleLogout }) {
   const menuItems = [
-    { label: "Overview", icon: "📊" },
-    { label: "Leads", icon: "👥" },
-    { label: "Profile", icon: "📄" },
-    { label: "Add Offer", icon: "➕" },
-    { label: "All Offers", icon: "🏷️" },
+    { label: "Overview", icon: <FiBarChart2 size={17} /> },
+    { label: "Leads", icon: <FiUsers size={17} /> },
+    { label: "Profile", icon: <FiUser size={17} /> },
+    { label: "Add Offer", icon: <FiPlusCircle size={17} /> },
+    { label: "All Offers", icon: <FiTag size={17} /> },
   ];
 
   return (
@@ -100,7 +101,7 @@ export function Sidebar({ activeTab, setActiveTab, handleLogout }) {
                 }
               }}
             >
-              <span style={{fontSize:"18px"}}>{item.icon}</span>
+              <span style={{display:"flex", alignItems:"center"}}>{item.icon}</span>
               {item.label}
             </div>
           );
@@ -126,7 +127,8 @@ export function Sidebar({ activeTab, setActiveTab, handleLogout }) {
           onMouseEnter={e=>e.currentTarget.style.color="#dc2626"}
           onMouseLeave={e=>e.currentTarget.style.color="#64748b"}
         >
-          🚪 Logout
+          <FiLogOut size={16} />
+          <span>Logout</span>
         </button>
       </div>
     </aside>

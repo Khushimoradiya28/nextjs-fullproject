@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
+import { getMediaUrl } from "../services/api";
 import styles from "./Header.module.css";
 
 const navItems = [
@@ -104,8 +105,9 @@ export default function Header() {
     return () => document.removeEventListener("keydown", handleKey);
   }, [menuOpen, dropdownOpen, closeMenu, closeDropdown]);
 
-  // User avatar initials
+  // User avatar initials & photo
   const userInitial = user?.name ? user.name.trim().charAt(0).toUpperCase() : "U";
+  const userPhotoUrl = getMediaUrl(user?.profilePhoto);
 
   // Transparent header on homepage before scroll
   const isHome = pathname === "/";
@@ -188,7 +190,17 @@ export default function Header() {
                 aria-label="User account menu"
               >
                 <div className={styles.userAvatar}>
-                  {userInitial}
+                  {userPhotoUrl ? (
+                    <img
+                      src={userPhotoUrl}
+                      alt={user?.name || "User"}
+                      className={styles.userAvatarImg}
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ) : null}
+                  <span>{userInitial}</span>
                 </div>
                 <span className={styles.userName}>{user?.name || "Account"}</span>
                 <svg
@@ -209,7 +221,19 @@ export default function Header() {
               {dropdownOpen && (
                 <div className={styles.dropdownMenu} role="menu">
                   <div className={styles.dropdownHeader}>
-                    <div className={styles.dropdownAvatar}>{userInitial}</div>
+                    <div className={styles.dropdownAvatar}>
+                      {userPhotoUrl ? (
+                        <img
+                          src={userPhotoUrl}
+                          alt={user?.name || "User"}
+                          className={styles.userAvatarImg}
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      ) : null}
+                      <span>{userInitial}</span>
+                    </div>
                     <div className={styles.dropdownUserInfo}>
                       <span className={styles.dropdownUserName}>{user?.name}</span>
                       <span
@@ -432,7 +456,19 @@ export default function Header() {
         {/* Mobile User Profile Card */}
         {isAuthenticated ? (
           <div className={styles.mobileUserCard}>
-            <div className={styles.mobileAvatar}>{userInitial}</div>
+            <div className={styles.mobileAvatar}>
+              {userPhotoUrl ? (
+                <img
+                  src={userPhotoUrl}
+                  alt={user?.name || "User"}
+                  className={styles.userAvatarImg}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : null}
+              <span>{userInitial}</span>
+            </div>
             <div className={styles.mobileUserInfo}>
               <span className={styles.mobileUserName}>{user?.name}</span>
               <span className={styles.mobileUserRole}>

@@ -73,16 +73,131 @@ const initialBlogs = [
     isFeatured: false,
     content: `<h2>Rental Yields in Gujarat</h2><p>Average rental yields in Gujarat range from 2.5% to 4.5% depending on location, property type, and furnishing level.</p><h2>Tenant Preferences</h2><p>Post-pandemic, tenants prioritize spacious layouts, work-from-home setups, good ventilation, and proximity to essential services.</p><h2>Tips for Landlords</h2><ul><li>Furnish smartly - semi-furnished attracts wider audience</li><li>Keep rent market-competitive with annual 5-8% revision</li><li>Maintain property well for long-term tenants</li><li>Use digital platforms for wider reach</li></ul>`,
   },
+  {
+    title: 'Commercial vs Residential Real Estate: Which is Better?',
+    slug: 'commercial-vs-residential-real-estate',
+    excerpt: 'A comprehensive comparison of capital appreciation, risk, and cash flow in both sectors.',
+    category: 'Investment',
+    coverImage: '/img/blog/3.jpg',
+    author: 'runr team',
+    readTime: '7 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>Yield Comparison</h2><p>Commercial assets typically yield 7-10% rental returns, compared to 2.5-4% for residential properties. However, entry ticket sizes for commercial are significantly higher.</p><h2>Lease Durations</h2><p>Commercial leases are generally 3 to 9 years with standard escalation clauses, providing predictable and stable income streams.</p><h2>Which Should You Choose?</h2><p>If you have higher capital and seek regular passive income, commercial is appealing. For personal security and steady capital appreciation, residential remains unbeatable.</p>`,
+  },
+  {
+    title: 'Tax Benefits on Home Loans in India (2025-26)',
+    slug: 'tax-benefits-home-loans-india',
+    excerpt: 'Maximize your tax deductions under Section 80C, Section 24(b), and Section 80EEA.',
+    category: 'Finance',
+    coverImage: '/img/blog/4.jpg',
+    author: 'runr team',
+    readTime: '5 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>Section 80C Deductions</h2><p>You can claim up to ₹1.5 Lakh per financial year on principal repayment of your home loan, including stamp duty and registration fees.</p><h2>Section 24(b) - Interest Deduction</h2><p>Deduct up to ₹2 Lakh annually on the interest component for a self-occupied property, offering major tax relief.</p><h2>Joint Loan Advantage</h2><p>Both co-borrowers who are co-owners can claim separate tax benefits, effectively doubling the total eligible deductions.</p>`,
+  },
+  {
+    title: 'Smart Home Automation Trends in Gujarat',
+    slug: 'smart-home-automation-trends-gujarat',
+    excerpt: 'Explore how smart lighting, IoT security, and energy-saving systems are redefining modern living.',
+    category: 'Lifestyle',
+    coverImage: '/img/blog/1.jpg',
+    author: 'runr team',
+    readTime: '4 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>Next-Gen Security</h2><p>Smart biometric door locks, video doorbells, and AI CCTV systems are now standard amenities in new residential projects across Ahmedabad and Surat.</p><h2>Energy Management</h2><p>Smart climate control and automated lighting schedules help reduce electricity bills by up to 25% while maximizing comfort.</p><h2>Voice Integration</h2><p>Seamless voice command integration with Alexa and Google Home makes living spaces more accessible and luxurious.</p>`,
+  },
+  {
+    title: 'RERA Guidelines: Everything Every Buyer Must Know',
+    slug: 'rera-guidelines-buyer-guide',
+    excerpt: 'Protect your investment with key RERA rules regarding carpet area, escrow accounts, and delivery timelines.',
+    category: 'Buying Guide',
+    coverImage: '/img/blog/2.jpg',
+    author: 'runr team',
+    readTime: '6 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>Standard Carpet Area Definition</h2><p>RERA mandates pricing based strictly on carpet area, ending the ambiguity of super built-up area calculations.</p><h2>70% Escrow Protection</h2><p>Builders must deposit 70% of buyer payments into a dedicated escrow account for construction, preventing fund diversion.</p><h2>Defect Liability Period</h2><p>The builder is responsible for structural defects and workmanship issues for up to 5 years after handing over possession.</p>`,
+  },
+  {
+    title: 'Emerging Growth Corridors in Ahmedabad & GIFT City',
+    slug: 'emerging-growth-corridors-ahmedabad-gift-city',
+    excerpt: 'Why the SG Highway - GIFT City corridor is currently India’s most promising real estate hotspot.',
+    category: 'Market Trends',
+    coverImage: '/img/blog/3.jpg',
+    author: 'runr team',
+    readTime: '6 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>GIFT City Global Hub</h2><p>With international banks, fintech giants, and the bullion exchange setting up operations, demand for premium housing in Gandhinagar and North Ahmedabad is booming.</p><h2>Infrastructure Boost</h2><p>The operational Metro rail connectivity and multi-lane expressways have reduced transit times, unlocking immense capital appreciation.</p>`,
+  },
+  {
+    title: 'NRI Property Investment in India: Complete Guide',
+    slug: 'nri-property-investment-guide',
+    excerpt: 'Repatriation rules, FEMA regulations, power of attorney, and top investment avenues for NRIs.',
+    category: 'Investment',
+    coverImage: '/img/blog/4.jpg',
+    author: 'runr team',
+    readTime: '7 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>FEMA & RBI Guidelines</h2><p>NRIs and OCIs can purchase residential and commercial properties in India without prior approval from RBI. Agricultural land is excluded.</p><h2>NRE vs NRO Accounts</h2><p>Understand how funding transactions through NRE or NRO bank accounts impacts seamless funds repatriation and currency conversion.</p>`,
+  },
+  {
+    title: 'Interior Design Tips to Maximize Compact Apartment Space',
+    slug: 'interior-design-compact-apartments',
+    excerpt: 'Clever storage solutions, mirror tricks, and multifunctional furniture for stylish apartment living.',
+    category: 'Lifestyle',
+    coverImage: '/img/blog/1.jpg',
+    author: 'runr team',
+    readTime: '4 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>Multipurpose Furniture</h2><p>Sofa-cum-beds, hydraulic storage beds, and extendable dining tables help save immense floor space without sacrificing style.</p><h2>Lighting & Optical Illusions</h2><p>Large wall mirrors and floor-to-ceiling sheer curtains create an airy, expansive feel in living rooms and master suites.</p>`,
+  },
+  {
+    title: 'Legal Checklist Before Purchasing Resale Property',
+    slug: 'legal-checklist-resale-property',
+    excerpt: 'Title search, encumbrance certificate, society NOC, and occupancy certificate verification.',
+    category: 'Buying Guide',
+    coverImage: '/img/blog/2.jpg',
+    author: 'runr team',
+    readTime: '5 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>30-Year Title Search</h2><p>Always verify the chain of title deeds for at least 30 years to ensure clean, unencumbered ownership before signing.</p><h2>Encumbrance Certificate (EC)</h2><p>Obtain an updated EC from the sub-registrar office to ensure there are no active mortgages or pending legal disputes.</p>`,
+  },
+  {
+    title: 'Commercial Office Spaces: High Yield Rental Strategies',
+    slug: 'commercial-office-rental-strategies',
+    excerpt: 'How Grade-A co-working spaces and IT parks are generating double-digit yields.',
+    category: 'Rental',
+    coverImage: '/img/blog/3.jpg',
+    author: 'runr team',
+    readTime: '5 min',
+    status: 'published',
+    isFeatured: false,
+    content: `<h2>Grade-A IT Assets</h2><p>Pre-leased commercial offices with Fortune 500 tenants offer high rental yields and 9-year locked-in lease security.</p><h2>Tenant Mix & Amenities</h2><p>Modern amenities including high-speed elevators, power backups, and ESG compliance attract top-tier tenants willing to pay premium rentals.</p>`,
+  },
 ];
 
 async function seedBlogs() {
   try {
     await Blog.updateMany({ author: /Runr/i }, { $set: { author: 'runr team' } });
-    const count = await Blog.countDocuments();
-    if (count === 0) {
-      await Blog.insertMany(initialBlogs);
-      console.log(`[SEED] Seeded ${initialBlogs.length} initial blogs into database`);
+    
+    // Upsert each initial blog so they exist with high quality content
+    for (const blogData of initialBlogs) {
+      await Blog.updateOne(
+        { slug: blogData.slug },
+        { $setOnInsert: blogData },
+        { upsert: true }
+      );
     }
+    
+    const totalCount = await Blog.countDocuments({ isDeleted: { $ne: true } });
+    console.log(`[SEED] Ensured initial blogs are present. Total blogs in DB: ${totalCount}`);
   } catch (err) {
     console.error('[SEED] Blog seed error:', err.message);
   }

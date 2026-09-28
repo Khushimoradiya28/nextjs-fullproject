@@ -216,13 +216,27 @@
   .heroBanner { flex-direction: row; }
 }
 
+.heroRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  max-width: 440px;
+}
+
+@media (max-width: 899px) {
+  .heroRight {
+    align-items: stretch;
+  }
+}
+
 .heroForm {
   display: flex;
   background: #ffffff;
   border-radius: 50px;
   padding: 5px;
   width: 100%;
-  max-width: 440px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
@@ -252,10 +266,38 @@
   transition: all 0.3s ease;
 }
 
-.heroForm button:hover {
+.heroForm button:hover:not(:disabled) {
   background: #005a8b;
   transform: scale(1.03);
   box-shadow: 0 4px 15px rgba(0, 123, 189, 0.4);
+}
+
+.heroForm button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.subscribeFeedback {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  animation: fadeInUp 0.3s ease-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feedbackSuccess {
+  background: rgba(16, 185, 129, 0.25);
+  color: #ffffff;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.feedbackError {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+  border: 1px solid rgba(239, 68, 68, 0.5);
 }
 
 /* ================= MAIN GRID & HOVER ANIMATIONS ================= */

@@ -144,41 +144,134 @@
   gap: 14px;
 }
 
-.adminProfile {
+.adminProfileCard {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  user-select: none;
+}
+
+.adminProfileCard:hover {
+  background: #ffffff;
+  border-color: #bae6fd;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.12);
+  transform: translateY(-1px);
+}
+
+.adminProfileHeader {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.adminAvatarWrap {
+  position: relative;
+  display: inline-flex;
 }
 
 .adminAvatar {
-  width: 40px;
-  height: 40px;
+  position: relative;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #007bbd;
+  background: linear-gradient(135deg, #007bbd 0%, #005a8e 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.95rem;
   border: 2px solid #e0f2fe;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 123, 189, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.adminProfileCard:hover .adminAvatar {
+  transform: scale(1.04);
+}
+
+.adminAvatarImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.adminAvatarInput {
+  display: none;
 }
 
 .adminInfo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 2px;
+}
+
+.adminNameRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .adminName {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adminEditIcon {
+  color: #94a3b8;
+  transition: color 0.15s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.adminProfileCard:hover .adminEditIcon {
+  color: #007bbd;
+  transform: scale(1.1);
 }
 
 .adminRole {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #64748b;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.adminEditProfilePill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #e0f2fe;
+  color: #0284c7;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.adminProfileCard:hover .adminEditProfilePill {
+  background: #0284c7;
+  color: #ffffff;
 }
 
 .logoutBtn {
@@ -1271,6 +1364,7 @@
 }
 
 .userTableAvatar {
+  position: relative;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -1282,7 +1376,18 @@
   font-weight: 800;
   font-size: 0.95rem;
   border: 1.5px solid #bae6fd;
+  overflow: hidden;
   flex-shrink: 0;
+}
+
+.userTableAvatarImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .userTableName {
@@ -1577,6 +1682,7 @@
 }
 
 .modalAvatar {
+  position: relative;
   width: 52px;
   height: 52px;
   border-radius: 16px;
@@ -1588,7 +1694,18 @@
   font-weight: 800;
   font-size: 1.35rem;
   box-shadow: 0 4px 14px rgba(0, 123, 189, 0.25);
+  overflow: hidden;
   flex-shrink: 0;
+}
+
+.modalAvatarImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
 }
 
 .modalUserInfo {
@@ -2944,28 +3061,58 @@
 
 .heroMetricPill {
   background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 16px;
-  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  padding: 10px 18px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 140px;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.heroMetricPill:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.38);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.heroMetricIconWrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.heroMetricInfo {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 120px;
 }
 
 .heroMetricPillLabel {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .heroMetricPillValue {
-  font-size: 1.15rem;
+  font-size: 1.18rem;
   font-weight: 800;
   color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 /* 2-Column Responsive Dashboard Layout */
@@ -3764,6 +3911,363 @@
 
 .blogSpinIcon {
   animation: blogSpin 0.75s linear infinite;
+}
+
+/* ==========================================================================
+   12. ADMIN PROFILE REVIEW & EDIT MODAL
+   ========================================================================== */
+.adminProfileModalCard {
+  background: #ffffff;
+  border-radius: 24px;
+  width: 95%;
+  max-width: 620px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.3), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+  animation: modalScaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adminModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-bottom: 1px solid #bae6fd;
+}
+
+.adminModalHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.adminModalAvatarWrap {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.adminModalAvatar {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007bbd 0%, #005a8e 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.45rem;
+  border: 3px solid #ffffff;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.35);
+  transition: transform 0.18s ease;
+}
+
+.adminModalAvatarWrap:hover .adminModalAvatar {
+  transform: scale(1.05);
+}
+
+.adminModalAvatarImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.adminModalCameraBadge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 22px;
+  height: 22px;
+  background: #0284c7;
+  color: #ffffff;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.adminModalAvatarWrap:hover .adminModalCameraBadge {
+  background: #0369a1;
+  transform: scale(1.12);
+}
+
+.adminModalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.adminModalTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.adminModalName {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.adminRoleBadgeGlow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  box-shadow: 0 1px 6px rgba(217, 119, 6, 0.15);
+}
+
+.adminModalEmail {
+  display: flex;
+  align-items: center;
+  font-size: 0.84rem;
+  color: #475569;
+  margin: 0;
+  font-weight: 500;
+}
+
+.adminModalNavTabs {
+  display: flex;
+  padding: 8px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 8px;
+}
+
+.adminModalTabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.adminModalTabBtn:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.adminModalTabActive {
+  background: #ffffff !important;
+  color: #007bbd !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.adminModalBody {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(90vh - 170px);
+}
+
+.adminModalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.adminFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .adminFormGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adminFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.adminFormLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.reqStar {
+  color: #ef4444;
+}
+
+.adminFormInput {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #0f172a;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.adminFormInput:focus {
+  border-color: #007bbd;
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.15);
+}
+
+.adminFormInputReadonly {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+}
+
+.adminFormHint {
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.pwdInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pwdToggleIconBtn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  padding: 4px;
+}
+
+.pwdToggleIconBtn:hover {
+  color: #0f172a;
+}
+
+.adminModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 8px;
+}
+
+.btnCancelConfirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 42px;
+  min-width: 120px;
+  padding: 0 22px;
+  background: #f8fafc;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btnCancelConfirm:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.btnSaveAdminProfile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  height: 42px;
+  min-width: 160px;
+  padding: 0 24px;
+  background: #007bbd;
+  color: #ffffff;
+  border: 1.5px solid #007bbd;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 123, 189, 0.25);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btnSaveAdminProfile:hover:not(:disabled) {
+  background: #006094;
+  border-color: #006094;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 123, 189, 0.35);
+}
+
+.btnSaveAdminProfile:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modalAlertSuccess {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.modalAlertError {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 

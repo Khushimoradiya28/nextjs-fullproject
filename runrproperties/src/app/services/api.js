@@ -786,3 +786,15 @@ export async function deleteAdminBlog(id) {
   });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// PROPERTY ALERTS & NEWSLETTER SUBSCRIPTION
+// ═══════════════════════════════════════════════════════════════
+
+export async function subscribePropertyAlerts(email) {
+  return await request(`${API_BASE}/contact/subscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+}
+

@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import {
   FaFacebookF,
@@ -13,9 +14,45 @@ import {
   HiOutlineMail,
   HiOutlineLocationMarker,
 } from "react-icons/hi";
+import { subscribePropertyAlerts } from "../services/api";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState({ type: "", message: "" });
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email || !email.trim()) return;
+
+    setLoading(true);
+    setFeedback({ type: "", message: "" });
+    try {
+      const res = await subscribePropertyAlerts(email.trim());
+      if (res?.success) {
+        setFeedback({
+          type: "success",
+          message: res.message || "🎉 Subscribed! You will receive exclusive property alerts.",
+        });
+        setEmail("");
+        setTimeout(() => setFeedback({ type: "", message: "" }), 5000);
+      } else {
+        setFeedback({
+          type: "error",
+          message: res?.message || "Failed to subscribe. Please try again.",
+        });
+      }
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        message: "An error occurred. Please check your connection and try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <footer className={styles.footer}>
       {/* Background Motion Layer */}
@@ -40,13 +77,33 @@ export default function Footer() {
               Get exclusive alerts for new apartments, villas, & commercial hubs.
             </p>
           </div>
-          <form className={styles.heroForm} onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="Enter your email address..." required />
-            <button type="submit">
-              <span>Get Alerts</span>
-              <FaPaperPlane />
-            </button>
-          </form>
+          <div className={styles.heroRight}>
+            <form className={styles.heroForm} onSubmit={handleSubscribe}>
+              <input
+                type="email"
+                placeholder="Enter your email address..."
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+              <button type="submit" disabled={loading}>
+                <span>{loading ? "Subscribing..." : "Get Alerts"}</span>
+                <FaPaperPlane />
+              </button>
+            </form>
+            {feedback.message && (
+              <div
+                className={`${styles.subscribeFeedback} ${
+                  feedback.type === "success"
+                    ? styles.feedbackSuccess
+                    : styles.feedbackError
+                }`}
+              >
+                {feedback.message}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Main Links Grid */}

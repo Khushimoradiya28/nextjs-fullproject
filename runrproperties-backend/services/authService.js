@@ -206,12 +206,14 @@ const changePassword = async (userId, { currentPassword, newPassword }) => {
     throw error;
   }
 
-  // Verify current password
-  const isMatch = await user.comparePassword(currentPassword);
-  if (!isMatch) {
-    const error = new Error('Current password is incorrect');
-    error.statusCode = 400;
-    throw error;
+  // Verify current password only if provided
+  if (currentPassword && typeof currentPassword === 'string' && currentPassword.trim()) {
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      const error = new Error('Current password is incorrect');
+      error.statusCode = 400;
+      throw error;
+    }
   }
 
   // Update password

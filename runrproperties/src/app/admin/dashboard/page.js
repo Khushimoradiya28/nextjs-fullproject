@@ -20,7 +20,21 @@ import {
   FiCheckCircle,
   FiImage,
   FiLoader,
+  FiCamera,
+  FiUser,
+  FiLock,
+  FiKey,
+  FiPhone,
+  FiMail,
+  FiShield,
+  FiLogOut,
 } from "react-icons/fi";
+import { HiOutlineCurrencyRupee } from "react-icons/hi";
+import {
+  uploadProfilePhoto,
+  updateProfile as apiUpdateProfile,
+  changePassword as apiChangePassword,
+} from "../../services/api";
 import styles from "./admin.module.css";
 
 export default function AdminDashboardPage() {
@@ -151,18 +165,156 @@ export default function AdminDashboardPage() {
     "General",
   ];
 
-  // Helper to get media URL for image preview
-  const getMediaUrl = (url) => {
-    if (!url) return "/img/blog/1.jpg";
+  // Decent Soft Pastel Avatar Generator (no harsh dark solid colors)
+  const getDecentAvatarStyle = (name = "", role = "") => {
+    const palette = [
+      { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" }, // Soft Sky Blue
+      { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" }, // Soft Mint Emerald
+      { bg: "#faf5ff", color: "#7e22ce", border: "#e9d5ff" }, // Soft Lavender Purple
+      { bg: "#fff7ed", color: "#c2410c", border: "#fed7aa" }, // Soft Peach Warm
+      { bg: "#fdf2f8", color: "#be185d", border: "#fbcfe8" }, // Soft Rose Pink
+      { bg: "#f0fdfa", color: "#0f766e", border: "#99f6e4" }, // Soft Teal Cyan
+      { bg: "#eef2ff", color: "#4338ca", border: "#c7d2fe" }, // Soft Indigo
+      { bg: "#f8fafc", color: "#334155", border: "#cbd5e1" }, // Soft Slate
+    ];
+
+    if (role === "admin") {
+      return { bg: "#fef3c7", color: "#b45309", border: "#fde68a" }; // Soft Warm Amber for Admin
+    }
+    if (role === "owner") {
+      return { bg: "#ecfdf5", color: "#047857", border: "#a7f3d0" }; // Soft Emerald for Owner
+    }
+    if (role === "buyer") {
+      return { bg: "#f0f9ff", color: "#0284c7", border: "#bae6fd" }; // Soft Sky for Buyer
+    }
+    if (!name) return palette[0];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return palette[Math.abs(hash) % palette.length];
+  };
+
+  // Admin Profile Review & Edit Modal State
+  const [isAdminProfileModalOpen, setIsAdminProfileModalOpen] = useState(false);
+  const [adminProfileForm, setAdminProfileForm] = useState({ name: "", mobile: "" });
+  const [adminPasswordForm, setAdminPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [showAdminCurrentPwd, setShowAdminCurrentPwd] = useState(false);
+  const [showAdminNewPwd, setShowAdminNewPwd] = useState(false);
+  const [showAdminConfirmPwd, setShowAdminConfirmPwd] = useState(false);
+  const [adminProfileSaving, setAdminProfileSaving] = useState(false);
+  const [adminPasswordSaving, setAdminPasswordSaving] = useState(false);
+  const [adminProfileMsg, setAdminProfileMsg] = useState({ type: "", text: "" });
+  const [adminPasswordMsg, setAdminPasswordMsg] = useState({ type: "", text: "" });
+  const [adminProfileTab, setAdminProfileTab] = useState("profile"); // 'profile' | 'password'
+
+  const handleOpenAdminProfileModal = () => {
+    setAdminProfileForm({
+      name: user?.name || "",
+      mobile: user?.mobile || "",
+    });
+    setAdminPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setAdminProfileMsg({ type: "", text: "" });
+    setAdminPasswordMsg({ type: "", text: "" });
+    setIsAdminProfileModalOpen(true);
+  };
+
+  const handleSaveAdminProfile = async (e) => {
+    e?.preventDefault();
+    if (!adminProfileForm.name.trim()) {
+      setAdminProfileMsg({ type: "error", text: "Please enter your name" });
+      return;
+    }
+    setAdminProfileSaving(true);
+    setAdminProfileMsg({ type: "", text: "" });
+    try {
+      const res = await apiUpdateProfile({
+        name: adminProfileForm.name.trim(),
+        mobile: adminProfileForm.mobile.trim(),
+      });
+      if (res.success) {
+        if (auth.update) auth.update(res.data);
+        else if (auth.refreshUser) auth.refreshUser();
+        setAdminProfileMsg({ type: "success", text: "Admin profile updated successfully!" });
+        setTimeout(() => setAdminProfileMsg({ type: "", text: "" }), 3500);
+      } else {
+        setAdminProfileMsg({ type: "error", text: res.message || "Failed to update profile" });
+      }
+    } catch (err) {
+      setAdminProfileMsg({ type: "error", text: "An error occurred while saving profile" });
+    } finally {
+      setAdminProfileSaving(false);
+    }
+  };
+
+  const handleSaveAdminPassword = async (e) => {
+    e?.preventDefault();
+    if (!adminPasswordForm.newPassword || adminPasswordForm.newPassword.length < 6) {
+      setAdminPasswordMsg({ type: "error", text: "New password must be at least 6 characters" });
+      return;
+    }
+    if (adminPasswordForm.newPassword !== adminPasswordForm.confirmPassword) {
+      setAdminPasswordMsg({ type: "error", text: "New passwords do not match" });
+      return;
+    }
+    setAdminPasswordSaving(true);
+    setAdminPasswordMsg({ type: "", text: "" });
+    try {
+      const res = await apiChangePassword({
+        currentPassword: adminPasswordForm.currentPassword || "",
+        newPassword: adminPasswordForm.newPassword,
+      });
+      if (res.success) {
+        setAdminPasswordMsg({ type: "success", text: "Admin password updated successfully!" });
+        setAdminPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+        setTimeout(() => setAdminPasswordMsg({ type: "", text: "" }), 3500);
+      } else {
+        setAdminPasswordMsg({ type: "error", text: res.message || "Failed to update password" });
+      }
+    } catch (err) {
+      setAdminPasswordMsg({ type: "error", text: "An error occurred while updating password" });
+    } finally {
+      setAdminPasswordSaving(false);
+    }
+  };
+
+  // Helper to get media URL for image preview & avatars
+  const getMediaUrl = (url, fallback = "") => {
+    if (!url) return fallback;
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:") || url.startsWith("data:")) {
       return url;
     }
     const backendOrigin = API_BASE.replace(/\/api\/?$/, "");
     const cleanPath = url.startsWith("/") ? url : `/${url}`;
-    if (cleanPath.startsWith("/uploads") || cleanPath.startsWith("/images")) {
+    if (
+      cleanPath.startsWith("/uploads") ||
+      cleanPath.startsWith("/images") ||
+      cleanPath.startsWith("/banks") ||
+      cleanPath.startsWith("/avatars") ||
+      cleanPath.startsWith("/properties")
+    ) {
       return `${backendOrigin}${cleanPath}`;
     }
     return cleanPath;
+  };
+
+  // Helper to format Indian Currency in Cr / Lac / K / Rupee amounts
+  const formatIndianAmount = (val) => {
+    if (val === null || val === undefined || val === "") return "₹ 0";
+    const num = Number(val);
+    if (isNaN(num)) return "₹ 0";
+    if (num >= 10000000) {
+      return `₹ ${(num / 10000000).toFixed(2)} Cr`;
+    } else if (num >= 100000) {
+      return `₹ ${(num / 100000).toFixed(2)} Lac`;
+    } else if (num >= 1000) {
+      return `₹ ${(num / 1000).toFixed(2)} K`;
+    }
+    return `₹ ${num.toLocaleString("en-IN")}`;
   };
 
   const blogSearchTimeoutRef = useRef(null);
@@ -1287,12 +1439,31 @@ export default function AdminDashboardPage() {
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <div className={styles.adminProfile}>
+          <div
+            className={styles.adminProfileCard}
+            onClick={handleOpenAdminProfileModal}
+            role="button"
+            tabIndex={0}
+            title="Click to review and edit Admin profile"
+          >
             <div className={styles.adminAvatar}>
-              {(user?.name || "A").slice(0, 1).toUpperCase()}
+              {user?.profilePhoto ? (
+                <img
+                  src={getMediaUrl(user.profilePhoto)}
+                  alt={user?.name || "Admin"}
+                  className={styles.adminAvatarImg}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : null}
+              <span>{(user?.name || "A").slice(0, 1).toUpperCase()}</span>
             </div>
             <div className={styles.adminInfo}>
-              <span className={styles.adminName}>{user?.name || "Admin"}</span>
+              <div className={styles.adminNameRow}>
+                <span className={styles.adminName}>{user?.name || "Admin"}</span>
+                <FiEdit2 className={styles.adminEditIcon} size={12} title="Review & Edit Profile" />
+              </div>
               <span className={styles.adminRole}>Super Administrator</span>
             </div>
           </div>
@@ -1304,7 +1475,8 @@ export default function AdminDashboardPage() {
               router.push("/login");
             }}
           >
-            🚪 Logout
+            <FiLogOut size={16} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
@@ -1331,22 +1503,51 @@ export default function AdminDashboardPage() {
 
               <div className={styles.heroMetricsRow}>
                 <div className={styles.heroMetricPill}>
-                  <span className={styles.heroMetricPillLabel}>💼 Loan Volume</span>
-                  <span className={styles.heroMetricPillValue}>
-                    ₹ {stats?.totalLoanVolume ? (stats.totalLoanVolume >= 10000000 ? `${(stats.totalLoanVolume / 10000000).toFixed(2)} Cr` : stats.totalLoanVolume.toLocaleString("en-IN")) : "—"}
-                  </span>
+                  <div className={styles.heroMetricIconWrap} style={{ background: "rgba(56, 189, 248, 0.2)", color: "#38bdf8" }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                  <div className={styles.heroMetricInfo}>
+                    <span className={styles.heroMetricPillLabel}>Loan Volume</span>
+                    <span className={styles.heroMetricPillValue}>
+                      {stats?.totalLoanVolume ? formatIndianAmount(stats.totalLoanVolume) : "—"}
+                    </span>
+                  </div>
                 </div>
+
                 <div className={styles.heroMetricPill}>
-                  <span className={styles.heroMetricPillLabel}>🏠 Active Listings</span>
-                  <span className={styles.heroMetricPillValue}>
-                    {stats?.activeProperties ?? stats?.totalProperties ?? 0} Properties
-                  </span>
+                  <div className={styles.heroMetricIconWrap} style={{ background: "rgba(74, 222, 128, 0.2)", color: "#4ade80" }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                  </div>
+                  <div className={styles.heroMetricInfo}>
+                    <span className={styles.heroMetricPillLabel}>Active Listings</span>
+                    <span className={styles.heroMetricPillValue}>
+                      {stats?.activeProperties ?? stats?.totalProperties ?? 0} Properties
+                    </span>
+                  </div>
                 </div>
+
                 <div className={styles.heroMetricPill}>
-                  <span className={styles.heroMetricPillLabel}>🏦 Bank Network</span>
-                  <span className={styles.heroMetricPillValue}>
-                    {stats?.approvedBanks ?? stats?.totalBanks ?? 0} Partners
-                  </span>
+                  <div className={styles.heroMetricIconWrap} style={{ background: "rgba(251, 191, 36, 0.2)", color: "#fbbf24" }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 2 7 22 7 12 2"></polygon>
+                      <line x1="5" y1="10" x2="5" y2="18"></line>
+                      <line x1="12" y1="10" x2="12" y2="18"></line>
+                      <line x1="19" y1="10" x2="19" y2="18"></line>
+                      <polygon points="2 18 22 18 22 22 2 22 2 18"></polygon>
+                    </svg>
+                  </div>
+                  <div className={styles.heroMetricInfo}>
+                    <span className={styles.heroMetricPillLabel}>Bank Network</span>
+                    <span className={styles.heroMetricPillValue}>
+                      {stats?.approvedBanks ?? stats?.totalBanks ?? 0} Partners
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1417,7 +1618,7 @@ export default function AdminDashboardPage() {
                 type="button"
                 className={styles.statCard}
                 onClick={() => setActiveTab("users")}
-                title="Click to view Users (Buyers & Owners)"
+                title="Click to view Users (Buyers, Owners & Admins)"
               >
                 <div className={styles.statCardLeft}>
                   <div className={styles.statIconWrap} style={{ background: "#fffbeb", color: "#f59e0b" }}>
@@ -1439,6 +1640,10 @@ export default function AdminDashboardPage() {
                       <span style={{ color: "#d97706", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.78rem" }}>
                         {stats?.totalOwners ?? userCounts?.owner ?? 0} Owners
                       </span>
+                      <span style={{ color: "#cbd5e1" }}>•</span>
+                      <span style={{ color: "#7c3aed", fontWeight: 700, whiteSpace: "nowrap", fontSize: "0.78rem" }}>
+                        {stats?.totalAdmins ?? userCounts?.admin ?? 0} {Number(stats?.totalAdmins ?? userCounts?.admin ?? 0) === 1 ? "Admin" : "Admins"}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -1457,16 +1662,13 @@ export default function AdminDashboardPage() {
                 <div className={styles.statCardLeft}>
                   <div className={styles.statIconWrap} style={{ background: "#fdf2f8", color: "#db2777" }}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
-                      <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                      <polyline points="17 6 23 6 23 12" />
                     </svg>
                   </div>
                   <div>
                     <h3 className={styles.statValue}>
-                      {stats?.totalLoanVolume
-                        ? stats.totalLoanVolume >= 10000000
-                          ? `₹ ${(stats.totalLoanVolume / 10000000).toFixed(2)} Cr`
-                          : `₹ ${stats.totalLoanVolume.toLocaleString("en-IN")}`
-                        : "₹ 0"}
+                      {stats?.totalLoanVolume ? formatIndianAmount(stats.totalLoanVolume) : "₹ 0"}
                     </h3>
                     <p className={styles.statLabel} style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
                       <span>Loan Volume</span>
@@ -1662,8 +1864,8 @@ export default function AdminDashboardPage() {
                           </div>
 
                           <div className={styles.leadFeedRight}>
-                            <div className={styles.leadFeedAmount}>
-                              ₹ {lead.loanAmount ? Number(lead.loanAmount).toLocaleString("en-IN") : "—"}
+                            <div className={styles.leadFeedAmount} title={lead.loanAmount ? `₹ ${Number(lead.loanAmount).toLocaleString("en-IN")}` : ""}>
+                              {lead.loanAmount ? formatIndianAmount(lead.loanAmount) : "—"}
                             </div>
                             <span
                               style={{
@@ -1737,7 +1939,7 @@ export default function AdminDashboardPage() {
                           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.72rem", color: "#64748b" }}>
                             <span>Demand Volume</span>
                             <strong style={{ color: "#007bbd" }}>
-                              ₹ {b.totalVolume ? (b.totalVolume >= 10000000 ? `${(b.totalVolume / 10000000).toFixed(2)} Cr` : Number(b.totalVolume).toLocaleString("en-IN")) : "0"}
+                              {b.totalVolume ? formatIndianAmount(b.totalVolume) : "₹ 0"}
                             </strong>
                           </div>
                         </div>
@@ -2704,6 +2906,10 @@ export default function AdminDashboardPage() {
                   <strong style={{ color: "#d97706" }}>
                     {userCounts?.owner || stats?.totalOwners || 0} Owners
                   </strong>
+                  {" • "}
+                  <strong style={{ color: "#7c3aed" }}>
+                    {userCounts?.admin || stats?.totalAdmins || 0} Admins
+                  </strong>
                 </p>
               </div>
 
@@ -2775,26 +2981,45 @@ export default function AdminDashboardPage() {
                       </td>
                     </tr>
                   ) : (
-                    usersList.map((u, index) => (
-                      <tr
-                        key={u._id}
-                        className={styles.clickableTableRow}
-                        onClick={() => fetchUserDetails(u._id)}
-                      >
-                        <td className={styles.tdNumber}>
-                          {(userPagination.page - 1) * userPagination.limit + index + 1}
-                        </td>
-                        <td>
-                          <div className={styles.userNameWrapper}>
-                            <div className={styles.userTableAvatar}>
-                              {(u.name || "U").slice(0, 1).toUpperCase()}
+                    usersList.map((u, index) => {
+                      const avatarStyle = getDecentAvatarStyle(u.name, u.roleId?.name || u.role);
+                      return (
+                        <tr
+                          key={u._id}
+                          className={styles.clickableTableRow}
+                          onClick={() => fetchUserDetails(u._id)}
+                        >
+                          <td className={styles.tdNumber}>
+                            {(userPagination.page - 1) * userPagination.limit + index + 1}
+                          </td>
+                          <td>
+                            <div className={styles.userNameWrapper}>
+                              <div
+                                className={styles.userTableAvatar}
+                                style={{
+                                  background: avatarStyle.bg,
+                                  color: avatarStyle.color,
+                                  border: `1.5px solid ${avatarStyle.border}`
+                                }}
+                              >
+                                {u.profilePhoto ? (
+                                  <img
+                                    src={getMediaUrl(u.profilePhoto)}
+                                    alt={u.name || "User"}
+                                    className={styles.userTableAvatarImg}
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = "none";
+                                    }}
+                                  />
+                                ) : null}
+                                <span>{(u.name || "U").slice(0, 1).toUpperCase()}</span>
+                              </div>
+                              <div>
+                                <strong className={styles.userTableName}>{u.name}</strong>
+                                <div className={styles.userRoleSmall}>{u.roleId?.displayName || u.role}</div>
+                              </div>
                             </div>
-                            <div>
-                              <strong className={styles.userTableName}>{u.name}</strong>
-                              <div className={styles.userRoleSmall}>{u.roleId?.displayName || u.role}</div>
-                            </div>
-                          </div>
-                        </td>
+                          </td>
                         <td>
                           <div className={styles.ownerContactRow}>
                             <a
@@ -2914,9 +3139,10 @@ export default function AdminDashboardPage() {
                           </div>
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
+                    );
+                  })
+                )}
+              </tbody>
               </table>
             </div>
 
@@ -4278,7 +4504,7 @@ export default function AdminDashboardPage() {
                           <th style={{ minWidth: "140px" }}>Category</th>
                           <th style={{ minWidth: "130px" }}>Author & Read</th>
                           <th style={{ minWidth: "120px" }}>Status</th>
-                          <th style={{ minWidth: "130px" }}>Published Date</th>
+                          <th style={{ minWidth: "160px" }}>Date & Timestamps</th>
                           <th style={{ textAlign: "right", minWidth: "160px" }}>Actions</th>
                         </tr>
                       </thead>
@@ -4379,9 +4605,48 @@ export default function AdminDashboardPage() {
                               </div>
                             </td>
                             <td>
-                              <div style={{ fontSize: "0.82rem", color: "#334155" }}>
-                                {formatISTDate(blog.createdAt)}
-                              </div>
+                              {(() => {
+                                const pubDt = formatISTDateTime(blog.createdAt);
+                                const isUpdated = blog.updatedAt && new Date(blog.updatedAt).getTime() - new Date(blog.createdAt).getTime() > 60000;
+                                const updDt = isUpdated ? formatISTDateTime(blog.updatedAt) : null;
+                                const fullTooltip = `Published: ${pubDt.date} at ${pubDt.time} IST${updDt ? `\nUpdated: ${updDt.date} at ${updDt.time} IST` : ""}`;
+
+                                return (
+                                  <div
+                                    title={fullTooltip}
+                                    style={{
+                                      cursor: "help",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: "3px",
+                                    }}
+                                  >
+                                    {/* Published Date & Time */}
+                                    <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                                      <span style={{ fontSize: "0.82rem", color: "#0f172a", fontWeight: 700 }}>
+                                        {pubDt.date}
+                                      </span>
+                                      {pubDt.time && (
+                                        <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 500 }}>
+                                          {pubDt.time}
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Updated Date & Time */}
+                                    {updDt ? (
+                                      <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.71rem", color: "#007bbd", background: "#f0f8fd", border: "1px solid #bae6fd", padding: "1px 6px", borderRadius: "4px", width: "fit-content", fontWeight: 600 }}>
+                                        <span>Upd:</span>
+                                        <span>{updDt.date === pubDt.date ? updDt.time : `${updDt.date}, ${updDt.time}`}</span>
+                                      </div>
+                                    ) : (
+                                      <div style={{ fontSize: "0.7rem", color: "#94a3b8" }}>
+                                        Original version
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })()}
                             </td>
                             <td style={{ textAlign: "right" }}>
                               <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", justifyContent: "flex-end" }}>
@@ -4652,14 +4917,26 @@ export default function AdminDashboardPage() {
                         </div>
 
                         <div className={styles.blogFormGroup}>
-                          <label className={styles.blogFormLabel}>Read Time</label>
+                          <label className={styles.blogFormLabel}>
+                            Read Time
+                            <span className={styles.blogFormLabelHint}>e.g. 5 min</span>
+                          </label>
                           <input
                             type="text"
+                            list="readTimePresets"
                             placeholder="e.g. 5 min"
                             value={blogForm.readTime}
                             onChange={(e) => setBlogForm({ ...blogForm, readTime: e.target.value })}
                             className={styles.blogFormInput}
                           />
+                          <datalist id="readTimePresets">
+                            <option value="3 min" />
+                            <option value="4 min" />
+                            <option value="5 min" />
+                            <option value="6 min" />
+                            <option value="7 min" />
+                            <option value="10 min" />
+                          </datalist>
                         </div>
                       </div>
 
@@ -4754,7 +5031,17 @@ export default function AdminDashboardPage() {
             <div className={styles.modalHeader}>
               <div className={styles.modalHeaderLeft}>
                 <div className={styles.modalAvatar}>
-                  {(selectedUserDetail.user?.name || "U").slice(0, 1).toUpperCase()}
+                  {selectedUserDetail.user?.profilePhoto ? (
+                    <img
+                      src={getMediaUrl(selectedUserDetail.user.profilePhoto)}
+                      alt={selectedUserDetail.user?.name || "User"}
+                      className={styles.modalAvatarImg}
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ) : null}
+                  <span>{(selectedUserDetail.user?.name || "U").slice(0, 1).toUpperCase()}</span>
                 </div>
                 <div className={styles.modalUserInfo}>
                   <div className={styles.modalUserTitleRow}>
@@ -6152,6 +6439,295 @@ export default function AdminDashboardPage() {
               >
                 {actionLoading === blogToDelete._id ? "Deleting..." : "Yes, Delete Article"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 12. ADMIN PROFILE REVIEW & EDIT MODAL */}
+      {isAdminProfileModalOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => !adminProfileSaving && !adminPasswordSaving && setIsAdminProfileModalOpen(false)}
+        >
+          <div className={styles.adminProfileModalCard} onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className={styles.adminModalHeader}>
+              <div className={styles.adminModalHeaderLeft}>
+                <label className={styles.adminModalAvatarWrap} title="Click to upload profile photo">
+                  <div className={styles.adminModalAvatar}>
+                    {user?.profilePhoto ? (
+                      <img
+                        src={getMediaUrl(user.profilePhoto)}
+                        alt={user?.name || "Admin"}
+                        className={styles.adminModalAvatarImg}
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : null}
+                    <span>{(user?.name || "A").slice(0, 1).toUpperCase()}</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className={styles.adminAvatarInput}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setAdminProfileSaving(true);
+                      try {
+                        const res = await uploadProfilePhoto(file);
+                        if (res?.success && res?.data) {
+                          if (auth.update) auth.update(res.data);
+                          else if (auth.refreshUser) auth.refreshUser();
+                          setAdminProfileMsg({ type: "success", text: "Profile photo uploaded successfully!" });
+                        }
+                      } catch (err) {
+                        setAdminProfileMsg({ type: "error", text: "Failed to upload photo" });
+                      } finally {
+                        setAdminProfileSaving(false);
+                      }
+                    }}
+                  />
+                  <div className={styles.adminModalCameraBadge} title="Change Photo">
+                    <FiCamera size={13} />
+                  </div>
+                </label>
+
+                <div className={styles.adminModalInfo}>
+                  <div className={styles.adminModalTitleRow}>
+                    <h3 className={styles.adminModalName}>{user?.name || "Super Admin"}</h3>
+                    <span className={styles.adminRoleBadgeGlow}>👑 Super Administrator</span>
+                  </div>
+                  <p className={styles.adminModalEmail}>
+                    <FiMail style={{ marginRight: "4px" }} /> {user?.email || "admin@runrproperties.com"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className={styles.modalCloseBtn}
+                onClick={() => setIsAdminProfileModalOpen(false)}
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Tabs */}
+            <div className={styles.adminModalNavTabs}>
+              <button
+                type="button"
+                className={`${styles.adminModalTabBtn} ${adminProfileTab === "profile" ? styles.adminModalTabActive : ""}`}
+                onClick={() => setAdminProfileTab("profile")}
+              >
+                <FiUser /> Edit Profile
+              </button>
+              <button
+                type="button"
+                className={`${styles.adminModalTabBtn} ${adminProfileTab === "password" ? styles.adminModalTabActive : ""}`}
+                onClick={() => setAdminProfileTab("password")}
+              >
+                <FiLock /> Change Password
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className={styles.adminModalBody}>
+              {adminProfileTab === "profile" && (
+                <form onSubmit={handleSaveAdminProfile} className={styles.adminModalForm}>
+                  {adminProfileMsg.text && (
+                    <div
+                      className={
+                        adminProfileMsg.type === "success"
+                          ? styles.modalAlertSuccess
+                          : styles.modalAlertError
+                      }
+                    >
+                      {adminProfileMsg.type === "success" ? "✓ " : "⚠️ "}
+                      {adminProfileMsg.text}
+                    </div>
+                  )}
+
+                  <div className={styles.adminFormGrid}>
+                    <div className={styles.adminFormGroup}>
+                      <label className={styles.adminFormLabel}>
+                        <FiUser /> Full Name <span className={styles.reqStar}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.adminFormInput}
+                        value={adminProfileForm.name}
+                        onChange={(e) =>
+                          setAdminProfileForm((prev) => ({ ...prev, name: e.target.value }))
+                        }
+                        placeholder="Enter full name"
+                        required
+                      />
+                    </div>
+
+                    <div className={styles.adminFormGroup}>
+                      <label className={styles.adminFormLabel}>
+                        <FiPhone /> Contact Mobile
+                      </label>
+                      <input
+                        type="tel"
+                        className={styles.adminFormInput}
+                        value={adminProfileForm.mobile}
+                        onChange={(e) =>
+                          setAdminProfileForm((prev) => ({ ...prev, mobile: e.target.value }))
+                        }
+                        placeholder="e.g. 9999999999"
+                      />
+                    </div>
+
+                    <div className={styles.adminFormGroup}>
+                      <label className={styles.adminFormLabel}>
+                        <FiMail /> Registered Email (Primary)
+                      </label>
+                      <input
+                        type="email"
+                        className={`${styles.adminFormInput} ${styles.adminFormInputReadonly}`}
+                        value={user?.email || "admin@runrproperties.com"}
+                        readOnly
+                      />
+                      <span className={styles.adminFormHint}>
+                        🔒 Master admin email address is protected for system security.
+                      </span>
+                    </div>
+
+                    <div className={styles.adminFormGroup}>
+                      <label className={styles.adminFormLabel}>
+                        <FiShield /> System Role & Access Level
+                      </label>
+                      <input
+                        type="text"
+                        className={`${styles.adminFormInput} ${styles.adminFormInputReadonly}`}
+                        value="Super Administrator — Full Platform Access"
+                        readOnly
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.adminModalFooter}>
+                    <button
+                      type="button"
+                      className={styles.btnCancelConfirm}
+                      onClick={() => setIsAdminProfileModalOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className={styles.btnSaveAdminProfile}
+                      disabled={adminProfileSaving}
+                    >
+                      {adminProfileSaving ? "Saving..." : "Save Profile Changes"}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {adminProfileTab === "password" && (
+                <form onSubmit={handleSaveAdminPassword} className={styles.adminModalForm}>
+                  {adminPasswordMsg.text && (
+                    <div
+                      className={
+                        adminPasswordMsg.type === "success"
+                          ? styles.modalAlertSuccess
+                          : styles.modalAlertError
+                      }
+                    >
+                      {adminPasswordMsg.type === "success" ? "✓ " : "⚠️ "}
+                      {adminPasswordMsg.text}
+                    </div>
+                  )}
+
+                  <div style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: "10px", padding: "10px 14px", fontSize: "0.8rem", color: "#0369a1", display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+                    <FiLock size={15} style={{ flexShrink: 0 }} />
+                    <span>Direct Password Reset: Enter your new password below. Current password is not required.</span>
+                  </div>
+
+                  <div className={styles.adminFormGrid}>
+                    <div className={styles.adminFormGroup}>
+                      <label className={styles.adminFormLabel}>
+                        <FiLock /> New Password <span className={styles.reqStar}>*</span>
+                      </label>
+                      <div className={styles.pwdInputWrapper}>
+                        <input
+                          type={showAdminNewPwd ? "text" : "password"}
+                          className={styles.adminFormInput}
+                          value={adminPasswordForm.newPassword}
+                          onChange={(e) =>
+                            setAdminPasswordForm((prev) => ({
+                              ...prev,
+                              newPassword: e.target.value,
+                            }))
+                          }
+                          placeholder="Min 6 characters"
+                          required
+                          minLength={6}
+                        />
+                        <button
+                          type="button"
+                          className={styles.pwdToggleIconBtn}
+                          onClick={() => setShowAdminNewPwd((prev) => !prev)}
+                        >
+                          {showAdminNewPwd ? <FiEyeOff /> : <FiEye />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className={styles.adminFormGroup}>
+                      <label className={styles.adminFormLabel}>
+                        <FiCheckCircle /> Confirm New Password <span className={styles.reqStar}>*</span>
+                      </label>
+                      <div className={styles.pwdInputWrapper}>
+                        <input
+                          type={showAdminConfirmPwd ? "text" : "password"}
+                          className={styles.adminFormInput}
+                          value={adminPasswordForm.confirmPassword}
+                          onChange={(e) =>
+                            setAdminPasswordForm((prev) => ({
+                              ...prev,
+                              confirmPassword: e.target.value,
+                            }))
+                          }
+                          placeholder="Re-enter new password"
+                          required
+                          minLength={6}
+                        />
+                        <button
+                          type="button"
+                          className={styles.pwdToggleIconBtn}
+                          onClick={() => setShowAdminConfirmPwd((prev) => !prev)}
+                        >
+                          {showAdminConfirmPwd ? <FiEyeOff /> : <FiEye />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.adminModalFooter}>
+                    <button
+                      type="button"
+                      className={styles.btnCancelConfirm}
+                      onClick={() => setIsAdminProfileModalOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className={styles.btnSaveAdminProfile}
+                      disabled={adminPasswordSaving}
+                    >
+                      {adminPasswordSaving ? "Updating..." : "Update Password"}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>
