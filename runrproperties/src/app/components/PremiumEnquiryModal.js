@@ -14,14 +14,14 @@ function maskPhone(phone) {
 
 export default function PremiumEnquiryModal({ property, onClose }) {
   const { user } = useAuth();
-  const owner = property.owner || {};
+  const owner = property?.owner || {};
   const [mounted, setMounted] = useState(false);
 
   const [form, setForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.mobile || "",
-    message: `Hi, I am interested in "${property.title}". Please share more details.`,
+    message: `Hi, I am interested in "${property?.title || "this property"}". Please share more details.`,
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
@@ -66,7 +66,7 @@ export default function PremiumEnquiryModal({ property, onClose }) {
 
   if (!mounted) return null;
 
-  const ownerInitial = owner.name ? owner.name.charAt(0).toUpperCase() : "O";
+  const ownerInitial = owner.name ? owner.name.charAt(0).toUpperCase() : (property.postedBy ? property.postedBy.charAt(0).toUpperCase() : "O");
 
   return createPortal(
     <>
@@ -75,19 +75,31 @@ export default function PremiumEnquiryModal({ property, onClose }) {
         <button
           className={styles.closeBtn}
           onClick={onClose}
-          aria-label="Close"
+          aria-label="Close modal"
         >
           ✕
         </button>
 
         {/* Left Panel — Owner Details */}
         <div className={styles.leftPanel}>
-          <div className={styles.ownerAvatar} style={{ background: owner.profilePhoto ? "transparent" : (owner.avatarColor || "#2980b9") }}>
+          <div
+            className={styles.ownerAvatar}
+            style={{
+              background: owner.profilePhoto
+                ? "transparent"
+                : owner.avatarColor || "#f97316",
+            }}
+          >
             {owner.profilePhoto ? (
               <img
                 src={getMediaUrl(owner.profilePhoto)}
-                alt={owner.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                alt={owner.name || "Owner"}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}
@@ -96,28 +108,28 @@ export default function PremiumEnquiryModal({ property, onClose }) {
               ownerInitial
             )}
           </div>
-          <h3 className={styles.ownerName}>{owner.name || "Property Owner"}</h3>
+          <h3 className={styles.ownerName}>{owner.name || property.postedBy || "Property Owner"}</h3>
           <span className={styles.ownerLabel}>Property Owner</span>
 
           <div className={styles.ownerContact}>
-            {owner.email && (
+            {(owner.email || property.contactEmail) && (
               <div className={styles.contactItem}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="4" width="20" height="16" rx="2" />
                   <path d="M22 7l-10 6L2 7" />
                 </svg>
-                <span>{owner.email}</span>
+                <span>{owner.email || property.contactEmail}</span>
               </div>
             )}
             <div className={styles.contactItem}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" />
               </svg>
-              <span>{maskPhone(owner.mobile || owner.phone || "")}</span>
+              <span>{maskPhone(owner.mobile || owner.phone || property.contactNumber || property.mobile || "")}</span>
             </div>
 
             <div className={styles.revealHint}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
               </svg>
@@ -135,8 +147,12 @@ export default function PremiumEnquiryModal({ property, onClose }) {
 
         {/* Right Panel — Enquiry Form */}
         <div className={styles.rightPanel}>
-          <h3 className={styles.formTitle}>Send Enquiry</h3>
-          <p className={styles.formSubtitle}>Fill in your details and the owner will get back to you</p>
+          <div className={styles.formHeader}>
+            <h3 className={styles.formTitle}>
+              Send <span className={styles.highlight}>Enquiry</span>
+            </h3>
+            <p className={styles.formSubtitle}>Fill in your details and the owner will get back to you</p>
+          </div>
 
           {success ? (
             <div className={styles.successMsg}>{success}</div>
@@ -145,17 +161,21 @@ export default function PremiumEnquiryModal({ property, onClose }) {
               {error && <div className={styles.errorMsg}>{error}</div>}
 
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Your Name *</label>
+                <label className={styles.fieldLabel}>YOUR NAME *</label>
                 <input
                   className={styles.input}
                   placeholder="Enter your name"
                   value={form.name}
-                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                  onChange={(e) => {
+                    const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                    setForm((p) => ({ ...p, name: lettersOnly }));
+                  }}
+                  required
                 />
               </div>
 
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Email</label>
+                <label className={styles.fieldLabel}>EMAIL</label>
                 <input
                   className={styles.input}
                   type="email"
@@ -166,22 +186,25 @@ export default function PremiumEnquiryModal({ property, onClose }) {
               </div>
 
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Phone *</label>
+                <label className={styles.fieldLabel}>PHONE *</label>
                 <MobileInput
                   className={styles.input}
                   placeholder="10-digit number"
                   value={form.phone}
                   onChange={(val) => setForm((p) => ({ ...p, phone: val }))}
+                  required
                 />
               </div>
 
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Message *</label>
+                <label className={styles.fieldLabel}>MESSAGE *</label>
                 <textarea
                   className={styles.textarea}
+                  rows={3}
                   placeholder="Write your message..."
                   value={form.message}
                   onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
+                  required
                 />
               </div>
 

@@ -61,7 +61,15 @@ export default function EnquiryModal({ property, onClose }) {
         ) : (
           <form className={styles.form} onSubmit={handleSubmit}>
             {error && <div className={styles.errorMsg}>{error}</div>}
-            <input className={styles.input} placeholder="Your Name *" value={form.name} onChange={(e) => setForm(p => ({...p, name: e.target.value}))} />
+            <input
+              className={styles.input}
+              placeholder="Your Name *"
+              value={form.name}
+              onChange={(e) => {
+                const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                setForm((p) => ({ ...p, name: lettersOnly }));
+              }}
+            />
             <input className={styles.input} type="email" placeholder="Email" value={form.email} onChange={(e) => setForm(p => ({...p, email: e.target.value}))} />
             <MobileInput className={styles.input} placeholder="Phone *" value={form.phone} onChange={(val) => setForm(p => ({...p, phone: val}))} />
             <textarea className={styles.textarea} placeholder="Message *" value={form.message} onChange={(e) => setForm(p => ({...p, message: e.target.value}))} />

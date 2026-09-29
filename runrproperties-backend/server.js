@@ -20,6 +20,10 @@ connectDB().then(() => {
   const seedBlogs = require('./utils/seedBlogs');
   seedBlogs();
 
+  // Seed default FAQs if collection is empty
+  const seedFaqs = require('./utils/seedFaqs');
+  seedFaqs();
+
   // Backfill avatarColor for all existing users missing it (runs once on startup)
   const User = require('./models/User');
   const { getRandomAvatarColor } = require('./utils/avatarColors');
@@ -122,6 +126,7 @@ app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/bank-partners', require('./routes/bankPartnerRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
+app.use('/api/faqs', require('./routes/faqRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
 // 404 handler

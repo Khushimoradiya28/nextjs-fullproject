@@ -157,7 +157,8 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
                   type="text"
                   value={form.name}
                   onChange={(e) => {
-                    setForm({ ...form, name: e.target.value });
+                    const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                    setForm({ ...form, name: lettersOnly });
                     if (errors.name) setErrors({ ...errors, name: "" });
                   }}
                   placeholder="e.g. John Doe"

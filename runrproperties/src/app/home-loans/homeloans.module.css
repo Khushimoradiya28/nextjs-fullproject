@@ -227,7 +227,7 @@
   display: grid;
   grid-template-columns: 1.25fr 0.85fr;
   gap: 40px;
-  align-items: stretch;
+  align-items: center;
 }
 
 .calcInputs {
@@ -319,20 +319,24 @@
   background: #f0f9ff;
   border-radius: 16px;
   border: 1px solid #bae6fd;
-  padding: 28px 24px;
+  padding: 24px 22px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: center;
+  gap: 16px;
 }
 
 .emiCard {
   text-align: center;
-  padding: 24px 20px;
+  padding: 22px 20px;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #e0f2fe;
   box-shadow: 0 4px 12px rgba(0, 123, 189, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .emiLabel {
@@ -340,15 +344,22 @@
   color: #64748b;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  text-align: center;
+  display: block;
 }
 
 .emiValue {
-  margin: 8px 0 6px;
+  margin: 6px 0 4px;
   font-size: 2.2rem;
   font-weight: 800;
   color: #007bbd;
   letter-spacing: -0.02em;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .bankTag {
@@ -359,6 +370,8 @@
   padding: 3px 10px;
   border-radius: 6px;
   font-weight: 600;
+  text-align: center;
+  margin-top: 4px;
 }
 
 .breakdownGrid {
@@ -390,108 +403,185 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BANKING PARTNERS SECTION
+   UNIFIED HERO SHOWCASE BANNER & MARQUEE - THEME BLUE
    ═══════════════════════════════════════════════════════════════ */
-.banksSection {
+.showcaseBannerCard {
+  background: linear-gradient(135deg, #eaf4fb 0%, #f2f8fd 40%, #e2f0fa 100%);
+  border: 1.5px solid #b8def5;
+  border-radius: 20px;
+  padding: 26px 34px 24px;
   margin-bottom: 72px;
+  box-shadow: 0 12px 36px rgba(0, 123, 189, 0.09), 0 2px 8px rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.sectionHeader {
-  text-align: center;
-  margin-bottom: 36px;
+.showcaseBannerCard:hover {
+  box-shadow: 0 18px 48px rgba(0, 123, 189, 0.14), 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
-.sectionTitle {
-  font-size: 1.85rem;
+.showcaseContentArea {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Top Brand Tagline Badge - Strongly Highlighted */
+.showcaseBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  border: 1.5px solid #007bbd;
+  border-radius: 9999px;
+  padding: 5px 16px 5px 12px;
+  width: fit-content;
+  font-family: 'Rimouski Sb', sans-serif;
+  user-select: none;
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.15), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.showcaseBrand:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 123, 189, 0.22);
+}
+
+.brandBadgeDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #007bbd;
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.25);
+  flex-shrink: 0;
+  animation: pulseBrandDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseBrandDot {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.25);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 5px rgba(0, 123, 189, 0.15);
+  }
+}
+
+.brandRunr {
+  font-size: 1.25rem;
   font-weight: 800;
   color: #0f172a;
-  margin: 0 0 8px;
   letter-spacing: -0.01em;
 }
 
-.sectionSubtitle {
-  font-size: 0.95rem;
-  color: #64748b;
-  margin: 0;
+.brandLoans {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #007bbd;
+  background: linear-gradient(135deg, #007bbd 0%, #0284c7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.01em;
 }
 
-.filterPillsWrap {
+/* Main Highlighted Headline */
+.showcaseTitle {
+  font-family: 'Rimouski Sb', sans-serif;
+  font-size: 1.95rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 2px 0 0;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.showcaseTitleHighlight {
+  color: #007bbd;
+  background: linear-gradient(135deg, #007bbd 0%, #0284c7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  display: inline-block;
+}
+
+/* Check Badges */
+.showcaseBadges {
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 18px;
+  font-size: 0.92rem;
+  color: #475569;
 }
 
-.filterPill {
-  padding: 8px 18px;
-  border-radius: 9999px;
-  border: 1.5px solid #e2e8f0;
-  background: #ffffff;
-  color: #64748b;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.filterPill:hover {
-  border-color: #007bbd;
-  color: #007bbd;
-  background: #f0f9ff;
-}
-
-.filterPillActive {
-  background: #007bbd !important;
-  color: #ffffff !important;
-  border-color: #007bbd !important;
-  box-shadow: 0 4px 12px rgba(0, 123, 189, 0.25);
-}
-
-.noBanksFound {
-  text-align: center;
-  padding: 40px 20px;
-  color: #64748b;
-  font-size: 0.95rem;
+.showcaseCheckItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 500;
-  background: #ffffff;
-  border: 1px dashed #cbd5e1;
-  border-radius: 12px;
-  max-width: 600px;
-  margin: 0 auto;
+}
+
+.checkIconSvg {
+  width: 17px;
+  height: 17px;
+  color: #007bbd;
+  flex-shrink: 0;
+}
+
+.highlightGreen {
+  color: #059669;
+  font-weight: 800;
+}
+
+.highlightTheme,
+.highlightRed {
+  color: #007bbd;
+  font-weight: 800;
+}
+
+/* Bank Partners Header Row */
+.partnerFilterRow {
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.partnerPillsLabel {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #007bbd;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BANKING PARTNERS MARQUEE SLIDER
+   MARQUEE SLIDER RUNNING BEHIND 3D HOUSE
    ═══════════════════════════════════════════════════════════════ */
 .marqueeWrap {
   width: 100%;
   overflow: hidden;
   position: relative;
-  padding: 10px 0 24px;
-  mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
-}
-
-.centeredBanksGrid {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  flex-wrap: wrap;
-  gap: 24px;
-  padding: 10px 0;
+  padding: 6px 0 10px;
+  margin: 2px 0;
+  z-index: 3;
+  mask-image: linear-gradient(to right, transparent 0%, black 1.5%, black calc(100% - 260px), transparent calc(100% - 150px));
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 1.5%, black calc(100% - 260px), transparent calc(100% - 150px));
 }
 
 .marqueeTrack {
   display: flex;
   width: max-content;
-  gap: 20px;
+  gap: 16px;
 }
 
 .marqueeGroup {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   flex-shrink: 0;
   animation: scrollTrack 30s linear infinite;
 }
@@ -509,153 +599,356 @@
   }
 }
 
+/* Bank Pill Card in Marquee - Perfectly Spaced with Apply Loan Button on Hover */
 .bankCardItem {
-  width: 235px;
+  width: 240px;
+  height: 124px;
   flex-shrink: 0;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 16px;
+  border: 1.2px solid rgba(0, 123, 189, 0.16);
+  border-radius: 16px;
+  padding: 14px 16px 12px;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(15, 30, 54, 0.06);
+  user-select: none;
   position: relative;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  overflow: hidden;
 }
 
 .bankCardItem:hover {
-  transform: translateY(-4px);
-  border-color: #bae6fd;
-  box-shadow: 0 12px 24px rgba(0, 123, 189, 0.1);
+  transform: translateY(-5px);
+  border-color: #007bbd;
+  box-shadow: 0 10px 26px rgba(0, 123, 189, 0.2);
 }
 
 .bankCardItemSelected {
   border-color: #007bbd !important;
-  box-shadow: 0 6px 18px rgba(0, 123, 189, 0.14) !important;
+  box-shadow: 0 8px 22px rgba(0, 123, 189, 0.25) !important;
 }
 
-/* Big Crisp Logo on Top */
 .bankLogoWrap {
+  height: 54px;
   width: 100%;
-  height: 60px;
-  background: #ffffff;
-  border: 1px solid #edf2f7;
-  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
-  margin-bottom: 12px;
+  padding: 0 6px;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bankCardItem:hover .bankLogoWrap {
+  transform: translateY(-2px);
 }
 
 .bankLogoImg {
-  max-width: 100%;
-  max-height: 100%;
+  max-height: 48px;
+  max-width: 175px;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.03));
+}
+
+.bankBrandFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandFallbackInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandLogoDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.brandFallbackName {
+  font-family: 'Rimouski Sb', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .bankAvatarText {
-  width: 100%;
-  height: 100%;
-  background: #f0f9ff;
-  color: #007bbd;
+  font-size: 1.05rem;
   font-weight: 800;
-  font-size: 1.1rem;
-  border-radius: 8px;
+  color: #0f172a;
+}
+
+/* Bottom Area for Rate & Apply Loan Button */
+.bankBottomArea {
+  height: 28px;
+  width: 100%;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: auto;
 }
 
-/* Name & Rate underneath logo */
-.bankInfoBlock {
-  text-align: center;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #f1f5f9;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.bankCardTitle {
-  margin: 0;
-  font-size: 0.98rem;
-  font-weight: 700;
-  color: #0f172a;
+.bankRatePillBadge {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #007bbd;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.bankRatePill {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #007bbd;
-  display: inline-block;
-}
-
-/* Compact Details List */
-.bankCompactList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
-  flex: 1;
-  background: #f8fafc;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #f1f5f9;
-}
-
-.compactRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.78rem;
-}
-
-.compactRow span {
-  color: #64748b;
-  font-weight: 500;
-}
-
-.compactRow strong {
-  color: #1e293b;
-  font-weight: 700;
-}
-
-/* Compact Button */
-.bankCardBtn {
-  width: 100%;
-  padding: 8px 0;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: 1.5px solid #007bbd;
-  background: #ffffff;
-  color: #007bbd;
-  transition: all 0.15s ease;
+.bankApplyBtn {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  height: 28px;
+  width: fit-content;
+  padding: 0 14px;
+  background: #007bbd;
+  color: #ffffff;
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 5px;
+  font-family: 'Rimouski Sb', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 750;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 3px 10px rgba(0, 123, 189, 0.32);
+  pointer-events: none;
 }
 
-.bankCardBtn:hover {
+.bankCardItem:hover .bankRatePillBadge {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.bankCardItem:hover .bankApplyBtn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Floating 3D Hand with House Visual (Foreground - Vertically Centered with Marquee) */
+.showcaseFloatingHand {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0;
+  padding: 0;
+}
+
+/* Solid background shield behind the hand/house */
+.showcaseFloatingHand::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  width: 260px;
+  background: linear-gradient(to right, transparent 0%, rgba(226, 240, 250, 0.92) 45%, #e2f0fa 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.floatingHouseWrap {
+  position: relative;
+  height: 100%;
+  max-height: 310px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.handHoldingHouseImg {
+  height: 100%;
+  max-height: 310px;
+  width: auto;
+  object-fit: contain;
+  object-position: right center;
+  display: block;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.showcaseBannerCard:hover .handHoldingHouseImg {
+  transform: scale(1.02);
+}
+
+
+
+/* Action Buttons */
+.showcaseActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+  z-index: 6;
+}
+
+.exploreOffersLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #007bbd;
+  font-size: 0.96rem;
+  font-weight: 750;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.exploreOffersLink:hover {
+  color: #005f94;
+}
+
+.exploreArrow {
+  font-size: 1.15rem;
+  transition: transform 0.2s ease;
+}
+
+.exploreOffersLink:hover .exploreArrow {
+  transform: translateX(4px);
+}
+
+.checkEligibilityBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
   background: #007bbd;
   color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.28);
 }
 
-.bankCardBtnSelected {
-  background: #007bbd !important;
-  color: #ffffff !important;
-  border-color: #007bbd !important;
+.checkEligibilityBtn:hover {
+  background: #005f94;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 189, 0.38);
+}
+
+.noBanksFound {
+  text-align: center;
+  padding: 30px 20px;
+  color: #64748b;
+  font-size: 0.92rem;
+  font-weight: 500;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+}
+
+@media (max-width: 992px) {
+  .showcaseBannerCard {
+    padding: 26px 22px 22px;
+  }
+  .showcaseFloatingHand {
+    width: 200px;
+    opacity: 0.25;
+  }
+}
+
+@media (max-width: 600px) {
+  .showcaseTitle {
+    font-size: 1.45rem;
+  }
+  .showcaseFloatingHand {
+    display: none;
+  }
+  .showcaseActionsRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .checkEligibilityBtn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION HEADERS (HOW IT WORKS, FAQ)
+   ═══════════════════════════════════════════════════════════════ */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.sectionBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  background: rgba(0, 123, 189, 0.08);
+  color: #007bbd;
+  border: 1px solid rgba(0, 123, 189, 0.2);
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.sectionTitle {
+  font-family: 'Rimouski Sb', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(1.85rem, 2.5vw, 2.3rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.sectionSubtitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #475569;
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+  text-align: center;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HOW IT WORKS (STEPS)
+   HOW IT WORKS (STEPS - ULTRA MODERN & ATTRACTIVE UI)
    ═══════════════════════════════════════════════════════════════ */
 .stepsSection {
   margin-bottom: 72px;
@@ -664,50 +957,179 @@
 .stepsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 22px;
+}
+
+@media (max-width: 1080px) {
+  .stepsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stepCard {
   background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  padding: 28px 22px;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 30, 54, 0.08);
+  padding: 26px 22px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(15, 30, 54, 0.03);
+}
+
+.stepCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: transparent;
+  transition: background 0.25s ease;
 }
 
 .stepCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(0, 123, 189, 0.12);
+  border-color: rgba(0, 123, 189, 0.25);
 }
 
-.stepNumber {
-  display: inline-flex;
+.stepTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.stepBadge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.stepIndexNum {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  font-family: 'Rimouski Sb', sans-serif;
+  letter-spacing: -0.02em;
+  transition: color 0.25s ease;
+}
+
+.stepCard:hover .stepIndexNum {
+  color: #94a3b8;
+}
+
+.stepIconWrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  color: #007bbd;
-  font-weight: 800;
-  font-size: 0.95rem;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stepCard:hover .stepIconWrap {
+  transform: scale(1.1);
+}
+
+.stepIconWrap svg {
+  width: 26px;
+  height: 26px;
 }
 
 .stepTitle {
-  margin: 0 0 10px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #0f172a;
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 750;
+  color: #0f1e36;
+  letter-spacing: -0.01em;
 }
 
 .stepText {
   margin: 0;
   color: #64748b;
-  font-size: 0.86rem;
-  line-height: 1.6;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+/* Themes */
+.stepTheme_sky .stepBadge {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0284c7;
+}
+
+.stepTheme_sky .stepIconWrap {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: #0284c7;
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+.stepTheme_sky:hover::before {
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+}
+
+.stepTheme_indigo .stepBadge {
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  color: #6366f1;
+}
+
+.stepTheme_indigo .stepIconWrap {
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.stepTheme_indigo:hover::before {
+  background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+}
+
+.stepTheme_amber .stepBadge {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #d97706;
+}
+
+.stepTheme_amber .stepIconWrap {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #d97706;
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.stepTheme_amber:hover::before {
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+}
+
+.stepTheme_emerald .stepBadge {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+}
+
+.stepTheme_emerald .stepIconWrap {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.stepTheme_emerald:hover::before {
+  background: linear-gradient(90deg, #16a34a 0%, #4ade80 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -719,12 +1141,11 @@
 }
 
 .faqList {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  align-items: start;
   width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
 }
 
 .faqItem {
@@ -732,19 +1153,19 @@
   border-radius: 16px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
 }
 
 .faqItem:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
 }
 
 .faqOpen {
   border-color: #bae6fd;
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 123, 189, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 123, 189, 0.08);
 }
 
 .faqQuestion {
@@ -752,20 +1173,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 20px 26px;
+  gap: 16px;
+  padding: 18px 22px;
   background: none;
   border: none;
   text-align: left;
-  font-size: 1rem;
+  font-size: 0.96rem;
   font-weight: 700;
   color: #0f172a;
   cursor: pointer;
+  line-height: 1.45;
 }
 
 .faqIcon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   color: #64748b;
   transition: transform 0.25s ease;
@@ -778,10 +1200,29 @@
 
 .faqAnswer {
   padding: 0 22px 18px;
-  color: #64748b;
-  font-size: 0.9rem;
+  color: #475569;
+  font-size: 0.88rem;
   line-height: 1.65;
   margin: 0;
+  animation: faqFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes faqFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 860px) {
+  .faqList {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════

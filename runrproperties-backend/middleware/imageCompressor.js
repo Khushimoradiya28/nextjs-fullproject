@@ -77,6 +77,15 @@ const processFileToWebp = async (file, opts = {}) => {
 
   let pipeline = sharp(file.buffer).rotate(); // Auto-rotate based on EXIF
 
+  // Auto-trim empty border whitespace for logos
+  if (opts.trim || opts.prefix === 'bank') {
+    try {
+      pipeline = pipeline.trim();
+    } catch (e) {
+      // Ignore if trim fails
+    }
+  }
+
   // Smart resize keeping aspect ratio without enlarging smaller images
   pipeline = pipeline.resize({
     width: maxWidth,

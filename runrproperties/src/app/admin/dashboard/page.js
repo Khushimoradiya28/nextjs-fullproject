@@ -36,6 +36,7 @@ import {
   changePassword as apiChangePassword,
 } from "../../services/api";
 import styles from "./admin.module.css";
+import FaqManager from "./FaqManager";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -1436,6 +1437,18 @@ export default function AdminDashboardPage() {
               </span>
             )}
           </button>
+          <button
+            type="button"
+            className={`${styles.navItem} ${activeTab === "faqs" ? styles.navItemActive : ""}`}
+            onClick={() => setActiveTab("faqs")}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.navIcon}>
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <span>FAQs Manager</span>
+          </button>
         </nav>
 
         <div className={styles.sidebarFooter}>
@@ -1483,6 +1496,11 @@ export default function AdminDashboardPage() {
 
       {/* Main Dashboard Content */}
       <main className={styles.mainContent}>
+        {/* FAQs MANAGER TAB */}
+        {activeTab === "faqs" && (
+          <FaqManager token={token} />
+        )}
+
         {/* 1. DASHBOARD OVERVIEW TAB */}
         {activeTab === "overview" && (
           <>

@@ -86,10 +86,13 @@ export function AuthProvider({ children }) {
     return await forgotPasswordAPI(data);
   }, []);
 
+  const token = typeof window !== "undefined" ? localStorage.getItem("runr_token") : null;
+
   return (
     <AuthContext.Provider
       value={{
         user,
+        token,
         loading,
         isAuthenticated: !!user,
         isAdmin: user?.role === "admin",
