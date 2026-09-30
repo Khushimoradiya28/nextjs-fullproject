@@ -231,14 +231,39 @@ export default function HeroBanner() {
     setTilt({ x: 0, y: 0, glareX: 50, glareY: 50 });
   };
 
-  // Auto-cycle through top Gujarat cities every 5s (pauses on hover)
+  const [typedCity, setTypedCity] = useState(gujaratTopDestinations[0].name);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Real-time typewriter effect cycling through top Gujarat cities
   useEffect(() => {
     if (isCityAutoPaused) return;
-    const timer = setInterval(() => {
+
+    const targetCityName = gujaratTopDestinations[activeCityIdx].name;
+    let timer;
+
+    if (!isDeleting && typedCity.length < targetCityName.length) {
+      // Type forward character by character
+      timer = setTimeout(() => {
+        setTypedCity(targetCityName.slice(0, typedCity.length + 1));
+      }, 95);
+    } else if (!isDeleting && typedCity.length === targetCityName.length) {
+      // Finished typing word, pause for 2.2s so user can read
+      timer = setTimeout(() => {
+        setIsDeleting(true);
+      }, 2200);
+    } else if (isDeleting && typedCity.length > 0) {
+      // Backspace delete character by character
+      timer = setTimeout(() => {
+        setTypedCity(targetCityName.slice(0, typedCity.length - 1));
+      }, 45);
+    } else if (isDeleting && typedCity.length === 0) {
+      // Finished deleting, transition to next city and start typing
+      setIsDeleting(false);
       setActiveCityIdx((prev) => (prev + 1) % gujaratTopDestinations.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [isCityAutoPaused]);
+    }
+
+    return () => clearTimeout(timer);
+  }, [typedCity, isDeleting, activeCityIdx, isCityAutoPaused]);
 
   // Lock body scroll when search modal is open + ESC to close
   useEffect(() => {
@@ -356,8 +381,9 @@ export default function HeroBanner() {
             <div className={styles.bannerCopy}>
               <h1 className={styles.bannerTitle}>
                 <span className={styles.bannerTitlePrefix}>Find Direct Verified Properties in</span>
-                <span key={currentDest.name} className={styles.bannerHighlight}>
-                  {currentDest.name}
+                <span className={styles.bannerHighlight}>
+                  {typedCity}
+                  <span className={styles.typewriterCursor} aria-hidden="true">|</span>
                 </span>
               </h1>
               <p className={styles.bannerText}>
@@ -503,7 +529,7 @@ export default function HeroBanner() {
                         value={bhk}
                         onChange={(e) => setBhk(e.target.value)}
                       >
-                        <option value="">Any</option>
+                        <option value="">Any BHK</option>
                         {bhkOptions.map((b) => (
                           <option key={b} value={b}>{b} BHK</option>
                         ))}
