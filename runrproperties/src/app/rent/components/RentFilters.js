@@ -105,7 +105,22 @@ export default function RentFilters({ filters, onFilterChange, onApplyFilters, o
 
           <div className={styles.filterGroup}>
             <label className={styles.filterLabel}>Available From</label>
-            <input type="date" className={styles.filterInput} value={filters.availableFrom} onChange={(e) => onFilterChange("availableFrom", e.target.value)} />
+            <input
+              type="date"
+              className={styles.filterInput}
+              value={filters.availableFrom}
+              onChange={(e) => onFilterChange("availableFrom", e.target.value)}
+              onClick={(e) => {
+                try {
+                  e.currentTarget.showPicker?.();
+                } catch (_) {}
+              }}
+              onFocus={(e) => {
+                try {
+                  e.currentTarget.showPicker?.();
+                } catch (_) {}
+              }}
+            />
           </div>
         </div>
 

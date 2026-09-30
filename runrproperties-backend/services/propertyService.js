@@ -25,6 +25,8 @@ const getAllProperties = async (query = {}) => {
     bedrooms,
     bathrooms,
     furnishing,
+    possessionStatus,
+    availableFrom,
     featured,
     sortBy = "newest",
   } = query;
@@ -66,6 +68,18 @@ const getAllProperties = async (query = {}) => {
   if (furnishings) {
     filter.furnishing =
       furnishings.length === 1 ? furnishings[0] : { $in: furnishings };
+  }
+
+  // Possession Status
+  const possessions = parseMulti(possessionStatus);
+  if (possessions) {
+    filter.possessionStatus =
+      possessions.length === 1 ? possessions[0] : { $in: possessions };
+  }
+
+  // Available From (date <= query date or available on/before specified date)
+  if (availableFrom) {
+    filter.availableFrom = { $lte: new Date(availableFrom) };
   }
 
   if (locality) filter.locality = new RegExp(locality, "i");

@@ -12,6 +12,8 @@ import {
   HiOutlineUpload,
   HiOutlineTrash,
   HiOutlineTag,
+  HiOutlineCalendar,
+  HiOutlineClock,
 } from "react-icons/hi";
 import {
   FaBed,
@@ -48,6 +50,8 @@ const defaultForm = {
   area: "",
   furnishing: "",
   parking: "",
+  availableFrom: "",
+  possessionStatus: "Ready to Move",
   description: "",
   image: "",
   images: [],
@@ -76,17 +80,136 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
       previewUrls: imgs,
     };
   });
+
+  const [priceUnit, setPriceUnit] = useState(() => {
+    const rawPrice = initialData?.price;
+    const lType = initialData?.listingType || "buy";
+    if (lType === "rent") return "rupees";
+    if (!rawPrice) return "lac";
+    const num = Number(rawPrice);
+    if (num >= 10000000) return "cr";
+    if (num >= 100000) return "lac";
+    if (num > 0 && num <= 500) return "lac";
+    return "rupees";
+  });
+
+  const [priceDisplay, setPriceDisplay] = useState(() => {
+    const rawPrice = initialData?.price;
+    const lType = initialData?.listingType || "buy";
+    if (!rawPrice && rawPrice !== 0) return "";
+    const num = Number(rawPrice);
+    if (isNaN(num) || num <= 0) return "";
+    if (lType === "rent") {
+      if (num >= 100000 && num % 100000 === 0) return String(num / 100000);
+      return String(num);
+    }
+    if (num >= 10000000) {
+      const cr = num / 10000000;
+      return String(cr % 1 === 0 ? cr : parseFloat(cr.toFixed(2)));
+    }
+    if (num >= 100000) {
+      const lac = num / 100000;
+      return String(lac % 1 === 0 ? lac : parseFloat(lac.toFixed(2)));
+    }
+    return String(num);
+  });
+
   const [errors, setErrors] = useState({});
   const [imageError, setImageError] = useState("");
 
+  const calculateFinalRupees = (val, unit) => {
+    const num = parseFloat(val);
+    if (isNaN(num) || num <= 0) return 0;
+    if (unit === "cr") return Math.round(num * 10000000);
+    if (unit === "lac") return Math.round(num * 100000);
+    if (unit === "thousand") return Math.round(num * 1000);
+    return Math.round(num);
+  };
+
+  const handlePriceValueChange = (e) => {
+    const val = e.target.value;
+    setPriceDisplay(val);
+    const finalVal = calculateFinalRupees(val, priceUnit);
+    setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
+    setErrors((p) => ({ ...p, price: "" }));
+  };
+
+  const handlePriceUnitChange = (e) => {
+    const newUnit = e.target.value;
+    setPriceUnit(newUnit);
+    const finalVal = calculateFinalRupees(priceDisplay, newUnit);
+    setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
+    setErrors((p) => ({ ...p, price: "" }));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "possessionStatus") {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (value === "Ready to Move" || value === "Immediate") {
+        setForm((p) => ({
+          ...p,
+          possessionStatus: value,
+          availableFrom: p.availableFrom && p.availableFrom > todayStr ? todayStr : (p.availableFrom || todayStr),
+        }));
+      } else if (value === "Under Construction") {
+        let nextDate = form.availableFrom;
+        if (!nextDate || nextDate <= todayStr) {
+          const future = new Date();
+          future.setMonth(future.getMonth() + 6);
+          nextDate = future.toISOString().slice(0, 10);
+        }
+        setForm((p) => ({
+          ...p,
+          possessionStatus: value,
+          availableFrom: nextDate,
+        }));
+      } else {
+        setForm((p) => ({ ...p, [name]: value }));
+      }
+      setErrors((p) => ({ ...p, possessionStatus: "" }));
+      return;
+    }
+
+    if (name === "availableFrom") {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (value) {
+        if (value > todayStr) {
+          setForm((p) => ({
+            ...p,
+            availableFrom: value,
+            possessionStatus: "Under Construction",
+          }));
+        } else {
+          setForm((p) => ({
+            ...p,
+            availableFrom: value,
+            possessionStatus: p.possessionStatus === "Immediate" ? "Immediate" : "Ready to Move",
+          }));
+        }
+      } else {
+        setForm((p) => ({ ...p, availableFrom: value }));
+      }
+      setErrors((p) => ({ ...p, availableFrom: "" }));
+      return;
+    }
+
     setForm((p) => ({ ...p, [name]: value }));
     setErrors((p) => ({ ...p, [name]: "" }));
   };
 
   const handleListingTypeChange = (type) => {
     setForm((p) => ({ ...p, listingType: type }));
+    if (type === "rent" && priceUnit === "cr") {
+      setPriceUnit("rupees");
+      const finalVal = calculateFinalRupees(priceDisplay, "rupees");
+      setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
+    } else if (type === "buy" && priceUnit === "rupees" && priceDisplay && parseFloat(priceDisplay) <= 500) {
+      setPriceUnit("lac");
+      const finalVal = calculateFinalRupees(priceDisplay, "lac");
+      setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
+    }
   };
 
   const toggleAmenity = (a) => {
@@ -160,7 +283,7 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
     if (!form.title.trim()) e.title = "Property title is required";
     if (!form.city.trim()) e.city = "Please select a city";
     if (!form.location.trim()) e.location = "Locality is required";
-    if (!form.price || parseInt(form.price) <= 0) e.price = "Enter a valid amount";
+    if (!priceDisplay || parseFloat(priceDisplay) <= 0) e.price = "Enter a valid price/amount";
     if (!form.area || parseInt(form.area) <= 0) e.area = "Area (Sq.Ft.) is required";
     if (!form.type) e.type = "Select Property Type";
     if (!form.description || form.description.trim().length < 20) {
@@ -176,7 +299,11 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
-    onSubmit(form);
+    const finalPrice = calculateFinalRupees(priceDisplay, priceUnit);
+    onSubmit({
+      ...form,
+      price: finalPrice,
+    });
   };
 
   return (
@@ -314,9 +441,55 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
                   <option value="">Select Parking</option>
                   <option value="Covered">Covered</option>
                   <option value="Open">Open</option>
-                  <option value="Both">Both Covered & Open</option>
+                  <option value="Both Covered & Open">Both Covered & Open</option>
                   <option value="None">None</option>
                 </select>
+              </div>
+
+              {/* Possession Status */}
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>
+                  <HiOutlineClock style={{ color: "#007bbd", fontSize: "0.88rem" }} /> Possession Status
+                </label>
+                <select name="possessionStatus" className={styles.formSelect} value={form.possessionStatus || "Ready to Move"} onChange={handleChange}>
+                  <option value="Ready to Move">Ready to Move</option>
+                  <option value="Immediate">Immediate Possession</option>
+                  <option value="Under Construction">Under Construction</option>
+                </select>
+                <div style={{ fontSize: "0.74rem", color: form.possessionStatus === "Under Construction" ? "#b45309" : "#15803d", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
+                  {form.possessionStatus === "Under Construction" ? "⏳ Property in progress (Future Date)" : "✓ Ready to Occupy (Immediate)"}
+                </div>
+              </div>
+
+              {/* Available From Date */}
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>
+                  <HiOutlineCalendar style={{ color: "#007bbd", fontSize: "0.88rem" }} /> {form.possessionStatus === "Under Construction" ? "Expected Possession Date" : "Available From (Date)"}
+                </label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="date"
+                    name="availableFrom"
+                    className={styles.formInput}
+                    value={form.availableFrom ? String(form.availableFrom).slice(0, 10) : ""}
+                    onChange={handleChange}
+                    onClick={(e) => {
+                      try {
+                        e.currentTarget.showPicker?.();
+                      } catch (_) {}
+                    }}
+                    onFocus={(e) => {
+                      try {
+                        e.currentTarget.showPicker?.();
+                      } catch (_) {}
+                    }}
+                  />
+                </div>
+                <div style={{ fontSize: "0.74rem", color: "#64748b", fontWeight: 500 }}>
+                  {form.possessionStatus === "Under Construction"
+                    ? "Future date marks project as Under Construction"
+                    : "Current/Past date marks as Ready to Move"}
+                </div>
               </div>
             </div>
           </div>
@@ -367,21 +540,69 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
 
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>
-                  {form.listingType === "rent" ? "Monthly Rent (₹)" : "Price (₹)"}{" "}
+                  {form.listingType === "rent" ? "Monthly Rent" : "Property Price"}{" "}
                   <span className={styles.requiredStar}>*</span>
                 </label>
-                <div className={styles.inputWrapper}>
-                  <span className={styles.inputIcon}>₹</span>
-                  <input
-                    name="price"
-                    type="number"
-                    className={`${styles.formInput} ${styles.formInputWithIcon}`}
-                    value={form.price}
-                    onChange={handleChange}
-                    placeholder={form.listingType === "rent" ? "25000" : "8500000"}
-                  />
+                <div className={styles.priceInputGroup}>
+                  <div className={styles.inputWrapper}>
+                    <span className={styles.inputIcon}>₹</span>
+                    <input
+                      name="priceDisplay"
+                      type="number"
+                      step="any"
+                      min="0"
+                      className={`${styles.formInput} ${styles.formInputWithIcon}`}
+                      value={priceDisplay}
+                      onChange={handlePriceValueChange}
+                      placeholder={
+                        priceUnit === "lac"
+                          ? "e.g. 85"
+                          : priceUnit === "cr"
+                          ? "e.g. 2.5"
+                          : form.listingType === "rent"
+                          ? "e.g. 25000"
+                          : "e.g. 8500000"
+                      }
+                    />
+                  </div>
+                  <select
+                    className={styles.priceUnitSelect}
+                    value={priceUnit}
+                    onChange={handlePriceUnitChange}
+                    aria-label="Select Price Unit"
+                  >
+                    {form.listingType === "rent" ? (
+                      <>
+                        <option value="rupees">₹ / Month</option>
+                        <option value="thousand">Thousand / Mo</option>
+                        <option value="lac">Lac / Month</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="lac">Lac</option>
+                        <option value="cr">Cr</option>
+                        <option value="rupees">₹ Total</option>
+                      </>
+                    )}
+                  </select>
                 </div>
                 {errors.price && <span className={styles.fieldError}>✕ {errors.price}</span>}
+                {priceDisplay && parseFloat(priceDisplay) > 0 && (
+                  <div className={styles.pricePreviewBadge}>
+                    <span>Preview:</span>
+                    <strong>
+                      {priceUnit === "cr"
+                        ? `₹ ${priceDisplay} Cr (₹ ${(parseFloat(priceDisplay) * 10000000).toLocaleString("en-IN")})`
+                        : priceUnit === "lac"
+                        ? `₹ ${priceDisplay} Lac (₹ ${(parseFloat(priceDisplay) * 100000).toLocaleString("en-IN")})`
+                        : priceUnit === "thousand"
+                        ? `₹ ${priceDisplay} K (₹ ${(parseFloat(priceDisplay) * 1000).toLocaleString("en-IN")})`
+                        : form.listingType === "rent"
+                        ? `₹ ${parseFloat(priceDisplay).toLocaleString("en-IN")} / month`
+                        : `₹ ${parseFloat(priceDisplay).toLocaleString("en-IN")}`}
+                    </strong>
+                  </div>
+                )}
               </div>
 
               <div className={styles.formGroup}>

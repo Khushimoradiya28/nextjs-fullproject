@@ -7,6 +7,7 @@ import {
   signupUser,
   logoutUser,
   updateProfile,
+  uploadProfilePhoto,
   changePassword as changePasswordAPI,
   forgotPassword as forgotPasswordAPI,
 } from "../services/api";
@@ -86,6 +87,19 @@ export function AuthProvider({ children }) {
     return await forgotPasswordAPI(data);
   }, []);
 
+  const uploadPhoto = useCallback(async (file) => {
+    const result = await uploadProfilePhoto(file);
+    if (result.success) {
+      const updatedUser = result.data?.user || result.user || result.data;
+      if (updatedUser) setUser(updatedUser);
+      else {
+        const fresh = await getCurrentUser();
+        if (fresh.success) setUser(fresh.user);
+      }
+    }
+    return result;
+  }, []);
+
   const token = typeof window !== "undefined" ? localStorage.getItem("runr_token") : null;
 
   return (
@@ -104,6 +118,7 @@ export function AuthProvider({ children }) {
         logout,
         update,
         refreshUser,
+        uploadProfilePhoto: uploadPhoto,
         changePass,
         forgotPass,
       }}

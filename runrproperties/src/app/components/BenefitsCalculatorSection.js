@@ -64,9 +64,11 @@ export default function BenefitsCalculatorSection() {
         <div className={styles.innerGrid}>
           <div className={styles.benefitsPanel}>
             <div className={styles.sectionTitleBox}>
-              <span className={styles.sectionTag}>✦ Why Us</span>
+              <div className={styles.sectionBadge}>
+                <span className={styles.sparkleIcon}>✦</span>
+                <span>Why Us</span>
+              </div>
               <h2>Why Choose runr properties?</h2>
-              <span className={styles.titleUnderline} aria-hidden="true" />
             </div>
 
             <div className={styles.benefitGrid}>
@@ -84,8 +86,10 @@ export default function BenefitsCalculatorSection() {
 
           <div className={styles.calculatorPanel}>
             <div className={styles.calcHeader}>
+              <div className={styles.calcBadge}>
+                <span>Quick Estimator</span>
+              </div>
               <h3>Home Loan – EMI Calculator</h3>
-              <span className={styles.titleUnderline} aria-hidden="true" />
             </div>
 
             <div className={styles.calcBody}>

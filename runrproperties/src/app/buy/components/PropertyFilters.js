@@ -18,9 +18,9 @@ const bhkOptions = [
 ];
 
 const budgetOptions = [
-  { value: "2500000", label: "₹ 25 Lakh" },
-  { value: "5000000", label: "₹ 50 Lakh" },
-  { value: "7500000", label: "₹ 75 Lakh" },
+  { value: "2500000", label: "₹ 25 Lac" },
+  { value: "5000000", label: "₹ 50 Lac" },
+  { value: "7500000", label: "₹ 75 Lac" },
   { value: "10000000", label: "₹ 1 Crore" },
   { value: "15000000", label: "₹ 1.5 Crore" },
   { value: "20000000", label: "₹ 2 Crore" },
@@ -31,6 +31,12 @@ const furnishingOptions = [
   { value: "furnished", label: "Furnished" },
   { value: "semi-furnished", label: "Semi-Furnished" },
   { value: "unfurnished", label: "Unfurnished" },
+];
+
+const possessionOptions = [
+  { value: "Ready to Move", label: "Ready to Move" },
+  { value: "Immediate", label: "Immediate Possession" },
+  { value: "Under Construction", label: "Under Construction" },
 ];
 
 const postedByOptions = [
@@ -183,6 +189,38 @@ export default function PropertyFilters({ filters, onFilterChange, onApplyFilter
               selected={filters.furnishing || []}
               onChange={(val) => onFilterChange("furnishing", val)}
               placeholder="Any"
+            />
+          </div>
+
+          {/* Availability / Possession Status */}
+          <div className={styles.filterGroup}>
+            <label className={styles.filterLabel}>Availability</label>
+            <MultiSelectDropdown
+              options={possessionOptions}
+              selected={filters.possessionStatus || []}
+              onChange={(val) => onFilterChange("possessionStatus", val)}
+              placeholder="Any Availability"
+            />
+          </div>
+
+          {/* Available From (Date) */}
+          <div className={styles.filterGroup}>
+            <label className={styles.filterLabel}>Available From</label>
+            <input
+              type="date"
+              className={styles.filterInput}
+              value={filters.availableFrom || ""}
+              onChange={(e) => onFilterChange("availableFrom", e.target.value)}
+              onClick={(e) => {
+                try {
+                  e.currentTarget.showPicker?.();
+                } catch (_) {}
+              }}
+              onFocus={(e) => {
+                try {
+                  e.currentTarget.showPicker?.();
+                } catch (_) {}
+              }}
             />
           </div>
 

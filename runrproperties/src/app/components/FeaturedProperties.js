@@ -6,14 +6,25 @@ import { useWishlist } from "../context/WishlistContext";
 import { searchProperties } from "../services/api";
 import styles from "./FeaturedProperties.module.css";
 
-function formatPrice(price) {
-  if (price >= 10000000) {
-    return `₹ ${(price / 10000000).toFixed(2)} Cr`;
+function formatPrice(price, listingType = "buy") {
+  if (price === undefined || price === null || price === "" || price === 0) return "₹ 0";
+  const num = Number(price);
+  if (isNaN(num) || num <= 0) return "₹ 0";
+  if (num >= 10000000) {
+    const cr = num / 10000000;
+    const formatted = parseFloat(cr.toFixed(2));
+    return `₹ ${formatted} Cr`;
   }
-  if (price >= 100000) {
-    return `₹ ${(price / 100000).toFixed(0)} Lakh`;
+  if (num >= 100000) {
+    const lac = num / 100000;
+    const formatted = parseFloat(lac.toFixed(2));
+    return `₹ ${formatted} Lac`;
   }
-  return `₹ ${price.toLocaleString("en-IN")}`;
+  if (num > 0 && num <= 500 && listingType === "buy") {
+    const formatted = parseFloat(num.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  return `₹ ${num.toLocaleString("en-IN")}`;
 }
 
 function PropertyCard({ item }) {
@@ -126,7 +137,8 @@ export default function FeaturedProperties() {
 
   const handlePrev = () => {
     isPausedRef.current = true;
-    const cardWidth = 320;
+    const firstCard = trackRef.current?.children[0];
+    const cardWidth = firstCard ? firstCard.offsetWidth + 20 : 280;
     const targetPosition = Math.max(0, positionRef.current - cardWidth);
 
     const startPosition = positionRef.current;
@@ -158,7 +170,8 @@ export default function FeaturedProperties() {
 
   const handleNext = () => {
     isPausedRef.current = true;
-    const cardWidth = 320;
+    const firstCard = trackRef.current?.children[0];
+    const cardWidth = firstCard ? firstCard.offsetWidth + 20 : 280;
     const targetPosition = positionRef.current + cardWidth;
 
     const startPosition = positionRef.current;
@@ -192,33 +205,43 @@ export default function FeaturedProperties() {
     <section className={styles.featuredSection}>
       <div className={styles.featuredHeader}>
         <div className={styles.sectionTitleBlock}>
-          <span className={styles.sectionTag}>✦ Hand-Picked</span>
+          <div className={styles.sectionBadge}>
+            <span className={styles.sparkleIcon}>✦</span>
+            <span>Hand-Picked</span>
+          </div>
           <h2 className={styles.sectionTitle}>Featured Properties</h2>
-          <div className={styles.titleUnderline} />
+          <p className={styles.sectionSubtitle}>
+            Explore verified premium listings curated across prime Gujarat locations
+          </p>
         </div>
-        <a href="/buy" className={styles.viewAllLink}>View All <span>→</span></a>
-      </div>
 
-      {needsSlider && (
-        <div className={styles.sliderControls}>
-          <button
-            type="button"
-            className={styles.sliderButton}
-            onClick={handlePrev}
-            aria-label="Show previous featured properties"
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            className={styles.sliderButton}
-            onClick={handleNext}
-            aria-label="Show next featured properties"
-          >
-            →
-          </button>
+        <div className={styles.headerActions}>
+          {needsSlider && (
+            <div className={styles.sliderControls}>
+              <button
+                type="button"
+                className={styles.sliderButton}
+                onClick={handlePrev}
+                aria-label="Show previous featured properties"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                className={styles.sliderButton}
+                onClick={handleNext}
+                aria-label="Show next featured properties"
+              >
+                →
+              </button>
+            </div>
+          )}
+          <a href="/buy" className={styles.viewAllLink}>
+            <span>View All</span>
+            <span className={styles.viewAllArrow}>→</span>
+          </a>
         </div>
-      )}
+      </div>
 
       {loading ? (
         <div className={styles.featuredGrid}>

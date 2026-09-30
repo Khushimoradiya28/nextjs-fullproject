@@ -17,6 +17,8 @@ import {
   HiOutlineLocationMarker,
   HiOutlinePencilAlt,
   HiOutlineEye,
+  HiOutlineCalendar,
+  HiOutlineChevronRight,
 } from "react-icons/hi";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -24,11 +26,34 @@ import DashboardSidebar from "../components/DashboardSidebar";
 import profileStyles from "../profile/profile.module.css";
 import styles from "./dashboard.module.css";
 
-function formatPrice(price) {
-  if (!price) return "";
-  if (price >= 10000000) return `₹ ${(price / 10000000).toFixed(2)} Cr`;
-  if (price >= 100000) return `₹ ${(price / 100000).toFixed(1)} Lakh`;
-  return `₹ ${price.toLocaleString("en-IN")}`;
+function formatPrice(price, listingType = "buy") {
+  if (price === undefined || price === null || price === "" || price === 0) return "";
+  const num = Number(price);
+  if (isNaN(num) || num <= 0) return "";
+  if (num >= 10000000) {
+    const cr = num / 10000000;
+    const formatted = parseFloat(cr.toFixed(2));
+    return `₹ ${formatted} Cr`;
+  }
+  if (num >= 100000) {
+    const lac = num / 100000;
+    const formatted = parseFloat(lac.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  if (num > 0 && num <= 500 && listingType === "buy") {
+    const formatted = parseFloat(num.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  return `₹ ${num.toLocaleString("en-IN")}`;
+}
+
+function formatDateTime(val) {
+  if (!val) return "—";
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return "—";
+  const dateStr = d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  const timeStr = d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  return `${dateStr}, ${timeStr}`;
 }
 
 function formatDate(val) {
@@ -36,6 +61,33 @@ function formatDate(val) {
   const d = new Date(val);
   if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function getRoleDetails(buyer, s) {
+  const role = (buyer?.role || "buyer").toLowerCase();
+  if (role === "owner") {
+    return { label: "Owner", className: s.roleowner || "" };
+  }
+  if (role === "agent") {
+    return { label: "Agent", className: s.roleagent || "" };
+  }
+  if (role === "admin") {
+    return { label: "Admin", className: s.roleadmin || "" };
+  }
+  if (role === "bank_partner") {
+    return { label: "Bank Partner", className: s.rolebank_partner || "" };
+  }
+  return { label: "Buyer", className: s.rolebuyer || "" };
+}
+
+function getStatusClass(status, s) {
+  if (!status) return s.statusPending;
+  if (status.includes("Called")) return s.statusCalled;
+  if (status.includes("Discussion") || status === "Contacted") return s.statusDiscussion;
+  if (status.includes("Site Visit")) return s.statusSiteVisit;
+  if (status.includes("Deal Won") || status.includes("Won")) return s.statusDealWon;
+  if (status.includes("Not Interested") || status === "Closed") return s.statusNotInterested;
+  return s[`status${status}`] || s.statusPending;
 }
 
 function getImage(prop) {
@@ -180,7 +232,7 @@ function OwnerDashboard({ stats }) {
   return (
     <>
       <div className={styles.statsGrid}>
-        <Link href="/dashboard/my-properties" className={styles.statCard}>
+        <Link href="/dashboard/my-properties?status=all" className={styles.statCard}>
           <div className={styles.statIconBadge}>
             <HiOutlineHome />
           </div>
@@ -189,7 +241,7 @@ function OwnerDashboard({ stats }) {
             <span className={styles.statLabel}>Total Properties</span>
           </div>
         </Link>
-        <Link href="/dashboard/my-properties" className={styles.statCard}>
+        <Link href="/dashboard/my-properties?status=active" className={styles.statCard}>
           <div className={styles.statIconBadge} style={{ background: "#ecfdf5", borderColor: "#a7f3d0", color: "#059669" }}>
             <HiOutlineCheckCircle />
           </div>
@@ -198,7 +250,7 @@ function OwnerDashboard({ stats }) {
             <span className={styles.statLabel}>Active</span>
           </div>
         </Link>
-        <Link href="/dashboard/my-properties" className={styles.statCard}>
+        <Link href="/dashboard/my-properties?status=sold" className={styles.statCard}>
           <div className={styles.statIconBadge} style={{ background: "#fef3c7", borderColor: "#fde68a", color: "#d97706" }}>
             <HiOutlineArchive />
           </div>
@@ -230,117 +282,151 @@ function OwnerDashboard({ stats }) {
         </Link>
       </div>
 
-      <div className={styles.recentSection}>
-        <div className={styles.recentHeader}>
-          <h3>Recent Properties</h3>
-          <Link href="/dashboard/my-properties" className={styles.viewAll}>
-            View All <HiOutlineExternalLink />
-          </Link>
-        </div>
-        {properties.length > 0 ? (
-          <div className={styles.recentList}>
-            {properties.slice(0, 5).map((p) => {
-              const propId = p._id || p.id;
-              const propDetailLink = `/property/${propId}`;
-              return (
-                <div key={propId} className={styles.recentCard}>
-                  <Link href={propDetailLink} className={styles.recentImg}>
-                    <img src={getImage(p)} alt={p.title} />
+      <div className={styles.dashboard2ColGrid}>
+        {/* Left Column: Recent Properties (Top 3) */}
+        <div className={styles.recentSection} style={{ marginBottom: 0 }}>
+          <div className={styles.recentHeader}>
+            <h3>Recent Properties</h3>
+            <Link href="/dashboard/my-properties" className={styles.viewAll}>
+              View All <HiOutlineExternalLink />
+            </Link>
+          </div>
+          {properties.length > 0 ? (
+            <div className={styles.recentList}>
+              {properties.slice(0, 3).map((p) => {
+                const propId = p._id || p.id;
+                return (
+                  <Link
+                    key={propId}
+                    href="/dashboard/my-properties"
+                    className={styles.compactRowCard}
+                    title="Click to view and manage in My Properties"
+                  >
+                    {/* Left: Property Image Thumbnail */}
+                    <div className={styles.rowThumbWrap}>
+                      <img src={getImage(p)} alt={p.title} className={styles.rowThumbImg} />
+                    </div>
+
+                    {/* Right: Details beside image */}
+                    <div className={styles.rowContent}>
+                      <div className={styles.rowLine1}>
+                        <div className={styles.rowTitleWrap}>
+                          <strong className={styles.rowTitle}>{p.title}</strong>
+                          {propId && (
+                            <span className={styles.propIdBadge}>
+                              #{propId?.slice(-8)?.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                        <div className={styles.rowMetaRight}>
+                          <span className={`${styles.statusBadge} ${styles[`status${p.status || "active"}`]}`}>
+                            {p.status || "active"}
+                          </span>
+                          <span className={styles.dateBadge}>
+                            <HiOutlineCalendar /> {formatDate(p.createdAt)}
+                          </span>
+                          <span className={styles.rowArrow}>
+                            <HiOutlineChevronRight />
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.rowLine2}>
+                        {(p.locality || p.location || p.city) && (
+                          <span className={styles.rowSubtitle}>
+                            <HiOutlineLocationMarker /> {p.locality || p.location}{p.city ? `, ${p.city}` : ""}
+                          </span>
+                        )}
+                        {p.price > 0 && (
+                          <span className={styles.rowPrice}>
+                            • {formatPrice(p.price)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </Link>
-                  <div className={styles.recentBody}>
-                    <div className={styles.recentTopMeta}>
-                      <span className={`${styles.statusBadge} ${styles[`status${p.status || "active"}`]}`}>
-                        {p.status || "active"}
-                      </span>
-                      {p.category && <span className={styles.categoryTag}>{p.category}</span>}
-                      {p.purpose && <span className={styles.categoryTag}>For {p.purpose}</span>}
-                    </div>
-
-                    <Link href={propDetailLink} style={{ textDecoration: "none" }}>
-                      <h4 className={styles.recentTitle}>{p.title}</h4>
-                    </Link>
-                    
-                    <p className={styles.recentMeta}>
-                      <HiOutlineLocationMarker />
-                      {p.locality || p.location}{p.city ? `, ${p.city}` : ""}
-                    </p>
-
-                    <div className={styles.recentSpecs}>
-                      {p.bedrooms ? <span className={styles.specChip}>{p.bedrooms} BHK</span> : null}
-                      {p.bathrooms ? <span className={styles.specChip}>{p.bathrooms} Bath</span> : null}
-                      {p.area ? <span className={styles.specChip}>{p.area} sq.ft</span> : null}
-                    </div>
-
-                    <div className={styles.recentRow}>
-                      <span className={styles.recentPrice}>{formatPrice(p.price)}</span>
-                      {p.createdAt && <span className={styles.dateText}>Added {formatDate(p.createdAt)}</span>}
-                    </div>
-                  </div>
-
-                  <div className={styles.recentActions}>
-                    <Link href={`/dashboard/edit-property/${propId}`} className={styles.miniBtnPrimary}>
-                      <HiOutlinePencilAlt /> Edit
-                    </Link>
-                    <Link href={propDetailLink} className={styles.miniBtn}>
-                      <HiOutlineEye /> View
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <p className={styles.emptyText}>No properties added yet.</p>
-        )}
-      </div>
-
-      <div className={styles.recentSection}>
-        <div className={styles.recentHeader}>
-          <h3>Recent Enquiries</h3>
-          <Link href="/dashboard/enquiries" className={styles.viewAll}>
-            View All <HiOutlineExternalLink />
-          </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <p className={styles.emptyText}>No properties added yet.</p>
+          )}
         </div>
-        {enquiries.length > 0 ? (
-          <div className={styles.recentList}>
-            {enquiries.slice(0, 5).map((e) => {
-              const prop = e.property || {};
-              return (
-                <div key={e._id} className={styles.recentCard}>
-                  <div className={styles.recentImg}>
-                    <img src={getImage(prop)} alt={prop.title || ""} />
-                  </div>
-                  <div className={styles.recentBody}>
-                    <div className={styles.recentTopMeta}>
-                      <span className={`${styles.statusBadge} ${styles[`status${e.status || "Pending"}`]}`}>
-                        {e.status || "Pending"}
-                      </span>
-                      <span className={styles.dateText}>{formatDate(e.createdAt)}</span>
+
+        {/* Right Column: Recent Enquiries (Top 3) */}
+        <div className={styles.recentSection} style={{ marginBottom: 0 }}>
+          <div className={styles.recentHeader}>
+            <h3>Recent Enquiries</h3>
+            <Link href="/dashboard/enquiries" className={styles.viewAll}>
+              View All <HiOutlineExternalLink />
+            </Link>
+          </div>
+          {enquiries.length > 0 ? (
+            <div className={styles.recentList}>
+              {enquiries.slice(0, 3).map((e) => {
+                const prop = e.property || {};
+                const buyer = e.buyer || {};
+                const buyerInitial = (e.name || "B").charAt(0).toUpperCase();
+                const roleInfo = getRoleDetails(buyer, styles);
+                return (
+                  <Link
+                    key={e._id}
+                    href="/dashboard/enquiries"
+                    className={styles.compactRowCard}
+                    title="Click to view full lead details in Enquiries"
+                  >
+                    {/* Left: Avatar spanning row */}
+                    <div className={styles.rowAvatarWrap}>
+                      <span>{buyerInitial}</span>
                     </div>
 
-                    <h4 className={styles.recentTitle}>{prop.title || "Property Enquiry"}</h4>
-                    
-                    <p className={styles.recentMeta}>
-                      <strong>{e.name}</strong> &bull; {e.email || e.phone || ""}
-                    </p>
+                    {/* Right: Info */}
+                    <div className={styles.rowContent}>
+                      <div className={styles.rowLine1}>
+                        <div className={styles.rowTitleWrap}>
+                          <strong className={styles.rowTitle}>{e.name}</strong>
+                          <span className={`${styles.buyerBadge} ${roleInfo.className}`}>
+                            {roleInfo.label}
+                          </span>
+                        </div>
+                        <div className={styles.rowMetaRight}>
+                          <span className={`${styles.statusBadge} ${getStatusClass(e.status, styles)}`}>
+                            {e.status || "Pending"}
+                          </span>
+                          <span className={styles.dateBadge} title={formatDateTime(e.createdAt)}>
+                            <HiOutlineCalendar /> {formatDate(e.createdAt)}
+                          </span>
+                          <span className={styles.rowArrow}>
+                            <HiOutlineChevronRight />
+                          </span>
+                        </div>
+                      </div>
 
-                    <p className={styles.recentMeta} style={{ color: "#334155" }}>
-                      "{e.message?.substring(0, 90)}{e.message?.length > 90 ? "..." : ""}"
-                    </p>
-                  </div>
-
-                  <div className={styles.recentActions}>
-                    <Link href="/dashboard/enquiries" className={styles.miniBtn}>
-                      View Enquiry
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <p className={styles.emptyText}>No enquiries received yet.</p>
-        )}
+                      {/* Line 2: Property context & message snippet */}
+                      <div className={styles.rowLine2}>
+                        <span className={styles.rowForTag}>
+                          For: <strong>{prop.title || "Property"}</strong>
+                          {(prop.id || prop._id) && (
+                            <span className={styles.propIdBadge}>
+                              #{(prop.id || prop._id)?.slice(-8)?.toUpperCase()}
+                            </span>
+                          )}
+                        </span>
+                        {e.message && (
+                          <span className={styles.rowMsgSnippet}>
+                            • "{e.message}"
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <p className={styles.emptyText}>No enquiries received yet.</p>
+          )}
+        </div>
       </div>
     </>
   );
@@ -378,93 +464,124 @@ function BuyerDashboard({ stats }) {
         <Link href="/wishlist" className={styles.actionBtnOutline}>Wishlist</Link>
       </div>
 
-      <div className={styles.recentSection}>
-        <div className={styles.recentHeader}>
-          <h3>Recent Saved</h3>
-          <Link href="/wishlist" className={styles.viewAll}>
-            View All <HiOutlineExternalLink />
-          </Link>
-        </div>
-        {wishlist.length > 0 ? (
-          <div className={styles.recentList}>
-            {wishlist.slice(0, 5).map((p) => {
-              const propId = p.id || p._id;
-              const propDetailLink = `/property/${propId}`;
-              return (
-                <div key={propId} className={styles.recentCard}>
-                  <Link href={propDetailLink} className={styles.recentImg}>
-                    <img src={p.image || "/img/buy-properties/1.jpg"} alt={p.title} />
+      <div className={styles.dashboard2ColGrid}>
+        <div className={styles.recentSection} style={{ marginBottom: 0 }}>
+          <div className={styles.recentHeader}>
+            <h3>Recent Saved</h3>
+            <Link href="/wishlist" className={styles.viewAll}>
+              View All <HiOutlineExternalLink />
+            </Link>
+          </div>
+          {wishlist.length > 0 ? (
+            <div className={styles.recentList}>
+              {wishlist.slice(0, 3).map((p) => {
+                const propId = p.id || p._id;
+                const propDetailLink = `/property/${propId}`;
+                return (
+                  <Link
+                    key={propId}
+                    href={propDetailLink}
+                    className={styles.compactRowCard}
+                    title="Click to view property"
+                  >
+                    <div className={styles.rowThumbWrap}>
+                      <img src={p.image || "/img/buy-properties/1.jpg"} alt={p.title} className={styles.rowThumbImg} />
+                    </div>
+                    <div className={styles.rowContent}>
+                      <div className={styles.rowLine1}>
+                        <div className={styles.rowTitleWrap}>
+                          <strong className={styles.rowTitle}>{p.title}</strong>
+                        </div>
+                        <div className={styles.rowMetaRight}>
+                          {p.category && <span className={styles.categoryTag}>{p.category}</span>}
+                          <span className={styles.rowArrow}>
+                            <HiOutlineChevronRight />
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles.rowLine2}>
+                        <span className={styles.rowSubtitle}>
+                          <HiOutlineLocationMarker /> {p.location}{p.city ? `, ${p.city}` : ""}
+                        </span>
+                        {p.price > 0 && (
+                          <span className={styles.rowPrice}>
+                            • {formatPrice(p.price)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </Link>
-                  <div className={styles.recentBody}>
-                    <div className={styles.recentTopMeta}>
-                      {p.category && <span className={styles.categoryTag}>{p.category}</span>}
-                      {p.purpose && <span className={styles.categoryTag}>For {p.purpose}</span>}
-                    </div>
-                    <Link href={propDetailLink} style={{ textDecoration: "none" }}>
-                      <h4 className={styles.recentTitle}>{p.title}</h4>
-                    </Link>
-                    <p className={styles.recentMeta}>
-                      <HiOutlineLocationMarker />
-                      {p.location}{p.city ? `, ${p.city}` : ""}
-                    </p>
-                    <div className={styles.recentRow}>
-                      <span className={styles.recentPrice}>{formatPrice(p.price)}</span>
-                    </div>
-                  </div>
-                  <div className={styles.recentActions}>
-                    <Link href={propDetailLink} className={styles.miniBtnPrimary}>
-                      <HiOutlineEye /> View Property
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <p className={styles.emptyText}>No saved properties.</p>
-        )}
-      </div>
-
-      <div className={styles.recentSection}>
-        <div className={styles.recentHeader}>
-          <h3>Recent Enquiries</h3>
-          <Link href="/dashboard/my-enquiries" className={styles.viewAll}>
-            View All <HiOutlineExternalLink />
-          </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <p className={styles.emptyText}>No saved properties.</p>
+          )}
         </div>
-        {enquiries.length > 0 ? (
-          <div className={styles.recentList}>
-            {enquiries.slice(0, 5).map((e) => {
-              const prop = e.property || {};
-              return (
-                <div key={e._id} className={styles.recentCard}>
-                  <div className={styles.recentImg}>
-                    <img src={getImage(prop)} alt={prop.title || ""} />
-                  </div>
-                  <div className={styles.recentBody}>
-                    <div className={styles.recentTopMeta}>
-                      <span className={`${styles.statusBadge} ${styles[`status${e.status || "Pending"}`]}`}>
-                        {e.status || "Pending"}
-                      </span>
-                      <span className={styles.dateText}>{formatDate(e.createdAt)}</span>
-                    </div>
-                    <h4 className={styles.recentTitle}>{prop.title || "Property Enquiry"}</h4>
-                    <p className={styles.recentMeta}>
-                      "{e.message?.substring(0, 80)}{e.message?.length > 80 ? "..." : ""}"
-                    </p>
-                  </div>
-                  <div className={styles.recentActions}>
-                    <Link href="/dashboard/my-enquiries" className={styles.miniBtn}>
-                      View Status
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
+
+        <div className={styles.recentSection} style={{ marginBottom: 0 }}>
+          <div className={styles.recentHeader}>
+            <h3>Recent Enquiries</h3>
+            <Link href="/dashboard/my-enquiries" className={styles.viewAll}>
+              View All <HiOutlineExternalLink />
+            </Link>
           </div>
-        ) : (
-          <p className={styles.emptyText}>No enquiries sent.</p>
-        )}
+          {enquiries.length > 0 ? (
+            <div className={styles.recentList}>
+              {enquiries.slice(0, 3).map((e) => {
+                const prop = e.property || {};
+                return (
+                  <Link
+                    key={e._id}
+                    href="/dashboard/my-enquiries"
+                    className={styles.compactRowCard}
+                    title="Click to view enquiry in My Enquiries"
+                  >
+                    {/* Left: Thumbnail */}
+                    <div className={styles.rowThumbWrap}>
+                      <img src={getImage(prop)} alt={prop.title || ""} className={styles.rowThumbImg} />
+                    </div>
+
+                    {/* Right: Details beside image */}
+                    <div className={styles.rowContent}>
+                      <div className={styles.rowLine1}>
+                        <div className={styles.rowTitleWrap}>
+                          <strong className={styles.rowTitle}>{prop.title || "Property Enquiry"}</strong>
+                          {(prop.id || prop._id) && (
+                            <span className={styles.propIdBadge}>
+                              #{(prop.id || prop._id)?.slice(-8)?.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                        <div className={styles.rowMetaRight}>
+                          <span className={`${styles.statusBadge} ${getStatusClass(e.status, styles)}`}>
+                            {e.status || "Pending"}
+                          </span>
+                          <span className={styles.dateBadge}>
+                            <HiOutlineCalendar /> {formatDate(e.createdAt)}
+                          </span>
+                          <span className={styles.rowArrow}>
+                            <HiOutlineChevronRight />
+                          </span>
+                        </div>
+                      </div>
+
+                      {e.message && (
+                        <div className={styles.rowLine2}>
+                          <span className={styles.rowMsgSnippet}>
+                            "{e.message}"
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <p className={styles.emptyText}>No enquiries sent.</p>
+          )}
+        </div>
       </div>
     </>
   );

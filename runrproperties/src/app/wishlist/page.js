@@ -12,15 +12,25 @@ import profileStyles from "../profile/profile.module.css";
 import Link from "next/link";
 import styles from "./wishlist.module.css";
 
-function formatPrice(price) {
-  if (!price) return "₹ N/A";
-  if (price >= 10000000) {
-    return `₹ ${(price / 10000000).toFixed(2)} Cr`;
+function formatPrice(price, listingType = "buy") {
+  if (price === undefined || price === null || price === "" || price === 0) return "₹ N/A";
+  const num = Number(price);
+  if (isNaN(num) || num <= 0) return "₹ N/A";
+  if (num >= 10000000) {
+    const cr = num / 10000000;
+    const formatted = parseFloat(cr.toFixed(2));
+    return `₹ ${formatted} Cr`;
   }
-  if (price >= 100000) {
-    return `₹ ${(price / 100000).toFixed(1)} Lakh`;
+  if (num >= 100000) {
+    const lac = num / 100000;
+    const formatted = parseFloat(lac.toFixed(2));
+    return `₹ ${formatted} Lac`;
   }
-  return `₹ ${price.toLocaleString("en-IN")}`;
+  if (num > 0 && num <= 500 && listingType === "buy") {
+    const formatted = parseFloat(num.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  return `₹ ${num.toLocaleString("en-IN")}`;
 }
 
 function capitalizeFirst(str) {

@@ -100,6 +100,12 @@
   border-color: #cbd5e1;
 }
 
+.statCardActive {
+  border-color: #007bbd !important;
+  background: #f0f9ff !important;
+  box-shadow: 0 8px 24px rgba(0, 123, 189, 0.15) !important;
+}
+
 .statIconBadge {
   width: 46px;
   height: 46px;
@@ -468,6 +474,38 @@
   font-size: 0.88rem !important;
   border: 1px solid #bae6fd;
   display: inline-block;
+}
+
+.propDates {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.propDateItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.propDateItem strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.dateIcon {
+  color: #007bbd;
+  font-size: 0.88rem;
+  flex-shrink: 0;
+}
+
+.propDateDivider {
+  color: #cbd5e1;
+  font-size: 0.75rem;
 }
 
 /* Right Actions Grid (2x2) */

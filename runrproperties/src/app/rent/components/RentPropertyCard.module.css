@@ -13,6 +13,9 @@
   transition: transform 0.28s ease, box-shadow 0.28s ease;
   height: 100%;
   position: relative;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .card:hover {
@@ -28,39 +31,189 @@
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
+  transform: translateZ(0);
 }
 
 .cardImage {
-  height: 220px;
+  height: 228px;
   position: relative;
   overflow: hidden;
-  background-color: #f3f6fb;
+  background-color: #0b1120;
+  transform: translateZ(0);
 }
 
 .cardImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 35%;
   display: block;
-  transition: transform 0.35s ease;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  image-rendering: -webkit-optimize-contrast;
+  animation: cardImgFade 0.35s ease-out;
+}
+
+@keyframes cardImgFade {
+  from { opacity: 0.82; }
+  to { opacity: 1; }
 }
 
 .card:hover .cardImg {
-  transform: scale(1.03);
+  transform: scale(1.04) translateZ(0);
 }
 
-.featuredBadge {
+/* Card Auto-Slider Controls */
+.cardSlideBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 4;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  line-height: 1;
+}
+
+.card:hover .cardSlideBtn {
+  opacity: 1;
+}
+
+.cardSlidePrev {
+  left: 8px;
+}
+
+.cardSlideNext {
+  right: 8px;
+}
+
+.cardSlideBtn:hover {
+  background: #007bbd;
+  border-color: #ffffff;
+  transform: translateY(-50%) scale(1.12);
+}
+
+.cardSliderDots {
+  position: absolute;
+  top: 12px;
+  right: 52px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 3;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cardSliderDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  transition: all 0.25s ease;
+  display: inline-block;
+}
+
+.cardSliderDotActive {
+  width: 14px;
+  border-radius: 4px;
+  background: #38bdf8;
+}
+
+/* Highlighted Floating Price Badge on Image */
+.imagePriceBadge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+.card:hover .imagePriceBadge {
+  transform: translateY(-2px);
+}
+
+.imagePriceValue {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.imagePriceLabel {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  margin-left: 2px;
+}
+
+.badgeRow {
   position: absolute;
   top: 12px;
   left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+
+.featuredBadge {
   background: #f59e0b;
   color: white;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 4px 10px;
   border-radius: 20px;
-  z-index: 2;
   letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.listingBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+}
+
+.rentBadge {
+  background: #10b981;
+  color: #ffffff;
 }
 
 /* Wishlist / Like Button */
@@ -151,10 +304,12 @@
 
 .listMeta {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 5px;
+  margin-top: 4px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .metaItem {
@@ -165,10 +320,34 @@
   color: #007bbd;
   background: #f0f9ff;
   border: 1px solid #bae6fd;
-  padding: 2px 6px;
+  padding: 2.5px 7px;
   border-radius: 10px;
   font-weight: 600;
   white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.moreMetaItem {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  color: #007bbd;
+  background: #f0f9ff;
+  border: 1px dashed #7dd3fc;
+  padding: 2.5px 7px;
+  border-radius: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.moreMetaItem:hover {
+  background: #007bbd;
+  color: #ffffff;
+  border-style: solid;
+  border-color: #007bbd;
 }
 
 .metaItem svg {
@@ -202,59 +381,43 @@
   flex-wrap: nowrap;
 }
 
-.priceBlock {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 3px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  min-width: 0;
-}
+/* ═══════════════════════════════════════════════════
+   GRID VIEW FOOTER OWNER BAR & CALL BUTTON
+   ═══════════════════════════════════════════════════ */
 
-.rentValue {
-  font-size: 0.98rem;
-  font-weight: 800;
-  color: #1e3a5f;
-  white-space: nowrap;
-  letter-spacing: -0.02em;
-}
-
-.rentLabel {
-  font-size: 0.72rem;
-  color: #64748b;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* Sticky Owner Chip Base */
-.gridOwnerChip {
-  display: inline-flex;
+.gridOwnerBar {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  padding: 2px 4px 2px 2px;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  flex-shrink: 1;
-  min-width: 0;
-  max-width: 110px;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
 }
 
-.gridOwnerChip:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
+.gridOwnerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  cursor: pointer;
+  padding: 2px 6px 2px 2px;
+  border-radius: 20px;
+  transition: background 0.2s ease;
+}
+
+.gridOwnerLeft:hover {
+  background: #f1f5f9;
 }
 
 .gridOwnerAvatar {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   overflow: hidden;
   display: grid;
   place-items: center;
   flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .ownerAvatarImg {
@@ -264,78 +427,61 @@
 }
 
 .ownerInitialSmall {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: #ffffff;
 }
 
 .gridOwnerName {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: #334155;
-  max-width: 65px;
+  color: #1e293b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-right: 2px;
+  min-width: 0;
 }
 
-/* Call Button - Hidden by default inside the chip */
-.gridCallBadge {
-  width: 0;
-  height: 22px;
+.gridOwnerLabel {
+  font-weight: 500;
+  color: #64748b;
+  margin-right: 2px;
+}
+
+.gridCallBtn {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  border: none;
   background: #007bbd;
   color: #ffffff;
   display: grid;
   place-items: center;
   flex-shrink: 0;
+  cursor: pointer;
   opacity: 0;
   visibility: hidden;
-  transform: scale(0.6);
+  transform: scale(0.7);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-left: -4px;
 }
 
-.gridCallBadge svg {
-  width: 10px;
-  height: 10px;
+.gridCallBtn svg {
+  width: 14px;
+  height: 14px;
   fill: #ffffff;
 }
 
-/* Show Call Button when CARD is hovered */
-.card:hover .gridCallBadge {
-  width: 22px;
+.card:hover .gridCallBtn {
   opacity: 1;
   visibility: visible;
   transform: scale(1);
-  margin-left: 0;
-  box-shadow: 0 2px 6px rgba(0, 123, 189, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 123, 189, 0.35);
 }
 
-/* Standalone Contact Button (Fallback) */
-.contactIconBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: #007bbd;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 123, 189, 0.25);
-  transition: background 0.2s ease;
-}
-
-.contactIconBtn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.contactIconBtn:hover {
+.gridCallBtn:hover {
   background: #005f94;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 123, 189, 0.45);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -605,12 +751,10 @@
 
 @media (max-width: 640px) {
   /* Mobile / Touch Devices par Call icon hamesha visible rahega */
-  .gridCallBadge {
-    width: 26px;
+  .gridCallBtn {
     opacity: 1;
     visibility: visible;
     transform: scale(1);
-    margin-left: 0;
   }
 
   .card {

@@ -5,13 +5,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
-import { getMediaUrl } from "../services/api";
+import { getMediaUrl, uploadProfilePhoto as uploadProfilePhotoAPI } from "../services/api";
 import styles from "./DashboardSidebar.module.css";
 
 export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isOwner, logout, uploadProfilePhoto } = useAuth();
+  const { user, isOwner, logout, uploadProfilePhoto, refreshUser } = useAuth();
   const { wishlist } = useWishlist() || { wishlist: [] };
   const [uploading, setUploading] = useState(false);
 
@@ -22,17 +22,25 @@ export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (!file || !uploadProfilePhoto) return;
+    if (!file) return;
     setUploading(true);
     try {
-      const res = await uploadProfilePhoto(file);
+      let res;
+      if (typeof uploadProfilePhoto === "function") {
+        res = await uploadProfilePhoto(file);
+      } else {
+        res = await uploadProfilePhotoAPI(file);
+        if (res?.success && refreshUser) await refreshUser();
+      }
       if (res?.success && onPhotoUploaded) {
-        onPhotoUploaded(res.url);
+        onPhotoUploaded(res.url || res.data?.profilePhoto || res.data?.user?.profilePhoto);
       }
     } catch (err) {
       console.error("Failed to upload avatar", err);
     } finally {
       setUploading(false);
+      // reset file input value so user can upload again if needed
+      e.target.value = "";
     }
   };
 
@@ -70,29 +78,33 @@ export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
               </span>
             </div>
           )}
-          {uploadProfilePhoto && (
-            <label className={styles.avatarUploadBtn} title="Upload new photo">
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className={styles.avatarFileInput}
-                onChange={handlePhotoUpload}
-                disabled={uploading}
-              />
-              {uploading ? (
-                <div className={styles.uploadSpinner} />
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-              )}
-            </label>
-          )}
+          
+          <label
+            htmlFor="sidebar-avatar-input"
+            className={styles.avatarUploadBtn}
+            title="Upload new photo"
+          >
+            {uploading ? (
+              <div className={styles.uploadSpinner} />
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            )}
+          </label>
+          <input
+            id="sidebar-avatar-input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/jpg"
+            className={styles.avatarFileInput}
+            onChange={handlePhotoUpload}
+            disabled={uploading}
+          />
         </div>
-        <p className={styles.avatarHint}>
+        <label htmlFor="sidebar-avatar-input" className={styles.avatarHint}>
           {uploading ? "Uploading..." : user.profilePhoto ? "Change avatar" : "Upload avatar"}
-        </p>
+        </label>
       </div>
 
       {/* User Meta */}
@@ -135,7 +147,7 @@ export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          <span>Personal Profile</span>
+          <span>Profile</span>
         </Link>
 
         <Link
@@ -166,7 +178,6 @@ export default function DashboardSidebar({ activeOverride, onPhotoUploaded }) {
 
         {isOwner && (
           <>
-            <div className={styles.sidebarSectionLabel}>Owner Portal</div>
             <Link
               href="/dashboard/my-properties"
               className={`${styles.sidebarLink} ${isLinkActive("/dashboard/my-properties") ? styles.sidebarLinkActive : ""}`}

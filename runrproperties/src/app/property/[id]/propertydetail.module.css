@@ -88,11 +88,11 @@
 .galleryMain {
   position: relative;
   width: 100%;
-  height: 420px;
-  max-height: 52vh;
-  min-height: 280px;
+  height: 480px;
+  max-height: 58vh;
+  min-height: 320px;
   overflow: hidden;
-  background: #0f172a;
+  background: #0b1120;
 }
 
 .gallerySlideImg {
@@ -102,12 +102,16 @@
   object-position: center;
   display: block;
   cursor: zoom-in;
-  animation: smoothFade 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: smoothFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .galleryMain:hover .gallerySlideImg {
-  transform: scale(1.015);
+  transform: scale(1.02);
 }
 
 @keyframes smoothFade {
@@ -325,88 +329,215 @@
 .lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.96);
-  z-index: 9999;
+  background: rgba(8, 14, 26, 0.96);
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(12px);
-  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(16px);
+  animation: lightboxFade 0.22s ease;
+  user-select: none;
+}
+
+@keyframes lightboxFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .lightboxClose {
   position: absolute;
   top: 24px;
-  right: 24px;
-  width: 44px;
-  height: 44px;
+  right: 28px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-size: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 700;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background 0.2s;
+  z-index: 100001;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .lightboxClose:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #ef4444;
+  border-color: #ef4444;
+  transform: rotate(90deg) scale(1.08);
+}
+
+.lightboxImageContainer {
+  position: relative;
+  max-width: 88vw;
+  max-height: 76vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
 }
 
 .lightboxImage {
-  max-width: 90vw;
-  max-height: 85vh;
+  max-width: 88vw;
+  max-height: 76vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border-radius: 14px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+  animation: lightboxZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.lightboxCounter {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 6px 16px;
-  border-radius: 20px;
+@keyframes lightboxZoomIn {
+  from {
+    opacity: 0.7;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .lightboxNav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  color: #ffffff;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background 0.2s;
+  z-index: 100002;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .lightboxNav:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #007bbd;
+  border-color: #007bbd;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 10px 28px rgba(0, 123, 189, 0.5);
 }
 
 .lightboxNav svg {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
 }
 
 .lightboxPrev {
-  left: 24px;
+  left: 32px;
 }
 
 .lightboxNext {
-  right: 24px;
+  right: 32px;
+}
+
+.lightboxFooter {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 100001;
+  max-width: 90vw;
+}
+
+.lightboxCounter {
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.lightboxThumbs {
+  display: flex;
+  gap: 8px;
+  max-width: 80vw;
+  overflow-x: auto;
+  padding: 4px;
+  scrollbar-width: none;
+}
+
+.lightboxThumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.lightboxThumb {
+  width: 52px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: #1e293b;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.lightboxThumb:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.lightboxThumbActive {
+  opacity: 1;
+  border-color: #007bbd;
+  box-shadow: 0 0 12px rgba(0, 123, 189, 0.6);
+  transform: translateY(-2px);
+}
+
+.lightboxThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .lightboxNav {
+    width: 44px;
+    height: 44px;
+  }
+  .lightboxPrev {
+    left: 12px;
+  }
+  .lightboxNext {
+    right: 12px;
+  }
+  .lightboxClose {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+  }
+  .lightboxImage {
+    max-width: 95vw;
+    max-height: 70vh;
+  }
 }
 
 /* ═══════════════════════════════════════════════════ */
@@ -488,6 +619,19 @@
   border: 1px solid #bae6fd;
 }
 
+.featuredBadge {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border: 1px solid #f59e0b;
+  letter-spacing: 0.03em;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+}
+
 .postedDate {
   font-size: 0.78rem;
   color: #94a3b8;
@@ -563,61 +707,86 @@
   margin-top: 4px;
 }
 
-/* Quick Info Cards */
+/* Quick Info Overview Strip - Unified & Ultra-Clean */
 .quickInfoGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02);
 }
 
 .quickInfoCard {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 18px 16px;
-  text-align: center;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: transparent;
+  border-radius: 0;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  border-right: 1px solid #f1f5f9;
+  box-shadow: none;
+  flex: 1 1 auto;
+  min-width: 110px;
+  transition: all 0.2s ease;
+}
+
+.quickInfoCard:last-child {
+  border-right: none;
 }
 
 .quickInfoCard:hover {
-  transform: translateY(-2px);
-  border-color: #bae6fd;
-  box-shadow: 0 8px 20px rgba(0, 123, 189, 0.08);
+  transform: none;
+  box-shadow: none;
 }
 
 .quickInfoIcon {
-  width: 42px;
-  height: 42px;
-  margin: 0 auto 10px;
-  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   background: #f0f9ff;
-  border: 1px solid #bae6fd;
+  border: 1px solid #e0f2fe;
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 
 .quickInfoIcon svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   color: #007bbd;
+}
+
+.quickInfoText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.quickInfoLabel {
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
 }
 
 .quickInfoValue {
   display: block;
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-size: 0.90rem;
+  font-weight: 750;
   color: #0f172a;
-  margin-bottom: 2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: capitalize;
-}
-
-.quickInfoLabel {
-  font-size: 0.72rem;
-  color: #64748b;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 /* Section Block */

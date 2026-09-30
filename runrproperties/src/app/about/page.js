@@ -17,6 +17,8 @@ import {
   HiOutlineMapPin,
   HiOutlineEye,
   HiOutlineHandThumbUp,
+  HiOutlineMagnifyingGlass,
+  HiOutlineKey,
 } from "react-icons/hi2";
 
 import { getPropertyStats } from "../services/api";
@@ -136,18 +138,24 @@ const pillars = [
 const steps = [
   {
     step: "01",
+    icon: <HiOutlineMagnifyingGlass />,
     title: "Discover Verified Properties",
     desc: "Filter by city, budget, and configuration with real photographs, verified floorplans, and clear pricing.",
+    tag: "Search & Filter",
   },
   {
     step: "02",
+    icon: <HiOutlineEye />,
     title: "Guided On-Site & Virtual Tours",
     desc: "Connect with our dedicated area specialists for convenient site visits, neighborhood insights, and property tours.",
+    tag: "Site Inspection",
   },
   {
     step: "03",
+    icon: <HiOutlineKey />,
     title: "Hassle-Free Legal & Handover",
     desc: "We assist with loan sanctions, registry documentation, and secure deal closure right up to the final key handover.",
+    tag: "Final Handover",
   },
 ];
 
@@ -361,11 +369,11 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* 3 Step Journey */}
+        {/* 3 Step Journey - Connected Light Flow Pipeline */}
         <section className={styles.processSection}>
           <div className={styles.centerHeader}>
             <div className={styles.sectionBadge}>
-              <HiOutlineHandThumbUp className={styles.sparkleIcon} />
+              <HiOutlineSparkles className={styles.sparkleIcon} />
               <span>How It Works</span>
             </div>
             <h2 className={styles.sectionHeading}>Your Seamless Property Journey</h2>
@@ -374,14 +382,28 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className={styles.stepsGrid}>
-            {steps.map((st, idx) => (
-              <div key={idx} className={styles.stepCard}>
-                <div className={styles.stepNumber}>{st.step}</div>
-                <h3 className={styles.stepTitle}>{st.title}</h3>
-                <p className={styles.stepDesc}>{st.desc}</p>
-              </div>
-            ))}
+          <div className={styles.timelineWrapper}>
+            <div className={styles.timelineTrack} />
+            <div className={styles.stepsGrid}>
+              {steps.map((st, idx) => (
+                <div key={idx} className={styles.stepCardWrap}>
+                  <div className={styles.stepCard}>
+                    <div className={styles.stepHeaderRow}>
+                      <div className={styles.stepNumberBadge}>{st.step}</div>
+                      <div className={styles.stepIconBubble}>{st.icon}</div>
+                    </div>
+                    <span className={styles.stepTag}>{st.tag}</span>
+                    <h3 className={styles.stepTitle}>{st.title}</h3>
+                    <p className={styles.stepDesc}>{st.desc}</p>
+                  </div>
+                  {idx < steps.length - 1 && (
+                    <div className={styles.stepArrowConnector} aria-hidden="true">
+                      <HiOutlineArrowRight />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

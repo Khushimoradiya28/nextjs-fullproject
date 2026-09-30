@@ -942,7 +942,7 @@ router.patch('/property-enquiries/:id/status', protect, adminOnly, async (req, r
     )
       .populate('property', 'title price city locality images photos propertyType listingType category status')
       .populate('owner', 'name email mobile')
-      .populate('buyer', 'name email mobile');
+      .populate('buyer', 'name email mobile role');
 
     if (!enquiry) {
       return res.status(404).json({ success: false, message: 'Property enquiry not found' });

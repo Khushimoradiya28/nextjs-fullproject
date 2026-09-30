@@ -54,27 +54,31 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #007bbd;
   color: #ffffff;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   border: 2.5px solid #ffffff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
 }
 
 .avatarUploadBtn svg {
-  width: 14px !important;
-  height: 14px !important;
+  width: 15px !important;
+  height: 15px !important;
+  stroke: #ffffff;
 }
 
 .avatarUploadBtn:hover {
   background: #00659c;
-  transform: scale(1.08);
+  transform: scale(1.12);
+  box-shadow: 0 4px 14px rgba(0, 123, 189, 0.4);
 }
 
 .avatarFileInput {
@@ -84,7 +88,7 @@
 .uploadSpinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.35);
   border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -95,10 +99,21 @@
 }
 
 .avatarHint {
-  font-size: 0.74rem;
-  font-weight: 500;
-  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #007bbd;
   margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.avatarHint:hover {
+  color: #005682;
+  text-decoration: underline;
 }
 
 .sidebarUserMeta {

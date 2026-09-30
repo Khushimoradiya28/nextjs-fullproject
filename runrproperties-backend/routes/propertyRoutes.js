@@ -4,7 +4,7 @@ const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const { createUploader, compressToWebp } = require('../middleware/imageCompressor');
 
 const uploadPropertyImages = createUploader({ maxSize: 15 * 1024 * 1024, maxFiles: 10 });
-const compressPropertyImages = compressToWebp({ maxWidth: 1920, quality: 84, prefix: 'prop' });
+const compressPropertyImages = compressToWebp({ maxWidth: 2560, maxHeight: 2560, quality: 92, prefix: 'prop' });
 
 const {
   createProperty,

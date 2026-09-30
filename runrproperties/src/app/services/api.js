@@ -337,6 +337,12 @@ export async function addProperty(propertyData) {
   formData.append("area", parseInt(propertyData.area || 0));
   formData.append("furnishing", furnishingMap[rawFurnishing] || "");
   formData.append("parking", propertyData.parking || "");
+  if (propertyData.availableFrom) {
+    formData.append("availableFrom", propertyData.availableFrom);
+  }
+  if (propertyData.possessionStatus) {
+    formData.append("possessionStatus", propertyData.possessionStatus);
+  }
   formData.append("description", propertyData.description || "");
   formData.append("price", parseInt(propertyData.price || 0));
   formData.append("featured", propertyData.featured || false);
@@ -426,6 +432,10 @@ export async function updateProperty(propertyId, updates) {
     );
   if (updates.parking !== undefined)
     formData.append("parking", updates.parking);
+  if (updates.availableFrom !== undefined)
+    formData.append("availableFrom", updates.availableFrom);
+  if (updates.possessionStatus !== undefined)
+    formData.append("possessionStatus", updates.possessionStatus);
   if (updates.description !== undefined)
     formData.append("description", updates.description);
   if (updates.price) formData.append("price", parseInt(updates.price));
@@ -611,6 +621,8 @@ function mapProperty(p) {
     status: p.status || "active",
     postedBy: p.postedBy || "owner",
     postedDate: p.createdAt || new Date().toISOString(),
+    createdAt: p.createdAt || p.postedDate || null,
+    updatedAt: p.updatedAt || null,
     availableFrom: p.availableFrom || p.createdAt || new Date().toISOString(),
   };
 }

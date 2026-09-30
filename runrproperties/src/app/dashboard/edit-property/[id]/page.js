@@ -60,6 +60,8 @@ export default function EditPropertyPage() {
           area: String(p.area || ""),
           furnishing: p.furnishing || "",
           parking: p.parking || "",
+          availableFrom: p.availableFrom ? String(p.availableFrom).slice(0, 10) : "",
+          possessionStatus: p.possessionStatus || "Ready to Move",
           description: p.description || "",
           amenities: p.amenities || [],
           image: p.image || "",

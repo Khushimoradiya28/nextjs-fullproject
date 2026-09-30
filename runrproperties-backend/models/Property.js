@@ -76,7 +76,16 @@ const propertySchema = new mongoose.Schema(
     },
     parking: {
       type: String,
-      enum: ['Covered', 'Open', 'Both', 'None', ''],
+      enum: ['Covered', 'Open', 'Both', 'Both Covered & Open', 'None', ''],
+      default: '',
+    },
+    availableFrom: {
+      type: Date,
+      default: null,
+    },
+    possessionStatus: {
+      type: String,
+      enum: ['Ready to Move', 'Immediate', 'Under Construction', ''],
       default: '',
     },
     description: {

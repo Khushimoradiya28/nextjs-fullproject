@@ -39,7 +39,7 @@ const getOwnerDashboard = async (ownerId) => {
     // Recent enquiries (last 5)
     Enquiry.find({ owner: ownerId })
       .populate('property', 'title slug images')
-      .populate('buyer', 'name email mobile avatarColor profilePhoto')
+      .populate('buyer', 'name email mobile avatarColor profilePhoto role')
       .sort({ createdAt: -1 })
       .limit(5)
       .lean(),

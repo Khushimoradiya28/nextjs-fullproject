@@ -113,9 +113,14 @@ export default function CityPortal() {
     <section className={`${styles.citySection} gray-bg theme-padding`}>
       <div className={styles.cityHeader}>
         <div className={styles.sectionTitle}>
-          <span className={styles.sectionTag}>✦ Explore Cities</span>
+          <div className={styles.sectionBadge}>
+            <span className={styles.sparkleIcon}>✦</span>
+            <span>Explore Cities</span>
+          </div>
           <h2>Explore Properties in Top Cities</h2>
-          <span className={styles.titleUnderline} />
+          <p className={styles.sectionSubtitle}>
+            Find premium homes and commercial hubs across Gujarat's fastest growing regions
+          </p>
         </div>
 
         <div className={styles.sliderControls}>
@@ -139,21 +144,32 @@ export default function CityPortal() {
       </div>
 
       <div ref={sliderRef} className={styles.citySlider} suppressHydrationWarning>
-        {loopItems.map((city, index) => (
-          <Link
-            key={`${city.slug}-${index}`}
-            href={`/city/${city.slug}`}
-            className={styles.cityCard}
-          >
-            <div className={styles.cityIcon} aria-hidden="true">
-              <img src={city.image} alt={city.name} className={styles.cityImage} />
-            </div>
-            <div className={styles.cityInfo}>
-              <span className={styles.cityName}>{city.name}</span>
-              <span className={styles.cityLabel}>{cityCounts[city.slug] || 0} Properties</span>
-            </div>
-          </Link>
-        ))}
+        {loopItems.map((city, index) => {
+          const count = cityCounts[city.slug] || 0;
+          return (
+            <Link
+              key={`${city.slug}-${index}`}
+              href={`/city/${city.slug}`}
+              className={styles.cityCard}
+            >
+              <div className={styles.cardTopAccent} />
+              <div className={styles.cityIcon} aria-hidden="true">
+                <img src={city.image} alt={city.name} className={styles.cityImage} />
+              </div>
+              <div className={styles.cityInfo}>
+                <span className={styles.cityName}>{city.name}</span>
+                <div className={styles.cityPill}>
+                  <span className={styles.pulseDot} />
+                  <span>{count} {count === 1 ? "Property" : "Properties"}</span>
+                </div>
+                <div className={styles.exploreCue}>
+                  <span>Explore</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

@@ -82,13 +82,19 @@ export default function BlogSection() {
     <section className={styles.blogSection}>
       <div className={styles.blogInner}>
         <div className={styles.blogHeader}>
-          <div>
-            <span className={styles.label}>✦ Insights</span>
+          <div className={styles.sectionTitleBlock}>
+            <div className={styles.sectionBadge}>
+              <span className={styles.sparkleIcon}>✦</span>
+              <span>Insights & News</span>
+            </div>
             <h2 className={styles.sectionTitle}>Latest from Blog</h2>
-            <div className={styles.titleUnderline} />
+            <p className={styles.sectionSubtitle}>
+              Real estate guides, market trends, and property buying advice in Gujarat
+            </p>
           </div>
           <Link href="/blog" className={styles.viewAll}>
-            View All Blogs →
+            <span>View All Blogs</span>
+            <span className={styles.viewAllArrow}>→</span>
           </Link>
         </div>
 
@@ -97,7 +103,7 @@ export default function BlogSection() {
             <Link
               key={post.slug || index}
               href={`/blog/${post.slug || ""}`}
-              style={{ textDecoration: "none", color: "inherit", display: "block" }}
+              className={styles.blogCardLink}
             >
               <article className={styles.blogCard}>
                 <div className={styles.cardVisual} aria-hidden="true">

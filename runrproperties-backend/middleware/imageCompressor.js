@@ -71,9 +71,9 @@ const processFileToWebp = async (file, opts = {}) => {
   const uniqueName = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
   const outputPath = path.join(IMAGES_DIR, uniqueName);
 
-  const maxWidth = opts.maxWidth || 1920;
-  const maxHeight = opts.maxHeight || 1920;
-  const quality = opts.quality || 84; // High visual fidelity (sharp & non-blurry, yet 70-85% smaller)
+  const maxWidth = opts.maxWidth || 2560;
+  const maxHeight = opts.maxHeight || 2560;
+  const quality = opts.quality || 92; // Ultra crisp high visual fidelity, retaining 100% clarity
 
   let pipeline = sharp(file.buffer).rotate(); // Auto-rotate based on EXIF
 
@@ -94,7 +94,7 @@ const processFileToWebp = async (file, opts = {}) => {
     withoutEnlargement: true,
   });
 
-  // Convert to WebP with balanced effort & high quality
+  // Convert to WebP with balanced effort & crystal clear quality
   pipeline = pipeline.webp({
     quality: quality,
     effort: 4,

@@ -2648,6 +2648,33 @@ export default function AdminDashboardPage() {
                       <tr key={p._id}>
                         <td className={styles.tdNumber}>{serialNumber}</td>
                         <td>
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", marginBottom: "3px" }}>
+                            <span style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              padding: "1px 6px",
+                              borderRadius: "4px",
+                              background: "#f0f9ff",
+                              border: "1px solid #bae6fd",
+                              color: "#0369a1",
+                              fontSize: "0.68rem",
+                              fontWeight: 700,
+                              letterSpacing: "0.03em",
+                            }}>
+                              ID: #{p._id?.slice(-8)?.toUpperCase()}
+                            </span>
+                            {p.category && (
+                              <span
+                                className={
+                                  p.category.toLowerCase() === "commercial"
+                                    ? styles.categoryCommercial
+                                    : styles.categoryResidential
+                                }
+                              >
+                                {p.category}
+                              </span>
+                            )}
+                          </div>
                           <a
                             href={`/property/${p._id}`}
                             target="_blank"
@@ -2657,17 +2684,6 @@ export default function AdminDashboardPage() {
                           >
                             <strong className={styles.propTitleText}>{p.title}</strong>
                           </a>
-                          {p.category && (
-                            <span
-                              className={
-                                p.category.toLowerCase() === "commercial"
-                                  ? styles.categoryCommercial
-                                  : styles.categoryResidential
-                              }
-                            >
-                              {p.category}
-                            </span>
-                          )}
                         </td>
                         <td>
                           <div className={styles.ownerNameText}>{p.owner?.name || "—"}</div>
@@ -4131,6 +4147,23 @@ export default function AdminDashboardPage() {
                                 }}
                               />
                               <div style={{ minWidth: 0 }}>
+                                {(prop.id || prop._id) && (
+                                  <span style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    padding: "1px 6px",
+                                    borderRadius: "4px",
+                                    background: "#f0f9ff",
+                                    border: "1px solid #bae6fd",
+                                    color: "#0369a1",
+                                    fontSize: "0.68rem",
+                                    fontWeight: 700,
+                                    letterSpacing: "0.03em",
+                                    marginBottom: "2px",
+                                  }}>
+                                    ID: #{(prop.id || prop._id)?.slice(-8)?.toUpperCase()}
+                                  </span>
+                                )}
                                 <strong
                                   style={{
                                     display: "block",
@@ -4146,7 +4179,7 @@ export default function AdminDashboardPage() {
                                   {prop.title || "Property Listing"}
                                 </strong>
                                 <div style={{ fontSize: "0.74rem", color: "#007bbd", fontWeight: 700 }}>
-                                  {prop.price ? (prop.price >= 10000000 ? `₹ ${(prop.price / 10000000).toFixed(2)} Cr` : `₹ ${(prop.price / 100000).toFixed(1)} Lakh`) : "Price on Request"}
+                                  {prop.price ? (prop.price >= 10000000 ? `₹ ${parseFloat((prop.price / 10000000).toFixed(2))} Cr` : prop.price >= 100000 ? `₹ ${parseFloat((prop.price / 100000).toFixed(2))} Lac` : prop.price <= 500 ? `₹ ${parseFloat(Number(prop.price).toFixed(2))} Lac` : `₹ ${Number(prop.price).toLocaleString("en-IN")}`) : "Price on Request"}
                                 </div>
                                 <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
                                   📍 {prop.city || prop.locality || "Gujarat"}
@@ -6043,7 +6076,7 @@ export default function AdminDashboardPage() {
                     </h4>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.82rem", flexWrap: "wrap" }}>
                       <span style={{ color: "#007bbd", fontWeight: 800 }}>
-                        {selectedPropertyLead.property.price ? (selectedPropertyLead.property.price >= 10000000 ? `₹ ${(selectedPropertyLead.property.price / 10000000).toFixed(2)} Cr` : `₹ ${(selectedPropertyLead.property.price / 100000).toFixed(1)} Lakh`) : "Price on Request"}
+                        {selectedPropertyLead.property.price ? (selectedPropertyLead.property.price >= 10000000 ? `₹ ${parseFloat((selectedPropertyLead.property.price / 10000000).toFixed(2))} Cr` : selectedPropertyLead.property.price >= 100000 ? `₹ ${parseFloat((selectedPropertyLead.property.price / 100000).toFixed(2))} Lac` : selectedPropertyLead.property.price <= 500 ? `₹ ${parseFloat(Number(selectedPropertyLead.property.price).toFixed(2))} Lac` : `₹ ${Number(selectedPropertyLead.property.price).toLocaleString("en-IN")}`) : "Price on Request"}
                       </span>
                       <span style={{ color: "#64748b", fontWeight: 600 }}>
                         📍 {selectedPropertyLead.property.city || selectedPropertyLead.property.locality || "Gujarat"}

@@ -15,8 +15,33 @@ import { useWishlist } from "../../context/WishlistContext";
 import { useAuthGuard } from "../../hooks/useAuthGuard";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./propertydetail.module.css";
-function formatPrice(price) { if (!price) return "₹ 0"; if (price >= 10000000) return `₹ ${(price / 10000000).toFixed(2)} Cr`; if (price >= 100000) return `₹ ${(price / 100000).toFixed(1)} Lakh`; return `₹ ${price.toLocaleString("en-IN")}`; }
+function formatPrice(price, listingType = "buy") {
+  if (price === undefined || price === null || price === "" || price === 0) return "₹ 0";
+  const num = Number(price);
+  if (isNaN(num) || num <= 0) return "₹ 0";
+  if (num >= 10000000) {
+    const cr = num / 10000000;
+    const formatted = parseFloat(cr.toFixed(2));
+    return `₹ ${formatted} Cr`;
+  }
+  if (num >= 100000) {
+    const lac = num / 100000;
+    const formatted = parseFloat(lac.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  if (num > 0 && num <= 500 && listingType === "buy") {
+    const formatted = parseFloat(num.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  return `₹ ${num.toLocaleString("en-IN")}`;
+}
 function formatDate(d) { if (!d) return ""; return new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); }
+function formatParking(val) {
+  if (!val) return "";
+  const s = String(val).trim();
+  if (s.toLowerCase() === "both") return "Both Covered & Open";
+  return s;
+}
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
@@ -100,7 +125,7 @@ export default function PropertyDetailPage() {
     return formatted.length > 0 ? formatted : ["/img/buy-properties/1.jpg"];
   }, [property]);
 
-  // Continuous Auto-Slider Loop (Switches every 3.5 seconds unless hovered/paused)
+  // Continuous Auto-Slider Loop (Switches every 2 seconds unless hovered/paused)
   useEffect(() => {
     if (!images || images.length <= 1 || lightboxOpen || isPaused) return;
     const interval = setInterval(() => {
@@ -108,12 +133,21 @@ export default function PropertyDetailPage() {
         const next = prev + 1;
         return next >= images.length ? 0 : next;
       });
-    }, 3500);
+    }, 2000);
     return () => clearInterval(interval);
   }, [images, lightboxOpen, isPaused]);
 
   useEffect(() => { const h = () => setStickyVisible(window.scrollY > 500); window.addEventListener("scroll", h); return () => window.removeEventListener("scroll", h); }, []);
-  useEffect(() => { if (!lightboxOpen) return; const h = (e) => { if (e.key === "Escape") setLightboxOpen(false); }; window.addEventListener("keydown", h); return () => window.removeEventListener("keydown", h); }, [lightboxOpen]);
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const h = (e) => {
+      if (e.key === "Escape") setLightboxOpen(false);
+      else if (e.key === "ArrowLeft") setActiveImg((p) => (p - 1 + images.length) % images.length);
+      else if (e.key === "ArrowRight") setActiveImg((p) => (p + 1) % images.length);
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [lightboxOpen, images]);
 
   const handleShare = (type) => {
     const url = window.location.href;
@@ -183,12 +217,20 @@ export default function PropertyDetailPage() {
                   <div className={styles.headerMeta}>
                     <span className={`${styles.statusBadge} ${statusClass}`}>{property.status || "Active"}</span>
                     <span className={styles.listingBadge}>{property.listingType === "rent" ? "For Rent" : "For Sale"}</span>
-                    <span className={styles.postedDate}>Posted {formatDate(property.postedDate)}</span>
+                    {property.featured && <span className={styles.featuredBadge}>★ Featured</span>}
+                    <span className={styles.postedDate}>
+                      Published: {formatDate(property.postedDate || property.createdAt)}
+                    </span>
+                    {property.updatedAt && property.updatedAt !== property.createdAt && (
+                      <span className={styles.postedDate}>
+                        • Updated: {formatDate(property.updatedAt)}
+                      </span>
+                    )}
                   </div>
                   <h1 className={styles.propertyTitle}>{property.title}</h1>
                   <p className={styles.propertyLocation}>
                     <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-6-5-8.4-9.1A5.6 5.6 0 0112 4.6a5.6 5.6 0 018.4 7.3C18 16 12 21 12 21Z" stroke="currentColor" strokeWidth="1.6" /><circle cx="12" cy="11" r="2" stroke="currentColor" strokeWidth="1.4" /></svg>
-                    {property.location}{property.city ? `, ${property.city}` : ""}
+                    {property.locality || property.location || property.address || ""}{property.city ? `${property.locality || property.location || property.address ? ", " : ""}${property.city}` : ""}
                   </p>
                   <span className={styles.propertyId}>ID: {property.id?.slice(-8)?.toUpperCase()}</span>
                 </div>
@@ -342,12 +384,85 @@ export default function PropertyDetailPage() {
 
             {/* Quick Info */}
             <div className={styles.quickInfoGrid}>
-              {property.bhk > 0 && <div className={styles.quickInfoCard}><div className={styles.quickInfoIcon}><svg viewBox="0 0 24 24" fill="none"><path d="M3 21V7l9-4 9 4v14M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.5" /></svg></div><span className={styles.quickInfoValue}>{property.bhk} BHK</span><span className={styles.quickInfoLabel}>Bedrooms</span></div>}
-              {property.bathrooms > 0 && <div className={styles.quickInfoCard}><div className={styles.quickInfoIcon}><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16v5a3 3 0 01-3 3H7a3 3 0 01-3-3v-5zM6 12V5a2 2 0 012-2h1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></div><span className={styles.quickInfoValue}>{property.bathrooms}</span><span className={styles.quickInfoLabel}>Bathrooms</span></div>}
-              {property.area > 0 && <div className={styles.quickInfoCard}><div className={styles.quickInfoIcon}><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /></svg></div><span className={styles.quickInfoValue}>{property.area.toLocaleString("en-IN")}</span><span className={styles.quickInfoLabel}>Sq. Ft.</span></div>}
-              {property.type && <div className={styles.quickInfoCard}><div className={styles.quickInfoIcon}><svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V7l7-4 7 4v14" stroke="currentColor" strokeWidth="1.5" /></svg></div><span className={styles.quickInfoValue}>{property.type}</span><span className={styles.quickInfoLabel}>Type</span></div>}
-              {property.furnishing && <div className={styles.quickInfoCard}><div className={styles.quickInfoIcon}><svg viewBox="0 0 24 24" fill="none"><path d="M20 10V7a2 2 0 00-2-2H6a2 2 0 00-2 2v3M4 10v7h16v-7M2 17h20v2H2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></div><span className={styles.quickInfoValue}>{property.furnishing}</span><span className={styles.quickInfoLabel}>Furnishing</span></div>}
-              {property.parking && <div className={styles.quickInfoCard}><div className={styles.quickInfoIcon}><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.5" /><path d="M9 16V8h4a3 3 0 010 6H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></div><span className={styles.quickInfoValue}>{property.parking}</span><span className={styles.quickInfoLabel}>Parking</span></div>}
+              {property.bhk > 0 && (
+                <div className={styles.quickInfoCard}>
+                  <div className={styles.quickInfoIcon}>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M3 21V7l9-4 9 4v14M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.6" />
+                    </svg>
+                  </div>
+                  <div className={styles.quickInfoText}>
+                    <span className={styles.quickInfoLabel}>Bedrooms</span>
+                    <span className={styles.quickInfoValue}>{property.bhk} BHK</span>
+                  </div>
+                </div>
+              )}
+              {property.bathrooms > 0 && (
+                <div className={styles.quickInfoCard}>
+                  <div className={styles.quickInfoIcon}>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M4 12h16v5a3 3 0 01-3 3H7a3 3 0 01-3-3v-5zM6 12V5a2 2 0 012-2h1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <div className={styles.quickInfoText}>
+                    <span className={styles.quickInfoLabel}>Bathrooms</span>
+                    <span className={styles.quickInfoValue}>{property.bathrooms}</span>
+                  </div>
+                </div>
+              )}
+              {property.area > 0 && (
+                <div className={styles.quickInfoCard}>
+                  <div className={styles.quickInfoIcon}>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
+                    </svg>
+                  </div>
+                  <div className={styles.quickInfoText}>
+                    <span className={styles.quickInfoLabel}>Area</span>
+                    <span className={styles.quickInfoValue}>{property.area.toLocaleString("en-IN")} Sq.Ft.</span>
+                  </div>
+                </div>
+              )}
+              {property.type && (
+                <div className={styles.quickInfoCard}>
+                  <div className={styles.quickInfoIcon}>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M3 21h18M5 21V7l7-4 7 4v14" stroke="currentColor" strokeWidth="1.6" />
+                    </svg>
+                  </div>
+                  <div className={styles.quickInfoText}>
+                    <span className={styles.quickInfoLabel}>Type</span>
+                    <span className={styles.quickInfoValue}>{property.type}</span>
+                  </div>
+                </div>
+              )}
+              {property.furnishing && (
+                <div className={styles.quickInfoCard}>
+                  <div className={styles.quickInfoIcon}>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M20 10V7a2 2 0 00-2-2H6a2 2 0 00-2 2v3M4 10v7h16v-7M2 17h20v2H2z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <div className={styles.quickInfoText}>
+                    <span className={styles.quickInfoLabel}>Furnishing</span>
+                    <span className={styles.quickInfoValue}>{property.furnishing}</span>
+                  </div>
+                </div>
+              )}
+              {property.parking && (
+                <div className={styles.quickInfoCard}>
+                  <div className={styles.quickInfoIcon}>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.6" />
+                      <path d="M9 16V8h4a3 3 0 010 6H9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <div className={styles.quickInfoText}>
+                    <span className={styles.quickInfoLabel}>Parking</span>
+                    <span className={styles.quickInfoValue}>{formatParking(property.parking)}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Description */}
@@ -362,21 +477,19 @@ export default function PropertyDetailPage() {
               <div className={styles.amenitiesGrid}>{property.amenities.map(a => <div key={a} className={styles.amenityItem}><span className={styles.amenityDot} />{a}</div>)}</div>
             </div>}
 
-            {/* Features */}
+            {/* Additional Details (Non-duplicate) */}
             <div className={styles.sectionBlock}>
-              <h3 className={styles.sectionTitle}><svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2zM9 9h6M9 13h6M9 17h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>Property Features</h3>
+              <h3 className={styles.sectionTitle}><svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2zM9 9h6M9 13h6M9 17h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>Additional Details</h3>
               <div className={styles.featuresGrid}>
-                {property.bhk > 0 && <div className={styles.featureRow}><span className={styles.featureLabel}>Bedrooms</span><span className={styles.featureValue}>{property.bhk}</span></div>}
-                {property.bathrooms > 0 && <div className={styles.featureRow}><span className={styles.featureLabel}>Bathrooms</span><span className={styles.featureValue}>{property.bathrooms}</span></div>}
-                {property.area > 0 && <div className={styles.featureRow}><span className={styles.featureLabel}>Area</span><span className={styles.featureValue}>{property.area.toLocaleString("en-IN")} Sq.Ft.</span></div>}
-                {property.type && <div className={styles.featureRow}><span className={styles.featureLabel}>Type</span><span className={styles.featureValue}>{property.type}</span></div>}
+                {property.id && <div className={styles.featureRow}><span className={styles.featureLabel}>Property ID</span><span className={styles.featureValue}>{property.id?.slice(-8)?.toUpperCase()}</span></div>}
                 {property.category && <div className={styles.featureRow}><span className={styles.featureLabel}>Category</span><span className={styles.featureValue}>{property.category}</span></div>}
-                {property.listingType && <div className={styles.featureRow}><span className={styles.featureLabel}>Listing</span><span className={styles.featureValue}>{property.listingType === "rent" ? "For Rent" : "For Sale"}</span></div>}
-                {property.furnishing && <div className={styles.featureRow}><span className={styles.featureLabel}>Furnishing</span><span className={styles.featureValue}>{property.furnishing}</span></div>}
-                {property.parking && <div className={styles.featureRow}><span className={styles.featureLabel}>Parking</span><span className={styles.featureValue}>{property.parking}</span></div>}
-                {property.featured && <div className={styles.featureRow}><span className={styles.featureLabel}>Featured</span><span className={styles.featureValue}>Yes</span></div>}
-                {property.postedBy && <div className={styles.featureRow}><span className={styles.featureLabel}>Posted By</span><span className={styles.featureValue} style={{textTransform:"capitalize"}}>{property.postedBy}</span></div>}
+                {property.possessionStatus && <div className={styles.featureRow}><span className={styles.featureLabel}>Possession Status</span><span className={styles.featureValue}>{property.possessionStatus}</span></div>}
                 {property.availableFrom && <div className={styles.featureRow}><span className={styles.featureLabel}>Available From</span><span className={styles.featureValue}>{formatDate(property.availableFrom)}</span></div>}
+                {property.postedBy && <div className={styles.featureRow}><span className={styles.featureLabel}>Posted By</span><span className={styles.featureValue} style={{textTransform:"capitalize"}}>{property.postedBy}</span></div>}
+                {property.listingType === "rent" && property.deposit > 0 && <div className={styles.featureRow}><span className={styles.featureLabel}>Security Deposit</span><span className={styles.featureValue}>{formatPrice(property.deposit)}</span></div>}
+                {property.facing && <div className={styles.featureRow}><span className={styles.featureLabel}>Facing</span><span className={styles.featureValue}>{property.facing}</span></div>}
+                {property.floor !== undefined && property.floor !== null && property.floor !== "" && <div className={styles.featureRow}><span className={styles.featureLabel}>Floor</span><span className={styles.featureValue}>{property.floor}{property.totalFloors ? ` of ${property.totalFloors}` : ""}</span></div>}
+                {property.ageOfProperty && <div className={styles.featureRow}><span className={styles.featureLabel}>Property Age</span><span className={styles.featureValue}>{property.ageOfProperty}</span></div>}
               </div>
             </div>
 
@@ -540,15 +653,86 @@ export default function PropertyDetailPage() {
       </div></div>}
 
       {/* Lightbox */}
-      {lightboxOpen && <div className={styles.lightbox} onClick={() => setLightboxOpen(false)}>
-        <button className={styles.lightboxClose} onClick={() => setLightboxOpen(false)}>✕</button>
-        <img className={styles.lightboxImage} src={images[activeImg]} alt={property.title} onClick={e => e.stopPropagation()} />
-        <span className={styles.lightboxCounter}>{activeImg + 1} / {images.length}</span>
-        {images.length > 1 && <>
-          <button className={`${styles.lightboxNav} ${styles.lightboxPrev}`} onClick={e => { e.stopPropagation(); setActiveImg(p => (p - 1 + images.length) % images.length); }}><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-          <button className={`${styles.lightboxNav} ${styles.lightboxNext}`} onClick={e => { e.stopPropagation(); setActiveImg(p => (p + 1) % images.length); }}><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-        </>}
-      </div>}
+      {lightboxOpen && (
+        <div className={styles.lightbox} onClick={() => setLightboxOpen(false)}>
+          <button
+            type="button"
+            className={styles.lightboxClose}
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Close fullscreen"
+          >
+            ✕
+          </button>
+
+          {images.length > 1 && (
+            <button
+              type="button"
+              className={`${styles.lightboxNav} ${styles.lightboxPrev}`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActiveImg((p) => (p - 1 + images.length) % images.length);
+              }}
+              aria-label="Previous photo"
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+
+          <div className={styles.lightboxImageContainer} onClick={(e) => e.stopPropagation()}>
+            <img
+              key={activeImg}
+              className={styles.lightboxImage}
+              src={images[activeImg]}
+              alt={property.title}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/img/buy-properties/1.jpg";
+              }}
+            />
+          </div>
+
+          {images.length > 1 && (
+            <button
+              type="button"
+              className={`${styles.lightboxNav} ${styles.lightboxNext}`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActiveImg((p) => (p + 1) % images.length);
+              }}
+              aria-label="Next photo"
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+
+          <div className={styles.lightboxFooter} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.lightboxCounter}>
+              {activeImg + 1} / {images.length}
+            </div>
+            {images.length > 1 && (
+              <div className={styles.lightboxThumbs}>
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`${styles.lightboxThumb} ${i === activeImg ? styles.lightboxThumbActive : ""}`}
+                    onClick={() => setActiveImg(i)}
+                    aria-label={`Photo ${i + 1}`}
+                  >
+                    <img src={img} alt={`Thumbnail ${i + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {showEnquiry && <PremiumEnquiryModal property={property} onClose={() => setShowEnquiry(false)} />}
       <Footer />

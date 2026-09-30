@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -29,19 +29,47 @@ import {
   HiOutlineTrash,
   HiOutlineRefresh,
   HiOutlineCheck,
+  HiOutlineCalendar,
+  HiOutlineClock,
 } from "react-icons/hi";
 
 const ITEMS_PER_PAGE = 4;
 
-function formatPrice(price) {
-  if (!price) return "N/A";
-  if (price >= 10000000) return `₹ ${(price / 10000000).toFixed(2)} Cr`;
-  if (price >= 100000) return `₹ ${(price / 100000).toFixed(1)} Lakh`;
-  return `₹ ${price.toLocaleString("en-IN")}`;
+function formatPrice(price, listingType = "buy") {
+  if (price === undefined || price === null || price === "" || price === 0) return "N/A";
+  const num = Number(price);
+  if (isNaN(num) || num <= 0) return "N/A";
+  if (num >= 10000000) {
+    const cr = num / 10000000;
+    const formatted = parseFloat(cr.toFixed(2));
+    return `₹ ${formatted} Cr`;
+  }
+  if (num >= 100000) {
+    const lac = num / 100000;
+    const formatted = parseFloat(lac.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  if (num > 0 && num <= 500 && listingType === "buy") {
+    const formatted = parseFloat(num.toFixed(2));
+    return `₹ ${formatted} Lac`;
+  }
+  return `₹ ${num.toLocaleString("en-IN")}`;
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "Recently";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "Recently";
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export default function MyPropertiesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading, isAuthenticated, isOwner } = useAuth();
   const [properties, setProperties] = useState([]);
   const [fetching, setFetching] = useState(true);
@@ -53,10 +81,21 @@ export default function MyPropertiesPage() {
 
   // Search & Filters
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [listingFilter, setListingFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [cityFilter, setCityFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(() => searchParams?.get("status") || "all");
+  const [listingFilter, setListingFilter] = useState(() => searchParams?.get("listingType") || "all");
+  const [typeFilter, setTypeFilter] = useState(() => searchParams?.get("type") || "all");
+  const [cityFilter, setCityFilter] = useState(() => searchParams?.get("city") || "all");
+
+  useEffect(() => {
+    const s = searchParams?.get("status");
+    const l = searchParams?.get("listingType") || searchParams?.get("purpose");
+    const t = searchParams?.get("type");
+    const c = searchParams?.get("city");
+    if (s) setStatusFilter(s);
+    if (l) setListingFilter(l);
+    if (t) setTypeFilter(t);
+    if (c) setCityFilter(c);
+  }, [searchParams]);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,12 +140,14 @@ export default function MyPropertiesPage() {
 
     // Search
     if (search.trim()) {
-      const q = search.toLowerCase().trim();
+      const q = search.toLowerCase().trim().replace(/^#/, "");
       result = result.filter(
         (p) =>
           (p.title || "").toLowerCase().includes(q) ||
           (p.city || "").toLowerCase().includes(q) ||
-          (p.location || "").toLowerCase().includes(q),
+          (p.location || "").toLowerCase().includes(q) ||
+          (p.id || "").toLowerCase().includes(q) ||
+          (p.id?.slice(-8) || "").toLowerCase().includes(q),
       );
     }
 
@@ -280,7 +321,16 @@ export default function MyPropertiesPage() {
         {!fetching && !error && (
           <>
             <div className={styles.statsRow}>
-              <div className={styles.statCard}>
+              <div
+                className={`${styles.statCard} ${statusFilter === "all" && listingFilter === "all" ? styles.statCardActive : ""}`}
+                onClick={() => {
+                  setStatusFilter("all");
+                  setListingFilter("all");
+                  setCurrentPage(1);
+                }}
+                style={{ cursor: "pointer" }}
+                title="Filter All Properties"
+              >
                 <div className={`${styles.statIconBadge} ${styles.statIconTotal}`}>
                   <HiOutlineHome />
                 </div>
@@ -289,7 +339,17 @@ export default function MyPropertiesPage() {
                   <span className={styles.statLabel}>Total</span>
                 </div>
               </div>
-              <div className={styles.statCard}>
+
+              <div
+                className={`${styles.statCard} ${listingFilter === "buy" ? styles.statCardActive : ""}`}
+                onClick={() => {
+                  setListingFilter("buy");
+                  setStatusFilter("all");
+                  setCurrentPage(1);
+                }}
+                style={{ cursor: "pointer" }}
+                title="Filter For Sale Properties"
+              >
                 <div className={`${styles.statIconBadge} ${styles.statIconSale}`}>
                   <HiOutlineTag />
                 </div>
@@ -300,7 +360,17 @@ export default function MyPropertiesPage() {
                   <span className={styles.statLabel}>For Sale</span>
                 </div>
               </div>
-              <div className={styles.statCard}>
+
+              <div
+                className={`${styles.statCard} ${listingFilter === "rent" ? styles.statCardActive : ""}`}
+                onClick={() => {
+                  setListingFilter("rent");
+                  setStatusFilter("all");
+                  setCurrentPage(1);
+                }}
+                style={{ cursor: "pointer" }}
+                title="Filter For Rent Properties"
+              >
                 <div className={`${styles.statIconBadge} ${styles.statIconRent}`}>
                   <HiOutlineKey />
                 </div>
@@ -311,7 +381,17 @@ export default function MyPropertiesPage() {
                   <span className={styles.statLabel}>For Rent</span>
                 </div>
               </div>
-              <div className={styles.statCard}>
+
+              <div
+                className={`${styles.statCard} ${statusFilter === "sold" ? styles.statCardActive : ""}`}
+                onClick={() => {
+                  setStatusFilter("sold");
+                  setListingFilter("all");
+                  setCurrentPage(1);
+                }}
+                style={{ cursor: "pointer" }}
+                title="Filter Sold Properties"
+              >
                 <div className={`${styles.statIconBadge} ${styles.statIconSold}`}>
                   <HiOutlineCheckCircle />
                 </div>
@@ -476,9 +556,27 @@ export default function MyPropertiesPage() {
 
                       {/* Center: Property Details */}
                       <div className={styles.propInfo}>
-                        <span className={styles.propCategoryTag}>
-                          {prop.category || "Residential"} • {prop.type || "Apartment"}
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", marginBottom: "4px" }}>
+                          <span className={styles.propCategoryTag}>
+                            {prop.category || "Residential"} • {prop.type || "Apartment"}
+                          </span>
+                          {prop.id && (
+                            <span style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              padding: "2px 8px",
+                              borderRadius: "6px",
+                              background: "#f0f9ff",
+                              border: "1px solid #bae6fd",
+                              color: "#0369a1",
+                              fontSize: "0.72rem",
+                              fontWeight: 700,
+                              letterSpacing: "0.04em",
+                            }}>
+                              ID: #{prop.id?.slice(-8)?.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
                         <Link href={`/property/${prop.id}`}>
                           <h3 className={styles.propTitle}>{prop.title}</h3>
                         </Link>
@@ -496,6 +594,17 @@ export default function MyPropertiesPage() {
                           <span className={styles.propPrice}>
                             {formatPrice(prop.price)}
                             {prop.listingType === "rent" ? " / mo" : ""}
+                          </span>
+                        </div>
+                        <div className={styles.propDates}>
+                          <span className={styles.propDateItem} title="Published Date">
+                            <HiOutlineCalendar className={styles.dateIcon} />
+                            <span>Published: <strong>{formatDate(prop.createdAt || prop.postedDate)}</strong></span>
+                          </span>
+                          <span className={styles.propDateDivider}>•</span>
+                          <span className={styles.propDateItem} title="Last Updated Date">
+                            <HiOutlineClock className={styles.dateIcon} />
+                            <span>Updated: <strong>{formatDate(prop.updatedAt || prop.createdAt || prop.postedDate)}</strong></span>
                           </span>
                         </div>
                       </div>

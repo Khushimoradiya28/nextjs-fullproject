@@ -162,8 +162,8 @@ export default function PropertyLoanWidget({ property }) {
               style={{ width: "100%", accentColor: "#007bbd", cursor: "pointer" }}
             />
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#94a3b8", marginTop: "2px" }}>
-              <span>₹ 1 Lakh</span>
-              <span>₹ {(Math.max(propertyPrice, 5000000) / 10000000 >= 1 ? (Math.max(propertyPrice, 5000000) / 10000000).toFixed(2) + " Cr" : (Math.max(propertyPrice, 5000000) / 100000).toFixed(1) + " Lakh")}</span>
+              <span>₹ 1 Lac</span>
+              <span>₹ {(Math.max(propertyPrice, 5000000) / 10000000 >= 1 ? parseFloat((Math.max(propertyPrice, 5000000) / 10000000).toFixed(2)) + " Cr" : parseFloat((Math.max(propertyPrice, 5000000) / 100000).toFixed(2)) + " Lac")}</span>
             </div>
           </div>
 

@@ -19,6 +19,8 @@ const EMPTY_FILTERS = {
   areaMin: "",
   areaMax: "",
   furnishing: [],
+  possessionStatus: [],
+  availableFrom: "",
   keyword: "",
 };
 
@@ -42,6 +44,8 @@ function readInitialParams() {
       areaMin: sp.get("areaMin") || "",
       areaMax: sp.get("areaMax") || "",
       furnishing: sp.getAll("furnishing"),
+      possessionStatus: sp.getAll("possessionStatus"),
+      availableFrom: sp.get("availableFrom") || "",
       keyword: sp.get("q") || "",
     },
     sortBy: sp.get("sortBy") || "newest",
@@ -102,7 +106,12 @@ export default function BuyPage() {
         })
         .join(",");
     }
-    // console.log(q.furnishing);
+    if (f.possessionStatus && f.possessionStatus.length > 0) {
+      q.possessionStatus = f.possessionStatus.join(",");
+    }
+    if (f.availableFrom) {
+      q.availableFrom = f.availableFrom;
+    }
     if (f.keyword) q.q = f.keyword;
 
     const res = await searchProperties(q);
@@ -123,6 +132,8 @@ export default function BuyPage() {
     f.type.forEach((v) => p.append("type", v));
     f.bhk.forEach((v) => p.append("bhk", v));
     f.furnishing.forEach((v) => p.append("furnishing", v));
+    f.possessionStatus?.forEach((v) => p.append("possessionStatus", v));
+    if (f.availableFrom) p.set("availableFrom", f.availableFrom);
     if (f.budgetMin) p.set("minPrice", f.budgetMin);
     if (f.budgetMax) p.set("maxPrice", f.budgetMax);
     if (f.areaMin) p.set("areaMin", f.areaMin);

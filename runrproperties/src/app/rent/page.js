@@ -83,6 +83,7 @@ export default function RentPage() {
     if (f.rentMin) q.minPrice = f.rentMin;
     if (f.rentMax) q.maxPrice = f.rentMax;
     if (f.furnishing.length > 0) q.furnishing = f.furnishing.join(",");
+    if (f.availableFrom) q.availableFrom = f.availableFrom;
     if (f.keyword) q.q = f.keyword;
 
     const res = await searchProperties(q);

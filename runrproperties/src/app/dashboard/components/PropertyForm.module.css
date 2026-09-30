@@ -136,8 +136,83 @@
   box-sizing: border-box;
 }
 
+.formInput[type="date"] {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.formInput[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  filter: invert(36%) sepia(85%) saturate(1485%) hue-rotate(174deg) brightness(92%) contrast(101%);
+}
+
+.formInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background: rgba(0, 123, 189, 0.1);
+}
+
 .formInputWithIcon {
   padding-left: 36px;
+}
+
+.priceInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.priceInputGroup .inputWrapper {
+  flex: 1;
+}
+
+.priceUnitSelect {
+  width: auto;
+  min-width: 115px;
+  padding: 10px 32px 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #bae6fd;
+  background: #f0f9ff;
+  color: #007bbd;
+  font-weight: 700;
+  font-size: 0.86rem;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23007bbd' stroke-width='2.2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.priceUnitSelect:hover,
+.priceUnitSelect:focus {
+  outline: none;
+  border-color: #007bbd;
+  box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.15);
+}
+
+.pricePreviewBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.pricePreviewBadge strong {
+  color: #007bbd;
+  font-weight: 700;
 }
 
 .formInput::placeholder {
