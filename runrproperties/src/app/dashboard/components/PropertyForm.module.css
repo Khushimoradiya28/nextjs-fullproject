@@ -232,6 +232,32 @@
   box-shadow: 0 0 0 3px rgba(0, 123, 189, 0.12);
 }
 
+.cityHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.cityToggleBtn {
+  background: none;
+  border: none;
+  color: #007bbd;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+
+.cityToggleBtn:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
 .formSelect {
   width: 100%;
   padding: 10px 14px;

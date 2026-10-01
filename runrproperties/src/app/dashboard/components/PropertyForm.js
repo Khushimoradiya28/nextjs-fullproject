@@ -142,6 +142,40 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
     setErrors((p) => ({ ...p, price: "" }));
   };
 
+  const [isCustomCity, setIsCustomCity] = useState(() => {
+    if (!initialData?.city) return false;
+    return !CITIES.includes(initialData.city);
+  });
+
+  const formatCityTitleCase = (str) => {
+    return str
+      .replace(/[^a-zA-Z\s-]/g, "")
+      .replace(/\s+/g, " ")
+      .toLowerCase()
+      .split(" ")
+      .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : ""))
+      .join(" ");
+  };
+
+  const handleCustomCityChange = (e) => {
+    const formatted = formatCityTitleCase(e.target.value);
+    setForm((p) => ({ ...p, city: formatted }));
+    setErrors((p) => ({ ...p, city: "" }));
+  };
+
+  const handleCitySelectChange = (e) => {
+    const val = e.target.value;
+    if (val === "__custom__") {
+      setIsCustomCity(true);
+      setForm((p) => ({ ...p, city: "" }));
+      setErrors((p) => ({ ...p, city: "" }));
+    } else {
+      setIsCustomCity(false);
+      setForm((p) => ({ ...p, city: val }));
+      setErrors((p) => ({ ...p, city: "" }));
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -281,7 +315,11 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
   const validate = () => {
     const e = {};
     if (!form.title.trim()) e.title = "Property title is required";
-    if (!form.city.trim()) e.city = "Please select a city";
+    if (!form.city.trim()) {
+      e.city = isCustomCity ? "Please enter your city name" : "Please select a city";
+    } else if (isCustomCity && form.city.trim().length < 2) {
+      e.city = "City name must be at least 2 characters";
+    }
     if (!form.location.trim()) e.location = "Locality is required";
     if (!priceDisplay || parseFloat(priceDisplay) <= 0) e.price = "Enter a valid price/amount";
     if (!form.area || parseInt(form.area) <= 0) e.area = "Area (Sq.Ft.) is required";
@@ -300,8 +338,10 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
     e.preventDefault();
     if (!validate()) return;
     const finalPrice = calculateFinalRupees(priceDisplay, priceUnit);
+    const cleanedCity = formatCityTitleCase(form.city.trim());
     onSubmit({
       ...form,
+      city: cleanedCity,
       price: finalPrice,
     });
   };
@@ -508,17 +548,50 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
 
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>
-                  City <span className={styles.requiredStar}>*</span>
-                </label>
-                <select name="city" className={styles.formSelect} value={form.city} onChange={handleChange}>
-                  <option value="">Select City</option>
-                  {CITIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
+                <div className={styles.cityHeaderRow}>
+                  <label className={styles.formLabel} style={{ marginBottom: 0 }}>
+                    City <span className={styles.requiredStar}>*</span>
+                  </label>
+                  <button
+                    type="button"
+                    className={styles.cityToggleBtn}
+                    onClick={() => {
+                      setIsCustomCity((prev) => !prev);
+                      setForm((p) => ({ ...p, city: "" }));
+                      setErrors((p) => ({ ...p, city: "" }));
+                    }}
+                  >
+                    {isCustomCity ? "← Choose from list" : "+ Add Other City"}
+                  </button>
+                </div>
+                {isCustomCity ? (
+                  <div className={styles.inputWrapper}>
+                    <input
+                      type="text"
+                      name="customCity"
+                      className={styles.formInput}
+                      value={form.city}
+                      onChange={handleCustomCityChange}
+                      placeholder="Enter City Name (e.g. Anand, Vapi)"
+                      autoFocus
+                    />
+                  </div>
+                ) : (
+                  <select
+                    name="city"
+                    className={styles.formSelect}
+                    value={form.city}
+                    onChange={handleCitySelectChange}
+                  >
+                    <option value="">Select City</option>
+                    {CITIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                    <option value="__custom__">+ Other (Enter New City)</option>
+                  </select>
+                )}
                 {errors.city && <span className={styles.fieldError}>✕ {errors.city}</span>}
               </div>
 

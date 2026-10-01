@@ -164,8 +164,8 @@ function LeadCard({ lead, onUpdate }) {
           )}
 
           {/* Action Row */}
-          <div style={{display:"grid",gridTemplateColumns:"220px 1fr auto",gap:"14px",alignItems:"end"}}>
-            <div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:"14px",alignItems:"flex-end"}}>
+            <div style={{flex:"1 1 200px",minWidth:"180px"}}>
               <label style={{fontSize:"0.7rem",fontWeight:"700",color:"#475569",textTransform:"uppercase",letterSpacing:"0.06em",display:"block",marginBottom:"6px"}}>Update Status</label>
               <select value={status} onChange={(e)=>setStatus(e.target.value)} style={{width:"100%",padding:"10px 14px",border:"1.5px solid #cbd5e1",borderRadius:"8px",fontSize:"13px",background:"#ffffff",color:"#1A1A1A",cursor:"pointer",outline:"none",fontFamily:"'DM Sans',sans-serif",boxSizing:"border-box"}}>
                 <option value="pending">Pending</option>
@@ -175,11 +175,11 @@ function LeadCard({ lead, onUpdate }) {
                 <option value="closed_lost">Closed Lost</option>
               </select>
             </div>
-            <div>
+            <div style={{flex:"2 1 240px",minWidth:"220px"}}>
               <label style={{fontSize:"0.7rem",fontWeight:"700",color:"#475569",textTransform:"uppercase",letterSpacing:"0.06em",display:"block",marginBottom:"6px"}}>Internal Notes</label>
               <input value={notes} onChange={(e)=>setNotes(e.target.value)} placeholder="Add internal notes..." style={{width:"100%",padding:"10px 14px",border:"1.5px solid #cbd5e1",borderRadius:"8px",fontSize:"13px",background:"#ffffff",color:"#1A1A1A",outline:"none",boxSizing:"border-box",fontFamily:"'DM Sans',sans-serif"}} />
             </div>
-            <div style={{display:"flex",gap:"8px"}}>
+            <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
               {(lead.phone || lead.mobile) && (
                 <a
                   href={`https://wa.me/91${String(lead.phone||lead.mobile).replace(/[^0-9]/g,"")}?text=${encodeURIComponent(`Hello ${lead.name}, thank you for your home loan enquiry regarding ${lead.message || "our offers"}.`)}`}

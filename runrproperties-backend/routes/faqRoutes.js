@@ -40,7 +40,7 @@ router.get('/public', async (req, res, next) => {
 // @access  Admin
 router.get('/', protect, adminOnly, async (req, res, next) => {
   try {
-    const { search, status, page = 1, limit = 20 } = req.query;
+    const { search, status, page = 1, limit = 10 } = req.query;
     const query = {};
 
     if (status === 'active') {
@@ -57,7 +57,7 @@ router.get('/', protect, adminOnly, async (req, res, next) => {
     }
 
     const pageNum = parseInt(page, 10) || 1;
-    const limitNum = parseInt(limit, 10) || 20;
+    const limitNum = parseInt(limit, 10) || 10;
     const skip = (pageNum - 1) * limitNum;
 
     const [faqs, total, totalActive, totalInactive] = await Promise.all([

@@ -37,6 +37,7 @@ import {
 } from "../../services/api";
 import styles from "./admin.module.css";
 import FaqManager from "./FaqManager";
+import { showWishlistToast } from "../../components/WishlistToast";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -208,8 +209,10 @@ export default function AdminDashboardPage() {
   const [adminProfileMsg, setAdminProfileMsg] = useState({ type: "", text: "" });
   const [adminPasswordMsg, setAdminPasswordMsg] = useState({ type: "", text: "" });
   const [adminProfileTab, setAdminProfileTab] = useState("profile"); // 'profile' | 'password'
+  const [adminPhotoPreview, setAdminPhotoPreview] = useState("");
 
   const handleOpenAdminProfileModal = () => {
+    setAdminPhotoPreview("");
     setAdminProfileForm({
       name: user?.name || "",
       mobile: user?.mobile || "",
@@ -240,8 +243,8 @@ export default function AdminDashboardPage() {
       if (res.success) {
         if (auth.update) auth.update(res.data);
         else if (auth.refreshUser) auth.refreshUser();
-        setAdminProfileMsg({ type: "success", text: "Admin profile updated successfully!" });
-        setTimeout(() => setAdminProfileMsg({ type: "", text: "" }), 3500);
+        showWishlistToast("Profile updated successfully!", "added");
+        setIsAdminProfileModalOpen(false);
       } else {
         setAdminProfileMsg({ type: "error", text: res.message || "Failed to update profile" });
       }
@@ -270,9 +273,9 @@ export default function AdminDashboardPage() {
         newPassword: adminPasswordForm.newPassword,
       });
       if (res.success) {
-        setAdminPasswordMsg({ type: "success", text: "Admin password updated successfully!" });
+        showWishlistToast("Password updated successfully!", "added");
         setAdminPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-        setTimeout(() => setAdminPasswordMsg({ type: "", text: "" }), 3500);
+        setIsAdminProfileModalOpen(false);
       } else {
         setAdminPasswordMsg({ type: "error", text: res.message || "Failed to update password" });
       }
@@ -1469,8 +1472,9 @@ export default function AdminDashboardPage() {
                     e.currentTarget.style.display = "none";
                   }}
                 />
-              ) : null}
-              <span>{(user?.name || "A").slice(0, 1).toUpperCase()}</span>
+              ) : (
+                <span>{(user?.name || "A").slice(0, 1).toUpperCase()}</span>
+              )}
             </div>
             <div className={styles.adminInfo}>
               <div className={styles.adminNameRow}>
@@ -6507,17 +6511,18 @@ export default function AdminDashboardPage() {
               <div className={styles.adminModalHeaderLeft}>
                 <label className={styles.adminModalAvatarWrap} title="Click to upload profile photo">
                   <div className={styles.adminModalAvatar}>
-                    {user?.profilePhoto ? (
+                    {(adminPhotoPreview || user?.profilePhoto) ? (
                       <img
-                        src={getMediaUrl(user.profilePhoto)}
+                        src={adminPhotoPreview || getMediaUrl(user?.profilePhoto)}
                         alt={user?.name || "Admin"}
                         className={styles.adminModalAvatarImg}
                         onError={(e) => {
                           e.currentTarget.style.display = "none";
                         }}
                       />
-                    ) : null}
-                    <span>{(user?.name || "A").slice(0, 1).toUpperCase()}</span>
+                    ) : (
+                      <span>{(user?.name || "A").slice(0, 1).toUpperCase()}</span>
+                    )}
                   </div>
                   <input
                     type="file"
@@ -6526,13 +6531,18 @@ export default function AdminDashboardPage() {
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
+                      const localUrl = URL.createObjectURL(file);
+                      setAdminPhotoPreview(localUrl);
                       setAdminProfileSaving(true);
                       try {
                         const res = await uploadProfilePhoto(file);
-                        if (res?.success && res?.data) {
-                          if (auth.update) auth.update(res.data);
+                        if (res?.success && (res?.data || res?.user)) {
+                          const updatedUser = res.data?.user || res.user || res.data;
+                          if (auth.update) auth.update(updatedUser);
                           else if (auth.refreshUser) auth.refreshUser();
-                          setAdminProfileMsg({ type: "success", text: "Profile photo uploaded successfully!" });
+                          showWishlistToast("Profile photo updated successfully!", "added");
+                        } else {
+                          setAdminProfileMsg({ type: "error", text: res?.message || "Failed to upload photo" });
                         }
                       } catch (err) {
                         setAdminProfileMsg({ type: "error", text: "Failed to upload photo" });
@@ -6542,7 +6552,7 @@ export default function AdminDashboardPage() {
                     }}
                   />
                   <div className={styles.adminModalCameraBadge} title="Change Photo">
-                    <FiCamera size={13} />
+                    <FiCamera size={18} />
                   </div>
                 </label>
 
@@ -6636,7 +6646,7 @@ export default function AdminDashboardPage() {
 
                     <div className={styles.adminFormGroup}>
                       <label className={styles.adminFormLabel}>
-                        <FiMail /> Registered Email (Primary)
+                        <FiMail /> Registered Email <span className={styles.readonlyBadge}>Locked</span>
                       </label>
                       <input
                         type="email"
@@ -6644,22 +6654,24 @@ export default function AdminDashboardPage() {
                         value={user?.email || "admin@runrproperties.com"}
                         readOnly
                       />
-                      <span className={styles.adminFormHint}>
-                        🔒 Master admin email address is protected for system security.
-                      </span>
                     </div>
 
                     <div className={styles.adminFormGroup}>
                       <label className={styles.adminFormLabel}>
-                        <FiShield /> System Role & Access Level
+                        <FiShield /> System Access Level <span className={styles.readonlyBadge}>Super Admin</span>
                       </label>
                       <input
                         type="text"
                         className={`${styles.adminFormInput} ${styles.adminFormInputReadonly}`}
-                        value="Super Administrator — Full Platform Access"
+                        value="Full Platform & Database Access"
                         readOnly
                       />
                     </div>
+                  </div>
+
+                  <div className={styles.securityNoticeRow}>
+                    <FiLock size={14} className={styles.securityNoticeIcon} />
+                    <span>Master administrator email and role permissions are protected for security.</span>
                   </div>
 
                   <div className={styles.adminModalFooter}>
@@ -6696,8 +6708,8 @@ export default function AdminDashboardPage() {
                     </div>
                   )}
 
-                  <div style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: "10px", padding: "10px 14px", fontSize: "0.8rem", color: "#0369a1", display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                    <FiLock size={15} style={{ flexShrink: 0 }} />
+                  <div className={styles.securityNoticeRow} style={{ background: "#f0f9ff", borderColor: "#bae6fd", color: "#0369a1" }}>
+                    <FiLock size={15} style={{ flexShrink: 0, color: "#0284c7" }} />
                     <span>Direct Password Reset: Enter your new password below. Current password is not required.</span>
                   </div>
 

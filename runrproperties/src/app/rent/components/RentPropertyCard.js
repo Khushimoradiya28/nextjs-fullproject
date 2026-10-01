@@ -234,21 +234,21 @@ export default function RentPropertyCard({ property, viewMode }) {
         </div>
 
         <div className={styles.cardFooter}>
-          {isListView && property.owner ? (
+          {isListView ? (
             <>
               <div className={styles.ownerPanel}>
                 <div
                   className={styles.ownerAvatar}
                   style={{
-                    background: property.owner.profilePhoto
+                    background: property.owner?.profilePhoto
                       ? "transparent"
-                      : property.owner.avatarColor || "#2980b9",
+                      : property.owner?.avatarColor || "#007bbd",
                   }}
                 >
-                  {property.owner.profilePhoto ? (
+                  {property.owner?.profilePhoto ? (
                     <img
                       src={property.owner.profilePhoto}
-                      alt={property.owner.name}
+                      alt={property.owner?.name || "Owner"}
                       className={styles.ownerAvatarImg}
                       onError={(e) => {
                         e.currentTarget.style.display = "none";
@@ -256,15 +256,18 @@ export default function RentPropertyCard({ property, viewMode }) {
                     />
                   ) : (
                     <span className={styles.ownerInitial}>
-                      {property.owner.name?.charAt(0).toUpperCase()}
+                      {(property.owner?.name || "Verified Owner")
+                        .charAt(0)
+                        .toUpperCase()}
                     </span>
                   )}
                 </div>
                 <div className={styles.ownerInfo}>
                   <span className={styles.ownerName}>
-                    <span className={styles.gridOwnerLabel}>Owner: </span>{property.owner.name}
+                    <span className={styles.gridOwnerLabel}>Owner: </span>
+                    {property.owner?.name || "Verified Direct Owner"}
                   </span>
-                  <span className={styles.ownerLabel}>Property Owner</span>
+                  <span className={styles.ownerLabel}>Direct Listing</span>
                 </div>
               </div>
               <button

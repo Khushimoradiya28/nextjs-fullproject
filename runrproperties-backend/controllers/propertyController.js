@@ -1,4 +1,5 @@
 const propertyService = require('../services/propertyService');
+const { validateCity, normalizeCity } = require('../utils/cityNormalizer');
 
 /**
  * @desc    Create a new property
@@ -24,6 +25,16 @@ const createProperty = async (req, res, next) => {
         message: `Missing required fields: ${missing.join(', ')}`,
       });
     }
+
+    // Strict City Validation & Normalization
+    const cityValidation = validateCity(city);
+    if (!cityValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: cityValidation.message,
+      });
+    }
+    req.body.city = normalizeCity(city);
 
     if (req.body.amenities && typeof req.body.amenities === 'string') {
       try {
@@ -171,6 +182,17 @@ const updateProperty = async (req, res, next) => {
     console.log('[UPDATE] req.body:', JSON.stringify(req.body));
     console.log('[UPDATE] req.body.status:', req.body.status);
     console.log('[UPDATE] req.file:', req.file ? req.file.filename : 'none');
+
+    if (req.body.city) {
+      const cityValidation = validateCity(req.body.city);
+      if (!cityValidation.valid) {
+        return res.status(400).json({
+          success: false,
+          message: cityValidation.message,
+        });
+      }
+      req.body.city = normalizeCity(req.body.city);
+    }
 
     if (req.body.amenities && typeof req.body.amenities === 'string') {
       try {

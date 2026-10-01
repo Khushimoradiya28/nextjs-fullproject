@@ -126,8 +126,13 @@ const propertySchema = new mongoose.Schema(
   }
 );
 
-// Generate slug from title before saving
+const { normalizeCity } = require('../utils/cityNormalizer');
+
+// Sanitize, correct aliases and Title-Case City before saving
 propertySchema.pre('save', async function () {
+  if (this.isModified('city') && this.city) {
+    this.city = normalizeCity(this.city);
+  }
   if (this.isModified('title')) {
     let slug = this.title
       .toLowerCase()

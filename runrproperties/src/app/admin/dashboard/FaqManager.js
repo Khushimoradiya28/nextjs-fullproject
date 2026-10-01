@@ -23,6 +23,7 @@ export default function FaqManager({ token }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [expandedFaqId, setExpandedFaqId] = useState(null);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
 
   // Modal states
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -61,13 +62,15 @@ export default function FaqManager({ token }) {
     };
   };
 
-  const fetchFaqs = useCallback(async () => {
+  const fetchFaqs = useCallback(async (pageTarget = 1) => {
     setLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
       const params = new URLSearchParams();
       if (statusFilter !== "all") params.append("status", statusFilter);
       if (search.trim()) params.append("search", search.trim());
+      params.append("page", String(pageTarget));
+      params.append("limit", "10");
 
       const jwt = getAuthToken();
       const res = await fetch(`${API_BASE}/faqs?${params.toString()}`, {
@@ -81,6 +84,9 @@ export default function FaqManager({ token }) {
         if (data.counts) {
           setCounts(data.counts);
         }
+        if (data.pagination) {
+          setPagination(data.pagination);
+        }
       }
     } catch (err) {
       console.error("Error fetching FAQs:", err);
@@ -90,7 +96,7 @@ export default function FaqManager({ token }) {
   }, [token, statusFilter, search]);
 
   useEffect(() => {
-    fetchFaqs();
+    fetchFaqs(1);
   }, [fetchFaqs]);
 
   const handleOpenAddModal = () => {
@@ -174,12 +180,12 @@ export default function FaqManager({ token }) {
 
       if (data.success) {
         showToast(`FAQ marked as ${newStatus ? "Active" : "Inactive"}`);
-        fetchFaqs();
+        fetchFaqs(pagination.page);
       } else {
-        fetchFaqs();
+        fetchFaqs(pagination.page);
       }
     } catch (err) {
-      fetchFaqs();
+      fetchFaqs(pagination.page);
     }
   };
 
@@ -200,7 +206,7 @@ export default function FaqManager({ token }) {
       if (data.success) {
         setFaqToDelete(null);
         showToast("FAQ deleted successfully!");
-        fetchFaqs();
+        fetchFaqs(pagination.page);
       } else {
         showToast(data.message || "Failed to delete FAQ", "error");
       }
@@ -741,6 +747,114 @@ export default function FaqManager({ token }) {
           })
         )}
       </div>
+
+      {/* Pagination Controls Bar */}
+      {!loading && pagination.total > 0 && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "#ffffff",
+            border: "1px solid #e2e8f0",
+            borderRadius: "14px",
+            padding: "14px 20px",
+            boxShadow: "0 2px 6px rgba(15, 23, 42, 0.02)",
+            flexWrap: "wrap",
+            gap: "12px",
+          }}
+        >
+          <div style={{ fontSize: "0.86rem", color: "#64748b", fontWeight: 500 }}>
+            Showing{" "}
+            <strong style={{ color: "#0f172a" }}>
+              {Math.min((pagination.page - 1) * pagination.limit + 1, pagination.total)}
+            </strong>{" "}
+            to{" "}
+            <strong style={{ color: "#0f172a" }}>
+              {Math.min(pagination.page * pagination.limit, pagination.total)}
+            </strong>{" "}
+            of <strong style={{ color: "#0f172a" }}>{pagination.total}</strong> FAQs
+          </div>
+
+          {pagination.totalPages > 1 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const prev = Math.max(1, pagination.page - 1);
+                  setPagination((p) => ({ ...p, page: prev }));
+                  fetchFaqs(prev);
+                }}
+                disabled={pagination.page <= 1}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "9px",
+                  border: "1.5px solid #e2e8f0",
+                  background: pagination.page <= 1 ? "#f8fafc" : "#ffffff",
+                  color: pagination.page <= 1 ? "#94a3b8" : "#0f172a",
+                  fontWeight: 700,
+                  fontSize: "0.84rem",
+                  cursor: pagination.page <= 1 ? "not-allowed" : "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                ← Previous
+              </button>
+
+              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => {
+                const isActive = p === pagination.page;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => {
+                      setPagination((prev) => ({ ...prev, page: p }));
+                      fetchFaqs(p);
+                    }}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "9px",
+                      border: isActive ? "1.5px solid #007bbd" : "1.5px solid #e2e8f0",
+                      background: isActive ? "#007bbd" : "#ffffff",
+                      color: isActive ? "#ffffff" : "#334155",
+                      fontWeight: 700,
+                      fontSize: "0.86rem",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const next = Math.min(pagination.totalPages, pagination.page + 1);
+                  setPagination((p) => ({ ...p, page: next }));
+                  fetchFaqs(next);
+                }}
+                disabled={pagination.page >= pagination.totalPages}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "9px",
+                  border: "1.5px solid #e2e8f0",
+                  background: pagination.page >= pagination.totalPages ? "#f8fafc" : "#ffffff",
+                  color: pagination.page >= pagination.totalPages ? "#94a3b8" : "#0f172a",
+                  fontWeight: 700,
+                  fontSize: "0.84rem",
+                  cursor: pagination.page >= pagination.totalPages ? "not-allowed" : "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ADD / EDIT FAQ MODAL */}
       {isFormModalOpen && (

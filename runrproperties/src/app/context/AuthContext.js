@@ -61,11 +61,20 @@ export function AuthProvider({ children }) {
     const result = await updateProfile(data);
     if (result.success) {
       const updatedUser = result.user || result.data?.user || result.data;
-      if (updatedUser) setUser(updatedUser);
-      else {
+      if (updatedUser) {
+        setUser(updatedUser);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("runr_user", JSON.stringify(updatedUser));
+        }
+      } else {
         // Fallback: refetch current user from server
         const fresh = await getCurrentUser();
-        if (fresh.success) setUser(fresh.user);
+        if (fresh.success && fresh.user) {
+          setUser(fresh.user);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("runr_user", JSON.stringify(fresh.user));
+          }
+        }
       }
     }
     return result;
@@ -74,7 +83,13 @@ export function AuthProvider({ children }) {
   const refreshUser = useCallback(async () => {
     const result = await getCurrentUser();
     if (result.success) {
-      setUser(result.user);
+      const userObj = result.user || result.data;
+      if (userObj) {
+        setUser(userObj);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("runr_user", JSON.stringify(userObj));
+        }
+      }
     }
     return result;
   }, []);
@@ -91,10 +106,19 @@ export function AuthProvider({ children }) {
     const result = await uploadProfilePhoto(file);
     if (result.success) {
       const updatedUser = result.data?.user || result.user || result.data;
-      if (updatedUser) setUser(updatedUser);
-      else {
+      if (updatedUser) {
+        setUser(updatedUser);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("runr_user", JSON.stringify(updatedUser));
+        }
+      } else {
         const fresh = await getCurrentUser();
-        if (fresh.success) setUser(fresh.user);
+        if (fresh.success && fresh.user) {
+          setUser(fresh.user);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("runr_user", JSON.stringify(fresh.user));
+          }
+        }
       }
     }
     return result;

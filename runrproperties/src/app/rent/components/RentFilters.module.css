@@ -1,26 +1,29 @@
 .mobileFilterBtn {
   display: none;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border-radius: 12px;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
   border: 1px solid rgba(30, 58, 95, 0.12);
   background: #ffffff;
   color: #1e3a5f;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   cursor: pointer;
   position: relative;
+  height: 36px;
+  width: 100%;
 }
 
-.mobileFilterBtn svg { width: 18px; height: 18px; }
+.mobileFilterBtn svg { width: 15px; height: 15px; }
 
 .filterBadge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #007bbd;
 }

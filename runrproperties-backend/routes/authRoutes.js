@@ -28,9 +28,9 @@ const uploadProfilePhoto = async (req, res, next) => {
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { profilePhoto: photoPath },
-      { returnDocument: 'after' }
-    );
-    res.status(200).json({ success: true, data: user });
+      { new: true }
+    ).select('-password');
+    res.status(200).json({ success: true, data: user, user });
   } catch (error) {
     next(error);
   }
