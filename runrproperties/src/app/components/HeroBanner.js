@@ -673,21 +673,13 @@ export default function HeroBanner() {
                 </div>
                 <div className={styles.hotspotsList}>
                   {currentDest.hotspots.map((spot) => (
-                    <button
+                    <div
                       key={typeof spot === "string" ? spot : spot.name}
-                      type="button"
                       className={styles.hotspotChip}
-                      onClick={() => {
-                        const spotName = typeof spot === "string" ? spot : spot.name;
-                        setLocation(currentDest.name);
-                        router.push(
-                          `/buy?city=${encodeURIComponent(currentDest.name)}`
-                        );
-                      }}
                     >
                       <span className={styles.chipName}>{typeof spot === "string" ? spot : spot.name}</span>
                       {spot.count && <span className={styles.chipCount}>{spot.count}</span>}
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>

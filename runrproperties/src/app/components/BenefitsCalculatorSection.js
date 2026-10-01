@@ -38,8 +38,10 @@ function calculateEMI(principal, annualRate, years) {
 
 function parseNumber(value) {
   if (typeof value !== "string") return Number(value) || 0;
-  const cleaned = value.replace(/[^0-9.]/g, "");
-  return Number(cleaned) || 0;
+  const cleaned = value.replace(/[^0-9]/g, "");
+  const num = Number(cleaned) || 0;
+  if (num > 500000000) return 500000000;
+  return num;
 }
 
 export default function BenefitsCalculatorSection() {

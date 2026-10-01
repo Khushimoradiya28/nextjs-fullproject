@@ -470,7 +470,14 @@
   }
 }
 
-/* ── 4. Standard Mobile Devices (max-width: 640px) ── */
+/* ── 4. Tablets Portrait (max-width: 768px) ── */
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 0 20px !important;
+  }
+}
+
+/* ── 5. Standard Mobile Devices (max-width: 640px) ── */
 @media (max-width: 640px) {
   .contentWrapper {
     padding: 0 16px !important;
@@ -499,8 +506,12 @@
   }
 }
 
-/* ── 5. Small Mobile Screens (max-width: 440px) ── */
+/* ── 6. Small Mobile Screens (max-width: 440px) ── */
 @media (max-width: 440px) {
+  .contentWrapper {
+    padding: 0 12px !important;
+  }
+
   .heroBanner {
     padding: 1.4rem 1.2rem;
     border-radius: 16px;

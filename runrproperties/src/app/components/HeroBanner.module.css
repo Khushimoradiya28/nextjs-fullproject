@@ -1352,13 +1352,13 @@
 @media (max-width: 1024px) {
   .bannerInner {
     min-height: auto;
-    padding: 85px 0 50px;
+    padding: 85px 0 48px;
   }
 
   .bannerContainer {
     grid-template-columns: 1fr;
-    padding: 0 32px;
-    gap: 36px;
+    padding: 0 40px;
+    gap: 32px;
   }
 
   .bannerLeftCol {
@@ -1366,18 +1366,18 @@
   }
 
   .bannerTitle {
-    font-size: 2.4rem;
+    font-size: 2.3rem;
   }
 
   .bannerSearchCard {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    padding: 18px;
+    padding: 16px;
     border-radius: 0 16px 16px 16px;
   }
 
   .fieldGroup {
-    padding: 0;
+    padding: 2px 4px;
   }
 
   .bannerCTA {
@@ -1388,19 +1388,19 @@
 
   .bannerRightCol {
     max-width: 100%;
-    margin-top: 10px;
+    margin-top: 4px;
   }
 }
 
 /* ── 4. Tablets Portrait & Large Mobiles (max-width: 768px) ── */
 @media (max-width: 768px) {
   .bannerInner {
-    padding: 80px 0 40px;
+    padding: 78px 0 36px;
   }
 
   .bannerContainer {
-    padding: 0 18px;
-    gap: 28px;
+    padding: 0 20px;
+    gap: 24px;
   }
 
   .livePlatformBadge {
@@ -1413,12 +1413,12 @@
   }
 
   .bannerTitle {
-    font-size: 1.95rem;
+    font-size: 1.85rem;
     line-height: 1.22;
   }
 
   .bannerText {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     line-height: 1.5;
     margin-top: 6px;
   }
@@ -1430,20 +1430,63 @@
 
   .tabLabel,
   .tabActive {
-    padding: 9px 18px;
+    padding: 8px 18px;
     font-size: 0.84rem;
     border-radius: 10px 10px 0 0;
   }
 
   .bannerSearchCard {
-    grid-template-columns: 1fr;
-    padding: 14px;
-    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 12px;
+    gap: 8px;
     border-radius: 0 14px 14px 14px;
   }
 
+  .fieldGroup {
+    padding: 2px 4px;
+  }
+
+  .fieldLabel {
+    font-size: 0.68rem;
+  }
+
+  .select {
+    font-size: 0.84rem;
+    padding: 2px 16px 2px 0;
+  }
+
+  .fieldIcon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .rupeeIcon {
+    font-size: 0.92rem;
+  }
+
+  .bannerCTA {
+    grid-column: 1 / -1;
+    padding: 10px;
+    font-size: 0.88rem;
+    border-radius: 10px;
+  }
+
+  .marketHubCard {
+    padding: 16px;
+    border-radius: 18px;
+    gap: 10px;
+  }
+
+  .marketCityName {
+    font-size: 1.3rem;
+  }
+
+  .marketCityIcon {
+    font-size: 1.8rem;
+  }
+
   .marketMetricsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
@@ -1453,30 +1496,31 @@
   }
 
   .floatingLiveTrustPill {
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
-    padding: 10px 14px;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    gap: 12px;
+    padding: 10px 16px;
   }
 
   .trustPillDivider {
-    display: none;
+    display: block;
   }
 
   .trustPillRight {
-    align-items: center;
+    align-items: flex-end;
   }
 }
 
 /* ── 5. Standard Mobile Devices (max-width: 576px) ── */
 @media (max-width: 576px) {
   .bannerInner {
-    padding: 75px 0 32px;
+    padding: 72px 0 28px;
   }
 
   .bannerContainer {
-    padding: 0 14px;
-    gap: 22px;
+    padding: 0 16px;
+    gap: 20px;
   }
 
   .livePlatformBadge {
@@ -1491,11 +1535,12 @@
   }
 
   .bannerTitle {
-    font-size: 1.65rem;
+    font-size: 1.55rem;
   }
 
   .bannerText {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
   }
 
   .tabLabel,
@@ -1506,31 +1551,73 @@
     font-size: 0.8rem;
   }
 
+  .bannerSearchCard {
+    grid-template-columns: 1fr 1fr;
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .fieldGroup {
+    padding: 1px 2px;
+  }
+
+  .fieldLabel {
+    font-size: 0.62rem;
+  }
+
+  .select {
+    font-size: 0.8rem;
+    padding: 1px 14px 1px 0;
+  }
+
+  .fieldIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .rupeeIcon {
+    font-size: 0.85rem;
+  }
+
+  .bannerCTA {
+    padding: 9px;
+    font-size: 0.84rem;
+  }
+
   .marketHubCard {
-    padding: 16px;
-    border-radius: 18px;
-    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
+    gap: 8px;
   }
 
   .marketCityName {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
 
   .marketCityIcon {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 
   .marketCityTagline {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
   .marketHighlightBadge {
-    font-size: 0.64rem;
-    padding: 3px 8px;
+    font-size: 0.62rem;
+    padding: 3px 7px;
+  }
+
+  .metricValue {
+    font-size: 1.05rem;
+  }
+
+  .metricLabel {
+    font-size: 0.65rem;
   }
 
   .citySwitcherBar {
     grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
   }
 
   .switchName {
@@ -1538,12 +1625,27 @@
   }
 
   .switchIcon {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 
   .cityExploreBtn {
-    padding: 10px 14px;
-    font-size: 0.8rem;
+    padding: 9px 12px;
+    font-size: 0.78rem;
+  }
+
+  .floatingLiveTrustPill {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .trustPillDivider {
+    display: none;
+  }
+
+  .trustPillRight {
+    align-items: center;
   }
 
   .mobileSearchCTA {
@@ -1554,24 +1656,34 @@
 /* ── 6. Small Mobile Screens (max-width: 400px) ── */
 @media (max-width: 400px) {
   .bannerInner {
-    padding: 70px 0 24px;
+    padding: 68px 0 20px;
   }
 
   .bannerContainer {
-    padding: 0 10px;
-    gap: 18px;
+    padding: 0 12px;
+    gap: 16px;
   }
 
   .bannerTitle {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
   }
 
   .bannerSearchCard {
-    padding: 12px 10px;
+    padding: 8px;
+    gap: 5px;
+  }
+
+  .select {
+    font-size: 0.76rem;
   }
 
   .citySwitcherBar {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .switchName {
+    font-size: 0.58rem;
   }
 
   .hotspotsList {
@@ -1579,7 +1691,7 @@
   }
 
   .hotspotChip {
-    padding: 3px 7px;
-    font-size: 0.68rem;
+    padding: 3px 6px;
+    font-size: 0.66rem;
   }
 }

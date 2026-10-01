@@ -15,6 +15,35 @@ import {
 } from "react-icons/hi";
 import styles from "./BankEnquiryModal.module.css";
 
+function formatIndianNumber(val) {
+  if (val === undefined || val === null || val === "") return "";
+  const str = String(val).replace(/,/g, "").trim();
+  if (!str) return "";
+  const hasTrailingDot = str.endsWith(".");
+  const parts = str.split(".");
+  let intPart = parts[0].replace(/[^\d]/g, "");
+  if (!intPart && !hasTrailingDot) return "";
+  
+  let formattedInt = "";
+  if (intPart.length > 3) {
+    const last3 = intPart.slice(-3);
+    const remaining = intPart.slice(0, -3);
+    const formattedRemaining = remaining.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+    formattedInt = `${formattedRemaining},${last3}`;
+  } else {
+    formattedInt = intPart;
+  }
+  
+  if (parts.length > 1) {
+    const decPart = parts[1].replace(/[^\d]/g, "").slice(0, 2);
+    return `${formattedInt}.${decPart}`;
+  }
+  if (hasTrailingDot) {
+    return `${formattedInt}.`;
+  }
+  return formattedInt;
+}
+
 export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -234,9 +263,13 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
                   </label>
                   <input
                     type="text"
-                    value={form.monthlyIncome}
+                    inputMode="numeric"
+                    value={form.monthlyIncome ? `₹ ${formatIndianNumber(form.monthlyIncome)}` : ""}
                     onChange={(e) => {
-                      setForm({ ...form, monthlyIncome: e.target.value });
+                      const clean = e.target.value.replace(/[^0-9]/g, "");
+                      const num = parseInt(clean, 10);
+                      if (!isNaN(num) && num > 100000000) return; // Max 10 Cr / month
+                      setForm({ ...form, monthlyIncome: clean });
                       if (errors.monthlyIncome) setErrors({ ...errors, monthlyIncome: "" });
                     }}
                     placeholder="e.g. ₹ 75,000"
@@ -254,9 +287,13 @@ export default function BankEnquiryModal({ bank, onClose, onSuccess }) {
                 </label>
                 <input
                   type="text"
-                  value={form.loanAmount}
+                  inputMode="numeric"
+                  value={form.loanAmount ? `₹ ${formatIndianNumber(form.loanAmount)}` : ""}
                   onChange={(e) => {
-                    setForm({ ...form, loanAmount: e.target.value });
+                    const clean = e.target.value.replace(/[^0-9]/g, "");
+                    const num = parseInt(clean, 10);
+                    if (!isNaN(num) && num > 1000000000) return; // Max 100 Cr
+                    setForm({ ...form, loanAmount: clean });
                     if (errors.loanAmount) setErrors({ ...errors, loanAmount: "" });
                   }}
                   placeholder="e.g. ₹ 50,00,000"

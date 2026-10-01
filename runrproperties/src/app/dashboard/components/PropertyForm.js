@@ -64,6 +64,72 @@ const defaultForm = {
   status: "active",
 };
 
+// Indian number comma formatting: 12345678 -> 1,23,45,678 (real-time on-type)
+function formatIndianNumber(val) {
+  if (val === undefined || val === null || val === "") return "";
+  const str = String(val).replace(/,/g, "").trim();
+  if (!str) return "";
+  const hasTrailingDot = str.endsWith(".");
+  const parts = str.split(".");
+  let intPart = parts[0].replace(/[^\d]/g, "");
+  if (!intPart && !hasTrailingDot) return "";
+  
+  let formattedInt = "";
+  if (intPart.length > 3) {
+    const last3 = intPart.slice(-3);
+    const remaining = intPart.slice(0, -3);
+    const formattedRemaining = remaining.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+    formattedInt = `${formattedRemaining},${last3}`;
+  } else {
+    formattedInt = intPart;
+  }
+  
+  if (parts.length > 1) {
+    const decPart = parts[1].replace(/[^\d]/g, "").slice(0, 2);
+    return `${formattedInt}.${decPart}`;
+  }
+  if (hasTrailingDot) {
+    return `${formattedInt}.`;
+  }
+  return formattedInt;
+}
+
+function parseRawNumber(val) {
+  if (val === undefined || val === null) return "";
+  return String(val).replace(/,/g, "").trim();
+}
+
+function formatPriceInWords(val, listingType = "buy") {
+  if (!val) return "";
+  const num = Number(parseRawNumber(val));
+  if (isNaN(num) || num <= 0) return "";
+
+  let str = "";
+  if (num >= 10000000) {
+    const cr = (num / 10000000).toLocaleString("en-IN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+    str = `₹ ${cr} Crore`;
+  } else if (num >= 100000) {
+    const lac = (num / 100000).toLocaleString("en-IN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+    str = `₹ ${lac} Lakh`;
+  } else if (num >= 1000) {
+    const k = (num / 1000).toLocaleString("en-IN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
+    str = `₹ ${k} Thousand`;
+  } else {
+    str = `₹ ${num.toLocaleString("en-IN")}`;
+  }
+
+  return listingType === "rent" ? `${str} / month` : str;
+}
+
 export default function PropertyForm({ initialData, onSubmit, submitLabel = "List Property", loading }) {
   const [form, setForm] = useState(() => {
     const init = { ...defaultForm, ...initialData };
@@ -81,64 +147,36 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
     };
   });
 
-  const [priceUnit, setPriceUnit] = useState(() => {
-    const rawPrice = initialData?.price;
-    const lType = initialData?.listingType || "buy";
-    if (lType === "rent") return "rupees";
-    if (!rawPrice) return "lac";
-    const num = Number(rawPrice);
-    if (num >= 10000000) return "cr";
-    if (num >= 100000) return "lac";
-    if (num > 0 && num <= 500) return "lac";
-    return "rupees";
-  });
-
   const [priceDisplay, setPriceDisplay] = useState(() => {
     const rawPrice = initialData?.price;
-    const lType = initialData?.listingType || "buy";
     if (!rawPrice && rawPrice !== 0) return "";
     const num = Number(rawPrice);
     if (isNaN(num) || num <= 0) return "";
-    if (lType === "rent") {
-      if (num >= 100000 && num % 100000 === 0) return String(num / 100000);
-      return String(num);
-    }
-    if (num >= 10000000) {
-      const cr = num / 10000000;
-      return String(cr % 1 === 0 ? cr : parseFloat(cr.toFixed(2)));
-    }
-    if (num >= 100000) {
-      const lac = num / 100000;
-      return String(lac % 1 === 0 ? lac : parseFloat(lac.toFixed(2)));
-    }
-    return String(num);
+    return formatIndianNumber(num);
   });
 
   const [errors, setErrors] = useState({});
   const [imageError, setImageError] = useState("");
 
-  const calculateFinalRupees = (val, unit) => {
-    const num = parseFloat(val);
-    if (isNaN(num) || num <= 0) return 0;
-    if (unit === "cr") return Math.round(num * 10000000);
-    if (unit === "lac") return Math.round(num * 100000);
-    if (unit === "thousand") return Math.round(num * 1000);
-    return Math.round(num);
-  };
-
   const handlePriceValueChange = (e) => {
-    const val = e.target.value;
-    setPriceDisplay(val);
-    const finalVal = calculateFinalRupees(val, priceUnit);
-    setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
-    setErrors((p) => ({ ...p, price: "" }));
-  };
+    const inputVal = e.target.value;
+    const clean = parseRawNumber(inputVal);
 
-  const handlePriceUnitChange = (e) => {
-    const newUnit = e.target.value;
-    setPriceUnit(newUnit);
-    const finalVal = calculateFinalRupees(priceDisplay, newUnit);
-    setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
+    if (clean === "") {
+      setPriceDisplay("");
+      setForm((p) => ({ ...p, price: "" }));
+      setErrors((p) => ({ ...p, price: "" }));
+      return;
+    }
+
+    // High upper bounds (Rent: ₹10 Cr / month, Buy: ₹10,000 Cr)
+    const maxVal = form.listingType === "rent" ? 100000000 : 100000000000;
+    const num = parseFloat(clean);
+    if (!isNaN(num) && num > maxVal) return;
+
+    const formatted = formatIndianNumber(clean);
+    setPriceDisplay(formatted);
+    setForm((p) => ({ ...p, price: clean }));
     setErrors((p) => ({ ...p, price: "" }));
   };
 
@@ -234,16 +272,9 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
   };
 
   const handleListingTypeChange = (type) => {
-    setForm((p) => ({ ...p, listingType: type }));
-    if (type === "rent" && priceUnit === "cr") {
-      setPriceUnit("rupees");
-      const finalVal = calculateFinalRupees(priceDisplay, "rupees");
-      setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
-    } else if (type === "buy" && priceUnit === "rupees" && priceDisplay && parseFloat(priceDisplay) <= 500) {
-      setPriceUnit("lac");
-      const finalVal = calculateFinalRupees(priceDisplay, "lac");
-      setForm((p) => ({ ...p, price: finalVal ? String(finalVal) : "" }));
-    }
+    setForm((p) => ({ ...p, listingType: type, price: "" }));
+    setPriceDisplay("");
+    setErrors((p) => ({ ...p, price: "" }));
   };
 
   const toggleAmenity = (a) => {
@@ -321,8 +352,9 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
       e.city = "City name must be at least 2 characters";
     }
     if (!form.location.trim()) e.location = "Locality is required";
-    if (!priceDisplay || parseFloat(priceDisplay) <= 0) e.price = "Enter a valid price/amount";
-    if (!form.area || parseInt(form.area) <= 0) e.area = "Area (Sq.Ft.) is required";
+    const cleanPrice = parseRawNumber(priceDisplay);
+    if (!cleanPrice || parseFloat(cleanPrice) <= 0) e.price = "Enter a valid price/amount";
+    if (!form.area || parseInt(parseRawNumber(form.area)) <= 0) e.area = "Area (Sq.Ft.) is required";
     if (!form.type) e.type = "Select Property Type";
     if (!form.description || form.description.trim().length < 20) {
       e.description = "Description must be at least 20 characters";
@@ -343,6 +375,7 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
       ...form,
       city: cleanedCity,
       price: finalPrice,
+      area: parseInt(parseRawNumber(form.area), 10) || 0,
     });
   };
 
@@ -616,63 +649,24 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
                   {form.listingType === "rent" ? "Monthly Rent" : "Property Price"}{" "}
                   <span className={styles.requiredStar}>*</span>
                 </label>
-                <div className={styles.priceInputGroup}>
-                  <div className={styles.inputWrapper}>
-                    <span className={styles.inputIcon}>₹</span>
-                    <input
-                      name="priceDisplay"
-                      type="number"
-                      step="any"
-                      min="0"
-                      className={`${styles.formInput} ${styles.formInputWithIcon}`}
-                      value={priceDisplay}
-                      onChange={handlePriceValueChange}
-                      placeholder={
-                        priceUnit === "lac"
-                          ? "e.g. 85"
-                          : priceUnit === "cr"
-                          ? "e.g. 2.5"
-                          : form.listingType === "rent"
-                          ? "e.g. 25000"
-                          : "e.g. 8500000"
-                      }
-                    />
-                  </div>
-                  <select
-                    className={styles.priceUnitSelect}
-                    value={priceUnit}
-                    onChange={handlePriceUnitChange}
-                    aria-label="Select Price Unit"
-                  >
-                    {form.listingType === "rent" ? (
-                      <>
-                        <option value="rupees">₹ / Month</option>
-                        <option value="thousand">Thousand / Mo</option>
-                        <option value="lac">Lac / Month</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value="lac">Lac</option>
-                        <option value="cr">Cr</option>
-                        <option value="rupees">₹ Total</option>
-                      </>
-                    )}
-                  </select>
+                <div className={styles.inputWrapper}>
+                  <span className={styles.inputIcon}>₹</span>
+                  <input
+                    name="price"
+                    type="text"
+                    inputMode="numeric"
+                    className={`${styles.formInput} ${styles.formInputWithIcon}`}
+                    value={priceDisplay}
+                    onChange={handlePriceValueChange}
+                    placeholder={form.listingType === "rent" ? "e.g. 25,000" : "e.g. 85,00,000"}
+                  />
                 </div>
                 {errors.price && <span className={styles.fieldError}>✕ {errors.price}</span>}
-                {priceDisplay && parseFloat(priceDisplay) > 0 && (
-                  <div className={styles.pricePreviewBadge}>
-                    <span>Preview:</span>
-                    <strong>
-                      {priceUnit === "cr"
-                        ? `₹ ${priceDisplay} Cr (₹ ${(parseFloat(priceDisplay) * 10000000).toLocaleString("en-IN")})`
-                        : priceUnit === "lac"
-                        ? `₹ ${priceDisplay} Lac (₹ ${(parseFloat(priceDisplay) * 100000).toLocaleString("en-IN")})`
-                        : priceUnit === "thousand"
-                        ? `₹ ${priceDisplay} K (₹ ${(parseFloat(priceDisplay) * 1000).toLocaleString("en-IN")})`
-                        : form.listingType === "rent"
-                        ? `₹ ${parseFloat(priceDisplay).toLocaleString("en-IN")} / month`
-                        : `₹ ${parseFloat(priceDisplay).toLocaleString("en-IN")}`}
+                {form.price && Number(parseRawNumber(form.price)) >= 1000 && (
+                  <div className={styles.priceWordsBadge}>
+                    <span className={styles.priceWordsLabel}>In Words:</span>
+                    <strong className={styles.priceWordsValue}>
+                      {formatPriceInWords(form.price, form.listingType)}
                     </strong>
                   </div>
                 )}
@@ -685,11 +679,18 @@ export default function PropertyForm({ initialData, onSubmit, submitLabel = "Lis
                 <div className={styles.inputWrapper}>
                   <input
                     name="area"
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     className={styles.formInput}
-                    value={form.area}
-                    onChange={handleChange}
-                    placeholder="1450"
+                    value={form.area ? formatIndianNumber(form.area) : ""}
+                    onChange={(e) => {
+                      const raw = parseRawNumber(e.target.value);
+                      const num = parseInt(raw, 10);
+                      if (!isNaN(num) && num > 500000) return; // Max 5,00,000 sq ft
+                      setForm((p) => ({ ...p, area: raw }));
+                      setErrors((p) => ({ ...p, area: "" }));
+                    }}
+                    placeholder="1,450"
                   />
                 </div>
                 {errors.area && <span className={styles.fieldError}>✕ {errors.area}</span>}

@@ -291,6 +291,10 @@
 
 /* ── 4. Tablets Portrait (max-width: 880px) ── */
 @media (max-width: 880px) {
+  .blogSection {
+    padding: 0 20px;
+  }
+
   .blogInner {
     padding: 22px 20px 26px;
     border-radius: 18px;

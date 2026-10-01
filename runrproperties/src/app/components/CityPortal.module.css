@@ -292,6 +292,11 @@
 
 /* ── 4. Tablets Portrait (max-width: 880px) ── */
 @media (max-width: 880px) {
+  .citySection {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
   .cityHeader {
     flex-direction: column;
     align-items: flex-start;
@@ -336,8 +341,8 @@
   .citySection {
     padding-left: 16px;
     padding-right: 16px;
-    padding-top: 28px;
-    padding-bottom: 28px;
+    padding-top: 24px;
+    padding-bottom: 24px;
   }
 
   .citySlider {
