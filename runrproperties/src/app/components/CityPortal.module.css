@@ -1,7 +1,10 @@
+/* ═══════════════════════════════════════════════════
+   CITY PORTAL — Base Desktop Styles
+   ═══════════════════════════════════════════════════ */
+
 .citySection {
   width: 100%;
   max-width: 100%;
-  /* margin: 0 0 64px; */
   padding-top: 38px;
   padding-bottom: 38px;
 }
@@ -259,10 +262,19 @@
   margin-top: 2px;
 }
 
-/* ——————————————————————————————————
-   RESPONSIVE BREAKPOINTS
-   —————————————————————————————————— */
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE (STRICT SCREEN-WISE GROUPED MEDIA QUERIES)
+   ═══════════════════════════════════════════════════ */
 
+/* ── 1. Extra Large Screens & Laptops (max-width: 1400px) ── */
+@media (max-width: 1400px) {
+  .citySection {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+}
+
+/* ── 2. Standard Laptops (max-width: 1200px) ── */
 @media (max-width: 1200px) {
   .cityCard {
     flex: 0 0 calc((100% - 54px) / 4);
@@ -270,10 +282,20 @@
   }
 }
 
+/* ── 3. Tablets Landscape & Medium Screens (max-width: 1024px) ── */
+@media (max-width: 1024px) {
+  .citySection {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+/* ── 4. Tablets Portrait (max-width: 880px) ── */
 @media (max-width: 880px) {
   .cityHeader {
     flex-direction: column;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 14px;
     margin-bottom: 22px;
   }
 
@@ -282,7 +304,7 @@
   }
 
   .sectionTitle h2 {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
   }
 
   .cityCard {
@@ -309,14 +331,22 @@
   }
 }
 
+/* ── 5. Standard Mobile Devices (max-width: 640px) ── */
 @media (max-width: 640px) {
+  .citySection {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
   .citySlider {
     gap: 12px;
   }
 
   .cityCard {
     flex: 0 0 42%;
-    padding: 18px 12px;
+    padding: 16px 12px;
     border-radius: 18px;
     min-height: 170px;
     min-width: 130px;
@@ -350,7 +380,13 @@
   }
 }
 
+/* ── 6. Small Mobile Screens (max-width: 400px) ── */
 @media (max-width: 400px) {
+  .citySection {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
   .citySlider {
     gap: 10px;
   }

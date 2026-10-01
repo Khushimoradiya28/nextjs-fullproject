@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════
+   BLOG SECTION — Base Desktop Styles
+   ═══════════════════════════════════════════════════ */
+
 .blogSection {
   width: 100%;
   margin: 0 auto 72px;
@@ -13,24 +17,6 @@
   border-radius: 22px;
   border: 1px solid rgba(30, 58, 95, 0.1);
   box-shadow: 0 22px 60px rgba(30, 58, 95, 0.09);
-}
-
-@media (max-width: 1400px) {
-  .blogSection {
-    padding: 0 80px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .blogSection {
-    padding: 0 40px;
-  }
-}
-
-@media (max-width: 640px) {
-  .blogSection {
-    padding: 0 16px;
-  }
 }
 
 .blogHeader {
@@ -277,23 +263,37 @@
   box-shadow: 0 18px 34px rgba(0, 123, 189, 0.22);
 }
 
-@media (max-width: 1100px) {
-  .blogGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE (STRICT SCREEN-WISE GROUPED MEDIA QUERIES)
+   ═══════════════════════════════════════════════════ */
+
+/* ── 1. Extra Large Screens & Laptops (max-width: 1400px) ── */
+@media (max-width: 1400px) {
+  .blogSection {
+    padding: 0 80px;
   }
 }
 
-@media (max-width: 880px) {
-  .blogSection {
-    width: calc(100vw - 40px);
-    max-width: calc(100vw - 40px);
-    padding: 22px 20px 26px;
-    border-radius: 18px;
-  }
-
+/* ── 2. Standard Laptops (max-width: 1100px) ── */
+@media (max-width: 1100px) {
   .blogGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
+  }
+}
+
+/* ── 3. Tablets Landscape & Medium Screens (max-width: 1024px) ── */
+@media (max-width: 1024px) {
+  .blogSection {
+    padding: 0 40px;
+  }
+}
+
+/* ── 4. Tablets Portrait (max-width: 880px) ── */
+@media (max-width: 880px) {
+  .blogInner {
+    padding: 22px 20px 26px;
+    border-radius: 18px;
   }
 
   .callbackPanel {
@@ -312,14 +312,8 @@
   }
 }
 
+/* ── 5. Standard Mobile Devices (max-width: 720px) ── */
 @media (max-width: 720px) {
-  .blogSection {
-    width: calc(100vw - 24px);
-    max-width: calc(100vw - 24px);
-    padding: 20px 16px 22px;
-    border-radius: 16px;
-  }
-
   .blogHeader {
     flex-direction: column;
     align-items: flex-start;
@@ -333,7 +327,7 @@
   }
 
   .cardVisual {
-    min-height: 160px;
+    height: 170px;
   }
 
   .cardContent {
@@ -361,15 +355,27 @@
   }
 }
 
-@media (max-width: 400px) {
+/* ── 6. Small Tablets & Phones (max-width: 640px) ── */
+@media (max-width: 640px) {
   .blogSection {
-    width: calc(100vw - 16px);
-    max-width: calc(100vw - 16px);
-    padding: 16px 12px 18px;
+    padding: 0 16px;
+    margin-bottom: 48px;
   }
 
-  .cardContent {
-    padding: 14px 14px 16px;
+  .blogInner {
+    padding: 20px 16px 22px;
+    border-radius: 16px;
+  }
+}
+
+/* ── 7. Small Mobile Screens (max-width: 400px) ── */
+@media (max-width: 400px) {
+  .blogSection {
+    padding: 0 12px;
+  }
+
+  .blogInner {
+    padding: 16px 12px 18px;
   }
 
   .cardTitle {
@@ -377,7 +383,7 @@
   }
 
   .cardText {
-    font-size: 0.85rem;
+    font-size: 0.84rem;
   }
 
   .callbackPanel {

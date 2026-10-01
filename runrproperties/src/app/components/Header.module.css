@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════
+   HEADER — Base Desktop Styles
+   ═══════════════════════════════════════════════════ */
+
 :root {
   --header-bg: rgba(255, 255, 255, 0.95);
   --text-main: #0f172a;
@@ -8,7 +12,7 @@
   --border-color: rgba(226, 232, 240, 0.85);
 }
 
-/* Base Wrapper — Fixed Top Header (No layout shift) */
+/* Base Wrapper — Fixed Top Header */
 .headerWrapper {
   position: fixed;
   top: 0;
@@ -26,7 +30,6 @@
   will-change: background, box-shadow;
 }
 
-/* Transparent Header (Floats seamlessly over hero banner before scroll) */
 .headerWrapper.transparentHeader {
   background: transparent;
   backdrop-filter: none;
@@ -35,7 +38,6 @@
   box-shadow: none;
 }
 
-/* Scrolled state (Solid White & Elevation Shadow) */
 .headerWrapper.scrolled {
   background: #ffffff !important;
   backdrop-filter: blur(16px);
@@ -44,14 +46,12 @@
   border-bottom: 1px solid rgba(226, 232, 240, 0.95);
 }
 
-/* Spacer for non-homepage routes so content is placed cleanly below fixed header */
 .headerSpacer {
   height: 76px;
   width: 100%;
   flex-shrink: 0;
 }
 
-/* Container */
 .container {
   width: 100%;
   margin: 0 auto;
@@ -62,7 +62,6 @@
   gap: 20px;
 }
 
-/* Brand / Logo (Rock-solid, no scale flicker/vibration) */
 .brand {
   display: flex;
   align-items: center;
@@ -87,7 +86,6 @@
   pointer-events: none;
 }
 
-/* Central Floating Navigation Pill with Subtle Light Gradient */
 .navPill {
   display: flex;
   align-items: center;
@@ -135,7 +133,6 @@
   box-shadow: 0 4px 14px rgba(0, 123, 189, 0.14) !important;
 }
 
-/* Action Controls (Right End) */
 .actions {
   display: flex;
   align-items: center;
@@ -143,7 +140,6 @@
   flex-shrink: 0;
 }
 
-/* Icon Button (Wishlist) */
 .iconButton {
   position: relative;
   width: 42px;
@@ -184,7 +180,6 @@
   transform: scale(1.1);
 }
 
-/* Wishlist Badge */
 .wishlistBadge {
   position: absolute;
   top: -3px;
@@ -204,7 +199,6 @@
   box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
 }
 
-/* Authenticated User Menu */
 .userMenuWrapper {
   position: relative;
 }
@@ -284,7 +278,6 @@
   transform: rotate(180deg);
 }
 
-/* User Dropdown Menu Card */
 .dropdownMenu {
   position: absolute;
   top: calc(100% + 10px);
@@ -302,14 +295,8 @@
 }
 
 @keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .dropdownHeader {
@@ -513,7 +500,8 @@
   border: 1px solid #e2e8f0;
   color: var(--text-main);
   cursor: pointer;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
 
@@ -737,19 +725,30 @@
   color: #b91c1c;
 }
 
-/* Breakpoints */
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE (STRICT SCREEN-WISE GROUPED MEDIA QUERIES)
+   ═══════════════════════════════════════════════════ */
+
+/* ── 1. Extra Large Screens & Laptops (max-width: 1400px) ── */
 @media (max-width: 1400px) {
   .container {
     padding: 0 80px;
   }
 }
 
+/* ── 2. Tablets Landscape & Medium Screens (max-width: 1024px) ── */
 @media (max-width: 1024px) {
   .container {
     padding: 0 40px;
   }
+
+  .navLink {
+    padding: 7px 14px;
+    font-size: 0.88rem;
+  }
 }
 
+/* ── 3. Small Tablets & Phones (max-width: 900px) ── */
 @media (max-width: 900px) {
   .navPill {
     display: none;
@@ -763,5 +762,34 @@
 
   .container {
     padding: 0 16px;
+  }
+}
+
+/* ── 4. Small Mobile Screens (max-width: 480px) ── */
+@media (max-width: 480px) {
+  .logoMark {
+    height: 34px;
+  }
+
+  .userName {
+    display: none;
+  }
+
+  .userPillButton {
+    padding: 3px;
+  }
+
+  .chevronIcon {
+    display: none;
+  }
+
+  .iconButton {
+    width: 38px;
+    height: 38px;
+  }
+
+  .hamburger {
+    width: 38px;
+    height: 38px;
   }
 }

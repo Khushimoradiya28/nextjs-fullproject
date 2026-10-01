@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
@@ -67,7 +67,7 @@ function formatDate(dateStr) {
   });
 }
 
-export default function MyPropertiesPage() {
+function MyPropertiesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading, isAuthenticated, isOwner } = useAuth();
@@ -790,3 +790,12 @@ export default function MyPropertiesPage() {
     </div>
   );
 }
+
+export default function MyPropertiesPage() {
+  return (
+    <Suspense fallback={null}>
+      <MyPropertiesContent />
+    </Suspense>
+  );
+}
+

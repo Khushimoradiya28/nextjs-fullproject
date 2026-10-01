@@ -1,26 +1,12 @@
+/* ═══════════════════════════════════════════════════
+   FEATURED PROPERTIES — Base Desktop Styles
+   ═══════════════════════════════════════════════════ */
+
 .featuredSection {
   width: 100%;
   margin: 30px auto 30px;
   padding: 0 160px;
   box-sizing: border-box;
-}
-
-@media (max-width: 1400px) {
-  .featuredSection {
-    padding: 0 80px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .featuredSection {
-    padding: 0 40px;
-  }
-}
-
-@media (max-width: 640px) {
-  .featuredSection {
-    padding: 0 16px;
-  }
 }
 
 .featuredHeader {
@@ -345,7 +331,6 @@
     stroke 120ms ease;
 }
 
-/* Empty state */
 .emptyState {
   text-align: center;
   padding: 48px 24px;
@@ -360,7 +345,6 @@
   font-size: 0.95rem;
 }
 
-/* Smooth auto-scroll carousel */
 .carouselWrapper {
   overflow: hidden;
   width: 100%;
@@ -374,10 +358,18 @@
   cursor: grab;
 }
 
-/* ——————————————————————————————————
-   RESPONSIVE BREAKPOINTS
-   —————————————————————————————————— */
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE (STRICT SCREEN-WISE GROUPED MEDIA QUERIES)
+   ═══════════════════════════════════════════════════ */
 
+/* ── 1. Extra Large Screens & Laptops (max-width: 1400px) ── */
+@media (max-width: 1400px) {
+  .featuredSection {
+    padding: 0 80px;
+  }
+}
+
+/* ── 2. Standard Laptops (max-width: 1360px) ── */
 @media (max-width: 1360px) {
   .propertyCard {
     flex: 0 0 calc((100% - 54px) / 4);
@@ -386,7 +378,12 @@
   }
 }
 
+/* ── 3. Tablets Landscape & Medium Screens (max-width: 1024px) ── */
 @media (max-width: 1024px) {
+  .featuredSection {
+    padding: 0 40px;
+  }
+
   .propertyCard {
     flex: 0 0 calc((100% - 36px) / 3);
     max-width: calc((100% - 36px) / 3);
@@ -394,22 +391,18 @@
   }
 }
 
+/* ── 4. Tablets Portrait (max-width: 768px) ── */
 @media (max-width: 768px) {
-  .theme-padding {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
   .featuredSection {
-    width: calc(100vw - 40px);
-    max-width: calc(100vw - 40px);
-    position: relative;
+    padding: 0 20px;
+    margin: 24px auto;
   }
 
   .featuredHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
-    position: relative;
+    margin-bottom: 18px;
   }
 
   .headerActions {
@@ -428,11 +421,18 @@
   }
 }
 
+/* ── 5. Standard Mobile Devices (max-width: 640px) ── */
+@media (max-width: 640px) {
+  .featuredSection {
+    padding: 0 16px;
+  }
+}
+
+/* ── 6. Small Mobile Screens (max-width: 520px) ── */
 @media (max-width: 520px) {
   .featuredSection {
-    width: calc(100vw - 32px);
-    max-width: calc(100vw - 32px);
-    margin: 32px auto 0px;
+    padding: 0 14px;
+    margin: 20px auto;
   }
 
   .propertyCard {
@@ -448,5 +448,13 @@
 
   .cardBody {
     padding: 12px 14px 14px;
+  }
+
+  .cardTitle {
+    font-size: 0.94rem;
+  }
+
+  .cardPrice {
+    font-size: 1.05rem;
   }
 }

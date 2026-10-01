@@ -1,3 +1,13 @@
+/* ═══════════════════════════════════════════════════
+   BENEFITS & EMI CALCULATOR — Base Desktop Styles
+   ═══════════════════════════════════════════════════ */
+
+.sectionOuter {
+  width: 100%;
+  padding: 0 160px;
+  box-sizing: border-box;
+}
+
 .sectionWrapper {
   width: 100%;
   margin: 0 auto 64px;
@@ -6,30 +16,6 @@
   border-radius: 16px;
   border: 1px solid rgba(30, 58, 95, 0.14);
   box-shadow: 0 12px 40px rgba(30, 58, 95, 0.06);
-}
-
-.sectionOuter {
-  width: 100%;
-  padding: 0 160px;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1400px) {
-  .sectionOuter {
-    padding: 0 80px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .sectionOuter {
-    padding: 0 40px;
-  }
-}
-
-@media (max-width: 640px) {
-  .sectionOuter {
-    padding: 0 16px;
-  }
 }
 
 .innerGrid {
@@ -317,22 +303,34 @@
   height: 100%;
 }
 
-@media (max-width: 1200px) {
-  .sectionWrapper {
-    width: calc(100vw - 64px);
-    max-width: calc(100vw - 64px);
-  }
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE (STRICT SCREEN-WISE GROUPED MEDIA QUERIES)
+   ═══════════════════════════════════════════════════ */
 
-  .benefitGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px 12px;
+/* ── 1. Extra Large Screens & Laptops (max-width: 1400px) ── */
+@media (max-width: 1400px) {
+  .sectionOuter {
+    padding: 0 80px;
   }
 }
 
-@media (max-width: 980px) {
+/* ── 2. Standard Laptops (max-width: 1200px) ── */
+@media (max-width: 1200px) {
+  .benefitGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
+  }
+}
+
+/* ── 3. Tablets Landscape & Medium Screens (max-width: 1024px) ── */
+@media (max-width: 1024px) {
+  .sectionOuter {
+    padding: 0 40px;
+  }
+
   .innerGrid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 28px;
   }
 
   .benefitsPanel {
@@ -340,21 +338,19 @@
   }
 
   .calculatorPanel {
-    max-width: 520px;
+    max-width: 100%;
   }
 }
 
-@media (max-width: 880px) {
-  .sectionWrapper {
-    width: calc(100vw - 40px);
-    max-width: calc(100vw - 40px);
-    padding: 24px 22px;
-    border-radius: 14px;
+/* ── 4. Tablets Portrait (max-width: 768px) ── */
+@media (max-width: 768px) {
+  .sectionOuter {
+    padding: 0 20px;
   }
 
-  .benefitGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 12px;
+  .sectionWrapper {
+    padding: 22px 18px;
+    margin-bottom: 40px;
   }
 
   .benefitCard {
@@ -372,30 +368,27 @@
   }
 
   .calculatorPanel {
-    max-width: 100%;
-    padding: 18px 18px;
+    padding: 18px;
   }
 
   .calcForm {
-    padding-right: 44px;
+    padding-right: 36px;
   }
 }
 
-@media (max-width: 560px) {
+/* ── 5. Standard Mobile Devices (max-width: 640px) ── */
+@media (max-width: 640px) {
+  .sectionOuter {
+    padding: 0 16px;
+  }
+
   .sectionWrapper {
-    width: calc(100vw - 24px);
-    max-width: calc(100vw - 24px);
-    padding: 20px 16px;
-    border-radius: 12px;
+    padding: 18px 14px;
+    border-radius: 14px;
   }
 
   .benefitGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 10px;
-  }
-
-  .benefitCard {
-    padding: 8px 4px;
+    gap: 12px 8px;
   }
 
   .benefitIcon {
@@ -411,6 +404,7 @@
   .calcForm {
     grid-template-columns: 1fr;
     padding-right: 0;
+    gap: 10px;
   }
 
   .estimateCard {
@@ -423,43 +417,40 @@
   }
 
   .calculatorPanel {
-    padding: 16px 14px;
+    padding: 16px 12px;
     border-radius: 12px;
   }
 }
 
-@media (max-width: 640px) {
-  .sectionWrapper {
-    width: calc(100vw - 24px);
-    max-width: calc(100vw - 24px);
-    padding: 22px 16px;
-  }
-}
-
+/* ── 6. Small Mobile Screens (max-width: 400px) ── */
 @media (max-width: 400px) {
+  .sectionOuter {
+    padding: 0 12px;
+  }
+
   .sectionWrapper {
-    width: calc(100vw - 16px);
-    max-width: calc(100vw - 16px);
-    padding: 18px 12px;
+    padding: 16px 10px;
   }
 
-  .benefitGrid {
-    gap: 10px 8px;
+  .benefitCard {
+    padding: 6px 2px;
   }
 
-  .benefitIcon {
-    width: 44px;
-    height: 44px;
+  .benefitCard h3 {
+    font-size: 0.9rem;
   }
 
-  .benefitIcon img {
-    width: 38px;
-    height: 38px;
+  .benefitCard p {
+    font-size: 0.76rem;
   }
 
   .fieldInput {
     min-height: 36px;
-    padding: 7px 10px;
+    padding: 6px 10px;
     font-size: 0.84rem;
+  }
+
+  .estimateValue {
+    font-size: 1.05rem;
   }
 }
